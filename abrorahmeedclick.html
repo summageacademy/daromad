@@ -1,41 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
-  <title>Bosish...</title>
-  <meta http-equiv="refresh" content="1;url=https://google.com">
+  <meta charset="UTF-8">
+  <title>Yo‘naltirilmoqda...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
-      authDomain: "daromad-link.firebaseapp.com",
-      projectId: "daromad-link",
-      storageBucket: "daromad-link.firebasestorage.app",
-      messagingSenderId: "770178829456",
-      appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const PUBLISHER_UID = "dq6Grwt4PlgUu9k6mJekjv0LXW12";  // REPLACE WITH REAL UID
-    const SPONSORS = [
-      "https://summage.org",
-      "https://sponsor2.com/promo",
-      "https://sponsor3.com/deal"
-    ];
-
-    const pubRef = db.collection("publishers").doc(PUBLISHER_UID);
-    pubRef.update({
-      clicks: firebase.firestore.FieldValue.increment(1),
-      earnings: firebase.firestore.FieldValue.increment(0.001)
-    });
-
-    const url = SPONSORS[Math.floor(Math.random() * SPONSORS.length)];
-    setTimeout(() => { window.location = url; }, 300);
-  </script>
+  <style>
+    body{background:#4361ee;color:white;font-family:system-ui,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0;}
+    h1{font-size:28px;margin-bottom:16px;}
+    p{font-size:18px;}
+    .spinner{width:40px;height:40px;border:5px solid #ffffff33;border-top:5px solid white;border-radius:50%;animation:s 1s linear infinite;margin:30px 0;}
+    @keyframes s{to{transform:rotate(360deg)}}
+  </style>
 </head>
-<body style="text-align:center; margin-top:100px; font-family:sans-serif;">
-  <h3>Yo'naltirilmoqda...</h3>
-  <p>Sizga <b>$0.001</b> qo'shildi!</p>
+<body>
+  <h1>Bir soniya...</h1>
+  <div class="spinner"></div>
+  <p><strong>$0.001</strong> hisobingizga qo‘shildi!</p>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
+  authDomain: "daromad-link.firebaseapp.com",
+  projectId: "daromad-link",
+  storageBucket: "daromad-link.firebasestorage.app",
+  messagingSenderId: "770178829456",
+  appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const PUBLISHER_UID = "dq6Grwt4PlgUu9k6mJekjv0LXW12";   // Abrorahmeed uchun to‘g‘ri UID
+const SPONSORS = [
+  "https://summage.org",
+  "https://sponsor2.com/promo",
+  "https://sponsor3.com/deal"
+];
+
+db.collection("publishers").doc(PUBLISHER_UID).update({
+  clicks: firebase.firestore.FieldValue.increment(1),
+  earnings: firebase.firestore.FieldValue.increment(0.001)
+});
+
+setTimeout(() => {
+  location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)];
+}, 800);
+</script>
 </body>
 </html>
