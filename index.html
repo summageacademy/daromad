@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daromad Link - Reklama Tarmog'i</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 40px; background: #f6f9ff; color: #333; }
+    .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 20px 0; }
+    input, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; }
+    button { background: #0066ff; color: white; font-weight: bold; cursor: pointer; }
+    button:hover { background: #0055cc; }
+    .hidden { display: none; }
+    #link { background: #f0f0f0; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 14px; }
+    h2, h3 { color: #0066ff; }
+  </style>
+</head>
+<body>
+
+<div id="landing" class="box">
+  <h2>Daromad Link</h2>
+  <p>Faqat tanlangan nashriyotchilar uchun. Kirish orqali havolani oling.</p>
+  <button onclick="showLogin()">Kirish</button>
+</div>
+
+<div id="login" class="box hidden">
+  <h3>Kirish</h3>
+  <input id="email" type="email" placeholder="pub1@daromad.uz" /><br/>
+  <input id="pass" type="password" placeholder="Parol" /><br/>
+  <button onclick="login()">Kirish</button>
+  <p style="color:red" id="error"></p>
+</div>
+
+<div id="dash" class="box hidden">
+  <h3>Kabinet</h3>
+  <p><b>Email:</b> <span id="email"></span></p>
+  <p><b>Sizning havola:</b><br/>
+     <div id="link"></div>
+     <button onclick="copy()">Nusxa olish</button>
+  </p>
+  <p><b>Bosishlar:</b> <span id="clicks">0</span></p>
+  <p><b>Daromad:</b> $<span id="earn">0.00</span></p>
+  <button onclick="logout()">Chiqish</button>
+</div>
+
+<script>
+// === YOUR REAL CONFIG ===
+const firebaseConfig = {
+  apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
+  authDomain: "daromad-link.firebaseapp.com",
+  projectId: "daromad-link",
+  storageBucket: "daromad-link.firebasestorage.app",
+  messagingSenderId: "770178829456",
+  appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const landing = document.getElementById('landing');
+const login = document.getElementById('login');
+const dash = document.getElementById('dash');
+
+window.showLogin = () => { landing.classList.add('hidden'); login.classList.remove('hidden'); };
+window.copy = () => { 
+  const link = document.getElementById('link').innerText;
+  navigator.clipboard.writeText(link); 
+  alert("Havola nusxalandi!"); 
+};
+window.logout = () => auth.signOut();
+
+window.login = () => {
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  auth.signInWithEmailAndPassword(email, pass).catch(e => {
+    document.getElementById('error').textContent = e.message;
+  });
+};
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    login.classList.add('hidden');
+    dash.classList.remove('hidden');
+    document.getElementById('email').textContent = user.email;
+
+    const pubRef = db.collection("publishers").doc(user.uid);
+    pubRef.set({ clicks: 0, earnings: 0 }, { merge: true });
+
+    // Generate link: pub1@daromad.uz → pub1click.html
+    const username = user.email.split('@')[0];
+    const link = `${window.location.origin}/${username}click.html`;
+    document.getElementById('link').textContent = link;
+
+    pubRef.onSnapshot(doc => {
+      const d = doc.data();
+      document.getElementById('clicks').textContent = d.clicks || 0;
+      document.getElementById('earn').textContent = (d.earnings || 0).toFixed(2);
+    });
+
+  } else {
+    dash.classList.add('hidden');
+    landing.classList.remove('hidden');
+  }
+});
+</script>
+
+</body>
+</html>
