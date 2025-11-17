@@ -88,21 +88,31 @@ const loginDiv = document.getElementById('login');
 const dash = document.getElementById('dash');
 const errorEl = document.getElementById('error');
 
-document.getElementById('showLoginBtn').addEventListener('click',()=>{landing.classList.add('hidden');loginDiv.classList.remove('hidden');});
-document.getElementById('loginBtn').addEventListener('click',()=>{  
+document.getElementById('showLoginBtn').addEventListener('click', () => {
+  landing.classList.add('hidden');
+  loginDiv.classList.remove('hidden');
+});
+
+document.getElementById('loginBtn').addEventListener('click', () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value;
-  if(!email||!pass){errorEl.textContent="Iltimos, email va parolni kiriting";return;}
-  errorEl.textContent="Kirilmoqda...";
-  auth.signInWithEmailAndPassword(email,pass).catch(e=>errorEl.textContent=e.message);
+  if (!email || !pass) {
+    errorEl.textContent = "Iltimos, email va parolni kiriting";
+    return;
+  }
+  errorEl.textContent = "Kirilmoqda...";
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => errorEl.textContent = e.message);
 });
-document.getElementById('copyBtn').addEventListener('click',()=>{
+
+document.getElementById('copyBtn').addEventListener('click', () => {
   navigator.clipboard.writeText(document.getElementById('link').innerText);
   alert("Havola nusxalandi!");
 });
-document.getElementById('logoutBtn').addEventListener('click',()=>auth.signOut());
 
-auth.onAuthStateChanged(user => {
+document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+
+auth.onAuthStateChanged(async user => {
   // Har doim faqat bitta sahifa ko‘rinsin
   landing.classList.add('hidden');
   loginDiv.classList.add('hidden');
@@ -116,16 +126,29 @@ auth.onAuthStateChanged(user => {
     document.getElementById('email').textContent = user.email;
 
     const pubRef = db.collection("publishers").doc(user.uid);
-    pubRef.set({clicks:0,earnings:0},{merge:true});
 
-    const link = `${location.origin}/${name}click.html`;
-    document.getElementById('link').textContent = link;
+    // MUHIM: Faqat birinchi marta hujjat yaratamiz
+    const docSnap = await pubRef.get();
+    if (!docSnap.exists) {
+      await pubRef.set({
+        clicks: 0,
+        earnings: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
 
+    // Havola
+    document.getElementById('link').textContent = `${location.origin}/${name}click.html`;
+
+    // Real-time statistika (refreshda 0 bo‘lmaydi!)
     pubRef.onSnapshot(doc => {
-      const d = doc.data() || {clicks:0,earnings:0};
-      document.getElementById('clicks').textContent = d.clicks||0;
-      document.getElementById('earn').textContent = "$"+(d.earnings||0).toFixed(2);
+      const data = doc.data();
+      if (data) {
+        document.getElementById('clicks').textContent = data.clicks || 0;
+        document.getElementById('earn').textContent = "$" + (data.earnings || 0).toFixed(2);
+      }
     });
+
   } else {
     landing.classList.remove('hidden');
   }
