@@ -3,51 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daromad Link - Reklama Tarmog'i</title>
+  <title>Daromad Link – Reklama tarmog‘i</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 40px; background: #f6f9ff; color: #333; }
-    .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 20px 0; }
-    input, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; }
-    button { background: #0066ff; color: white; font-weight: bold; cursor: pointer; }
-    button:hover { background: #0055cc; }
-    .hidden { display: none; }
-    #link { background: #f0f0f0; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 14px; word-break: break-all; }
-    h2, h3 { color: #0066ff; }
+    :root { --primary:#4361ee; --success:#10b981; --danger:#ef4444; --gray:#64748b; --light:#f8fafc; --border:#e2e8f0; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:#1e293b;display:flex;align-items:center;justify-content:center;padding:20px;}
+    .card{max-width:420px;width:100%;background:white;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.15);padding:40px 32px;text-align:center;transition:transform .3s;}
+    .card:hover{transform:translateY(-5px);}
+    h1{font-size:28px;margin-bottom:8px;color:var(--primary);}
+    h2{font-size:22px;margin-bottom:16px;}
+    p{color:var(--gray);line-height:1.6;margin-bottom:24px;}
+    input{width:100%;padding:14px 16px;margin:10px 0;border:2px solid var(--border);border-radius:12px;font-size:16px;transition:.3s;}
+    input:focus{outline:none;border-color:var(--primary);}
+    button{width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:.3s;margin:10px 0;}
+    .btn-primary{background:var(--primary);color:white;}
+    .btn-primary:hover{background:#3b56d0;}
+    .btn-success{background:var(--success);color:white;}
+    .btn-success:hover{background:#0d9b6f;}
+    .btn-danger{background:var(--danger);color:white;}
+    .link-box{background:#f1f5f9;padding:16px;border-radius:12px;font-family:monospace;font-size:14px;word-break:break-all;margin:20px 0;border:2px dashed #94a3b8;}
+    .stats{display:flex;justify-content:space-around;margin:30px 0;padding:20px;background:#f8fafc;border-radius:16px;}
+    .stat{text-align:center;}
+    .stat-num{font-size:28px;font-weight:700;color:var(--primary);}
+    .stat-label{font-size:14px;color:var(--gray);}
+    .hidden{display:none !important;}
+    .error{color:var(--danger);min-height:24px;margin-top:10px;font-weight:500;}
   </style>
 </head>
 <body>
 
-<div id="landing" class="box">
-  <h2>Daromad Link</h2>
-  <p>Faqat tanlangan nashriyotchilar uchun. Kirish orqali havolani oling.</p>
-  <button id="showLoginBtn">Kirish</button>
+<div class="card" id="landing">
+  <h1>Daromad Link</h1>
+  <p>Har 1000 ta bosish = <strong>$1</strong><br/>Faqat tanlangan nashriyotchilar uchun</p>
+  <button class="btn-primary" id="showLoginBtn">Kirish</button>
 </div>
 
-<div id="login" class="box hidden">
-  <h3>Kirish</h3>
-  <input id="email" type="email" placeholder="pub1@daromad.uz" /><br/>
-  <input id="pass" type="password" placeholder="Parol" /><br/>
-  <button id="loginBtn">Kirish</button>
-  <p style="color:red; min-height:24px;" id="error"></p>
+<div class="card hidden" id="login">
+  <h2>Kirish</h2>
+  <input id="email" type="email" placeholder="pub1@daromad.uz" />
+  <input id="pass" type="password" placeholder="Parol" />
+  <button class="btn-primary" id="loginBtn">Kirish</button>
+  <div class="error" id="error"></div>
 </div>
 
-<div id="dash" class="box hidden">
-  <h3>Kabinet</h3>
-  <p><b>Email:</b> <span id="email"></span></p>
-  <p><b>Sizning havola:</b><br/>
-     <div id="link"></div>
-     <button id="copyBtn">Nusxa olish</button>
-  </p>
-  <p><b>Bosishlar:</b> <span id="clicks">0</span></p>
-  <p><b>Daromad:</b> $<span id="earn">0.00</span></p>
-  <button id="logoutBtn">Chiqish</button>
+<div class="card hidden" id="dash">
+  <h2>Salom, <span id="userName"></span>!</h2>
+  <p>Email: <strong id="email"></strong></p>
+  <div class="link-box" id="link"></div>
+  <button class="btn-success" id="copyBtn">Havolani nusxalash</button>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="clicks">0</div>
+      <div class="stat-label">Bosishlar</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="earn">$0.00</div>
+      <div class="stat-label">Daromad</div>
+    </div>
+  </div>
+
+  <button class="btn-danger" id="logoutBtn">Chiqish</button>
 </div>
 
 <script>
-// === SIZNING HAQIQIY CONFIG ===
 const firebaseConfig = {
   apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
   authDomain: "daromad-link.firebaseapp.com",
@@ -56,75 +79,57 @@ const firebaseConfig = {
   messagingSenderId: "770178829456",
   appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Elementlar
-const landing   = document.getElementById('landing');
-const loginDiv  = document.getElementById('login');
-const dash      = document.getElementById('dash');
-const errorEl   = document.getElementById('error');
+const landing = document.getElementById('landing');
+const loginDiv = document.getElementById('login');
+const dash = document.getElementById('dash');
+const errorEl = document.getElementById('error');
 
-// Tugmalar
-document.getElementById('showLoginBtn').addEventListener('click', () => {
-  landing.classList.add('hidden');
-  loginDiv.classList.remove('hidden');
-});
-
-document.getElementById('loginBtn').addEventListener('click', () => {
+document.getElementById('showLoginBtn').addEventListener('click',()=>{landing.classList.add('hidden');loginDiv.classList.remove('hidden');});
+document.getElementById('loginBtn').addEventListener('click',()=>{  
   const email = document.getElementById('email').value.trim();
-  const pass  = document.getElementById('pass').value;
-  if (!email || !pass) {
-    errorEl.textContent = "Email va parolni toʻldiring";
-    return;
-  }
-  errorEl.textContent = "Kirilmoqda...";
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(e => {
-      errorEl.textContent = e.message;
-    });
+  const pass = document.getElementById('pass').value;
+  if(!email||!pass){errorEl.textContent="Iltimos, email va parolni kiriting";return;}
+  errorEl.textContent="Kirilmoqda...";
+  auth.signInWithEmailAndPassword(email,pass).catch(e=>errorEl.textContent=e.message);
 });
-
-document.getElementById('copyBtn').addEventListener('click', () => {
+document.getElementById('copyBtn').addEventListener('click',()=>{
   navigator.clipboard.writeText(document.getElementById('link').innerText);
   alert("Havola nusxalandi!");
 });
+document.getElementById('logoutBtn').addEventListener('click',()=>auth.signOut());
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  auth.signOut();
-});
-
-// Asosiy holat kuzatuvchisi
 auth.onAuthStateChanged(user => {
+  // Har doim faqat bitta sahifa ko‘rinsin
+  landing.classList.add('hidden');
+  loginDiv.classList.add('hidden');
+  dash.classList.add('hidden');
+  errorEl.textContent = "";
+
   if (user) {
-    loginDiv.classList.add('hidden');
     dash.classList.remove('hidden');
+    const name = user.email.split('@')[0];
+    document.getElementById('userName').textContent = name;
     document.getElementById('email').textContent = user.email;
 
     const pubRef = db.collection("publishers").doc(user.uid);
-    pubRef.set({ clicks: 0, earnings: 0 }, { merge: true });
+    pubRef.set({clicks:0,earnings:0},{merge:true});
 
-    // Havola yaratish: pub1@daromad.uz → pub1click.html
-    const username = user.email.split('@')[0];
-    const link = `${window.location.origin}/${username}click.html`;
+    const link = `${location.origin}/${name}click.html`;
     document.getElementById('link').textContent = link;
 
-    // Jonli statistika
     pubRef.onSnapshot(doc => {
-      const d = doc.data() || { clicks: 0, earnings: 0 };
-      document.getElementById('clicks').textContent = d.clicks || 0;
-      document.getElementById('earn').textContent = (d.earnings || 0).toFixed(2);
+      const d = doc.data() || {clicks:0,earnings:0};
+      document.getElementById('clicks').textContent = d.clicks||0;
+      document.getElementById('earn').textContent = "$"+(d.earnings||0).toFixed(2);
     });
-
   } else {
-    dash.classList.add('hidden');
     landing.classList.remove('hidden');
-    errorEl.textContent = "";
   }
 });
 </script>
-
 </body>
 </html>
