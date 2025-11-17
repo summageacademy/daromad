@@ -14,7 +14,7 @@
     button { background: #0066ff; color: white; font-weight: bold; cursor: pointer; }
     button:hover { background: #0055cc; }
     .hidden { display: none; }
-    #link { background: #f0f0f0; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 14px; }
+    #link { background: #f0f0f0; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 14px; word-break: break-all; }
     h2, h3 { color: #0066ff; }
   </style>
 </head>
@@ -23,15 +23,15 @@
 <div id="landing" class="box">
   <h2>Daromad Link</h2>
   <p>Faqat tanlangan nashriyotchilar uchun. Kirish orqali havolani oling.</p>
-  <button onclick="showLogin()">Kirish</button>
+  <button id="showLoginBtn">Kirish</button>
 </div>
 
 <div id="login" class="box hidden">
   <h3>Kirish</h3>
   <input id="email" type="email" placeholder="pub1@daromad.uz" /><br/>
   <input id="pass" type="password" placeholder="Parol" /><br/>
-  <button onclick="login()">Kirish</button>
-  <p style="color:red" id="error"></p>
+  <button id="loginBtn">Kirish</button>
+  <p style="color:red; min-height:24px;" id="error"></p>
 </div>
 
 <div id="dash" class="box hidden">
@@ -39,15 +39,15 @@
   <p><b>Email:</b> <span id="email"></span></p>
   <p><b>Sizning havola:</b><br/>
      <div id="link"></div>
-     <button onclick="copy()">Nusxa olish</button>
+     <button id="copyBtn">Nusxa olish</button>
   </p>
   <p><b>Bosishlar:</b> <span id="clicks">0</span></p>
   <p><b>Daromad:</b> $<span id="earn">0.00</span></p>
-  <button onclick="logout()">Chiqish</button>
+  <button id="logoutBtn">Chiqish</button>
 </div>
 
 <script>
-// === YOUR REAL CONFIG ===
+// === SIZNING HAQIQIY CONFIG ===
 const firebaseConfig = {
   apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
   authDomain: "daromad-link.firebaseapp.com",
@@ -56,46 +56,64 @@ const firebaseConfig = {
   messagingSenderId: "770178829456",
   appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const landing = document.getElementById('landing');
-const login = document.getElementById('login');
-const dash = document.getElementById('dash');
+// Elementlar
+const landing   = document.getElementById('landing');
+const loginDiv  = document.getElementById('login');
+const dash      = document.getElementById('dash');
+const errorEl   = document.getElementById('error');
 
-window.showLogin = () => { landing.classList.add('hidden'); login.classList.remove('hidden'); };
-window.copy = () => { 
-  const link = document.getElementById('link').innerText;
-  navigator.clipboard.writeText(link); 
-  alert("Havola nusxalandi!"); 
-};
-window.logout = () => auth.signOut();
+// Tugmalar
+document.getElementById('showLoginBtn').addEventListener('click', () => {
+  landing.classList.add('hidden');
+  loginDiv.classList.remove('hidden');
+});
 
-window.login = () => {
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('pass').value;
-  auth.signInWithEmailAndPassword(email, pass).catch(e => {
-    document.getElementById('error').textContent = e.message;
-  });
-};
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('pass').value;
+  if (!email || !pass) {
+    errorEl.textContent = "Email va parolni toʻldiring";
+    return;
+  }
+  errorEl.textContent = "Kirilmoqda...";
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => {
+      errorEl.textContent = e.message;
+    });
+});
 
+document.getElementById('copyBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(document.getElementById('link').innerText);
+  alert("Havola nusxalandi!");
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  auth.signOut();
+});
+
+// Asosiy holat kuzatuvchisi
 auth.onAuthStateChanged(user => {
   if (user) {
-    login.classList.add('hidden');
+    loginDiv.classList.add('hidden');
     dash.classList.remove('hidden');
     document.getElementById('email').textContent = user.email;
 
     const pubRef = db.collection("publishers").doc(user.uid);
     pubRef.set({ clicks: 0, earnings: 0 }, { merge: true });
 
-    // Generate link: pub1@daromad.uz → pub1click.html
+    // Havola yaratish: pub1@daromad.uz → pub1click.html
     const username = user.email.split('@')[0];
     const link = `${window.location.origin}/${username}click.html`;
     document.getElementById('link').textContent = link;
 
+    // Jonli statistika
     pubRef.onSnapshot(doc => {
-      const d = doc.data();
+      const d = doc.data() || { clicks: 0, earnings: 0 };
       document.getElementById('clicks').textContent = d.clicks || 0;
       document.getElementById('earn').textContent = (d.earnings || 0).toFixed(2);
     });
@@ -103,6 +121,7 @@ auth.onAuthStateChanged(user => {
   } else {
     dash.classList.add('hidden');
     landing.classList.remove('hidden');
+    errorEl.textContent = "";
   }
 });
 </script>
