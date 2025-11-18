@@ -194,7 +194,14 @@
 </div>
 
 <script>
-const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
+const firebaseConfig = {
+  apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
+  authDomain: "daromad-link.firebaseapp.com",
+  projectId: "daromad-link",
+  storageBucket: "daromad-link.firebasestorage.app",
+  messagingSenderId: "770178829456",
+  appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
+};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -202,67 +209,141 @@ const db = firebase.firestore();
 let dailyChart, earningsChart;
 let hasPendingRequest = false;
 
-function showSection(id){
+function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
 }
 
-function copyLink(){
+function copyLink() {
   navigator.clipboard.writeText(document.getElementById('link').textContent);
-  alert("Nusxalandi!");
+  alert("Havola nusxalandi!");
 }
 
-async function saveCard(){
-  let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
-  if(card && card.length !== 16) return alert("16 ta raqam kiriting");
-  await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
+async function saveCard() {
+  let card = document.getElementById('cardNumber').value.replace(/\s/g, '');
+  if (card && card.length !== 16) return alert("16 ta raqam kiriting");
+  await db.collection("publishers").doc(auth.currentUser.uid).update({ cardNumber: card || null });
   alert("Saqlandi!");
 }
 
+// ADMIN-ONLY FUNCTION — WILL ONLY RUN FOR YOU
+function loadAdminPanel() {
+  // Users list
+  db.collection("publishers").onSnapshot(snap => {
+    const tbody = document.getElementById('usersBody');
+    tbody.innerHTML = '';
+    snap.docs.forEach(doc => {
+      const d = doc.data();
+      const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
+      const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${d.username || '—'}</strong></td>
+        <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + d.cardNumber + '\')">Copy</button>' : ''}</td>
+        <td>${(d.clicks || 0).toLocaleString()}</td>
+        <td>$${(d.earnings || 0).toFixed(2)}</td>
+        <td>${pendingCount}</td>
+        <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\'' + doc.id + '\')">To‘lash</button>' : '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+
+  // Global payout history
+  const logBody = document.getElementById('adminPayoutLog');
+  db.collection("publishers").get().then(snap => {
+    logBody.innerHTML = '<tr><td colspan="4">Yuklanmoqda...</td></tr>';
+    const payments = [];
+    snap.docs.forEach(doc => {
+      const d = doc.data();
+      (d.requests || []).forEach(r => {
+        if (r.status === 'paid') {
+          payments.push({
+            date: r.date,
+            username: d.username || '—',
+            amount: r.amount,
+            card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'
+          });
+        }
+      });
+    });
+    payments.sort((a, b) => (b.date?.seconds || b.date) - (a.date?.seconds || a.date));
+    logBody.innerHTML = '';
+    if (payments.length === 0) {
+      logBody.innerHTML = '<tr><td colspan="4">Hali to‘lov yo‘q</td></tr>';
+      return;
+    }
+    payments.forEach(p => {
+      const tr = document.createElement('tr');
+      const date = new Date(p.date?.seconds * 1000 || p.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
+      logBody.appendChild(tr);
+    });
+  });
+}
+
 auth.onAuthStateChanged(async user => {
-  if(!user){
+  if (!user) {
     document.getElementById('app').style.display = 'none';
     document.getElementById('authScreen').style.display = 'flex';
     return;
   }
+
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
+
+  // HIDE ADMIN TAB BY DEFAULT — 100% SECURITY
+  document.getElementById('adminTab').classList.add('hidden');
 
   const pubRef = db.collection("publishers").doc(user.uid);
   const snap = await pubRef.get();
   let data = snap.data() || {};
 
-  if(!snap.exists){
-    data = {username: user.email.split('@')[0], clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber:""};
+  if (!snap.exists) {
+    data = {
+      username: user.email.split('@')[0],
+      clicks: 0,
+      earnings: 0,
+      requests: [],
+      joined: new Date(),
+      dailyStats: {},
+      cardNumber: ""
+    };
     await pubRef.set(data);
   }
 
-  const isAdmin = data.isAdmin || user.email === "abrorahmeed@gmail.com";
-  if(isAdmin) document.getElementById('adminTab').classList.remove('hidden');
+  // ONLY YOU CAN SEE ADMIN PANEL — HARD CODED
+  const isRealAdmin = user.email === "abrorahmeed@gmail.com";
+  if (isRealAdmin) {
+    document.getElementById('adminTab').classList.remove('hidden');
+    loadAdminPanel(); // Load admin features only for you
+  }
 
+  // User info
   const username = data.username || user.email.split('@')[0];
-  document.querySelectorAll('#userName, #profileUsername').forEach(e=>e.textContent=username);
+  document.querySelectorAll('#userName, #profileUsername').forEach(e => e.textContent = username);
   document.getElementById('profileEmail').textContent = user.email;
-  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds*1000 || data.joined).toLocaleDateString('uz-UZ');
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds * 1000 || data.joined).toLocaleDateString('uz-UZ');
   document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
   document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
 
-  // REAL-TIME LISTENER
+  // REAL-TIME DATA
   pubRef.onSnapshot(doc => {
     const d = doc.data();
-    document.getElementById('totalClicks').textContent = (d.clicks||0).toLocaleString();
-    const earn = (d.earnings||0).toFixed(2);
-    document.getElementById('totalEarn').textContent = "$"+earn;
-    document.getElementById('balance').textContent = "$"+earn;
 
-    // CHECK FOR PENDING REQUEST
+    document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
+    const earn = (d.earnings || 0).toFixed(2);
+    document.getElementById('totalEarn').textContent = "$" + earn;
+    document.getElementById('balance').textContent = "$" + earn;
+
+    // Payout button logic — only 1 pending request allowed
     const pending = (d.requests || []).some(r => r.status === 'pending');
     hasPendingRequest = pending;
     const btn = document.getElementById('requestPayout');
     const notice = document.getElementById('pendingNotice');
-    if(pending || earn < 5){
+    if (pending || earn < 5) {
       btn.disabled = true;
       btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
       notice.style.display = pending ? "block" : "none";
@@ -272,43 +353,53 @@ auth.onAuthStateChanged(async user => {
       notice.style.display = "none";
     }
 
-    // CHARTS & PAYOUT TABLE (same as before)
+    // Charts
     const daily = d.dailyStats || {};
     const dates = Object.keys(daily).sort().slice(-7);
     const labels = dates.length ? dates.map(d => d.slice(5)) : ["Bugun"];
     const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [0];
 
-    if(dailyChart) dailyChart.destroy();
-    if(earningsChart) earningsChart.destroy();
+    if (dailyChart) dailyChart.destroy();
+    if (earningsChart) earningsChart.destroy();
 
     dailyChart = new Chart(document.getElementById('dailyChart'), {
-      type: 'bar', data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
       options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
     earningsChart = new Chart(document.getElementById('earningsChart'), {
       type: 'line',
-      data: { labels: ['Yan','Fev','Mar','Apr','May','Iyun','Iyul','Avg','Sen','Okt','Noy','Dek'],
-              datasets: [{ label: 'Daromad', data: Array(12).fill(0).map((_,i) => i+1 === new Date().getMonth()+1 ? parseFloat(earn) : 0), borderColor: '#10b981', tension: 0.4, fill: true }] },
+      data: {
+        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
+        datasets: [{
+          label: 'Daromad',
+          data: Array(12).fill(0).map((_, i) => i + 1 === new Date().getMonth() + 1 ? parseFloat(earn) : 0),
+          borderColor: '#10b981',
+          tension: 0.4,
+          fill: true
+        }]
+      },
       options: { responsive: true }
     });
 
+    // Payout history table
     const tbody = document.getElementById('payoutTable');
     tbody.innerHTML = '';
-    (d.requests||[]).forEach(r => {
+    (d.requests || []).forEach(r => {
       const tr = document.createElement('tr');
-      const date = new Date(r.date?.seconds*1000 || r.date);
-      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#f59e0b'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
+      const date = new Date(r.date?.seconds * 1000 || r.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status === 'paid' ? '#10b981' : '#f59e0b'}">${r.status === 'paid' ? 'To‘landi' : 'Kutilyapti'}</strong></td>`;
       tbody.appendChild(tr);
     });
   });
 
-  // PAYOUT REQUEST — ONLY ONCE!
+  // Payout request — only once
   document.getElementById('requestPayout').onclick = async () => {
-    if(hasPendingRequest) return alert("Sizda allaqachon so‘rov bor!");
-    const earn = parseFloat(document.getElementById('balance').textContent.replace('$',''));
-    if(earn < 5) return alert("Minimum $5 kerak");
-    if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
+    if (hasPendingRequest) return alert("Sizda allaqachon so‘rov bor!");
+    const earn = parseFloat(document.getElementById('balance').textContent.replace('$', ''));
+    if (earn < 5) return alert("Minimum $5 kerak");
+    if (confirm(`$${earn.toFixed(2)} so‘raymizmi?`)) {
       await pubRef.update({
         requests: firebase.firestore.FieldValue.arrayUnion({
           amount: earn,
@@ -319,64 +410,19 @@ auth.onAuthStateChanged(async user => {
       alert("So‘rov yuborildi! Admin tasdiqlashini kuting.");
     }
   };
-
-  // ADMIN PART (unchanged — still perfect)
-  if(isAdmin){
-    db.collection("publishers").onSnapshot(snap => {
-      const tbody = document.getElementById('usersBody');
-      tbody.innerHTML = '';
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
-        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${d.username || '—'}</strong></td>
-          <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\''+d.cardNumber+'\')">Copy</button>' : ''}</td>
-          <td>${(d.clicks||0).toLocaleString()}</td>
-          <td>$${(d.earnings||0).toFixed(2)}</td>
-          <td>${pendingCount}</td>
-          <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\''+doc.id+'\')">To‘lash</button>' : '—'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    });
-
-    // Global payout log
-    const logBody = document.getElementById('adminPayoutLog');
-    db.collection("publishers").get().then(snap => {
-      logBody.innerHTML = '';
-      const payments = [];
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        (d.requests || []).forEach(r => {
-          if(r.status === 'paid'){
-            payments.push({date: r.date, username: d.username || '—', amount: r.amount, card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'});
-          }
-        });
-      });
-      payments.sort((a,b) => (b.date?.seconds || b.date) - (a.date?.seconds || a.date));
-      payments.forEach(p => {
-        const tr = document.createElement('tr');
-        const date = new Date(p.date?.seconds*1000 || p.date);
-        tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
-        logBody.appendChild(tr);
-      });
-      if(payments.length === 0) logBody.innerHTML = '<tr><td colspan="4">Hali to‘lov yo‘q</td></tr>';
-    });
-  }
 });
 
+// Admin payout function
 window.payUser = async (uid) => {
-  if(!confirm("To‘lov tasdiqlansinmi?")) return;
+  if (!confirm("To‘lov tasdiqlansinmi? Balance va clicks 0 bo‘ladi")) return;
   const ref = db.collection("publishers").doc(uid);
   const data = (await ref.get()).data();
-  const updated = (data.requests || []).map(r => r.status === 'pending' ? {...r, status:'paid'} : r);
-  await ref.update({requests: updated, earnings: 0, clicks: 0});
+  const updated = (data.requests || []).map(r => r.status === 'pending' ? { ...r, status: 'paid' } : r);
+  await ref.update({ requests: updated, earnings: 0, clicks: 0 });
   alert("To‘lov muvaffaqiyatli amalga oshirildi!");
 };
 
-function filterUsers(){
+function filterUsers() {
   const term = document.getElementById('userSearch').value.toLowerCase();
   document.querySelectorAll('#usersBody tr').forEach(tr => {
     tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
@@ -386,8 +432,8 @@ function filterUsers(){
 document.getElementById('loginBtn').onclick = () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value;
-  if(!email||!pass) return document.getElementById('error').textContent = "To‘ldiring";
-  auth.signInWithEmailAndPassword(email, pass).catch(e=>document.getElementById('error').textContent = e.message);
+  if (!email || !pass) return document.getElementById('error').textContent = "Iltimos, barcha maydonlarni to‘ldiring";
+  auth.signInWithEmailAndPassword(email, pass).catch(e => document.getElementById('error').textContent = e.message);
 };
 
 document.querySelectorAll('.nav-item').forEach(item => {
