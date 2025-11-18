@@ -3,156 +3,147 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daromad Link – Reklama tarmog‘i</title>
+  <title>Daromad Link – Professional Panel</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    :root { --primary:#4361ee; --success:#10b981; --danger:#ef4444; --gray:#64748b; --light:#f8fafc; --border:#e2e8f0; }
+    :root{--p:#4361ee;--s:#10b981;--d:#ef4444;--g:#64748b;--b:#1e293b;--l:#f8fafc;--grad:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:#1e293b;display:flex;align-items:center;justify-content:center;padding:20px;}
-    .card{max-width:420px;width:100%;background:white;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.15);padding:40px 32px;text-align:center;transition:transform .3s;}
-    .card:hover{transform:translateY(-5px);}
-    h1{font-size:28px;margin-bottom:8px;color:var(--primary);}
-    h2{font-size:22px;margin-bottom:16px;}
-    p{color:var(--gray);line-height:1.6;margin-bottom:24px;}
-    input{width:100%;padding:14px 16px;margin:10px 0;border:2px solid var(--border);border-radius:12px;font-size:16px;transition:.3s;}
-    input:focus{outline:none;border-color:var(--primary);}
-    button{width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:.3s;margin:10px 0;}
-    .btn-primary{background:var(--primary);color:white;}
-    .btn-primary:hover{background:#3b56d0;}
-    .btn-success{background:var(--success);color:white;}
-    .btn-success:hover{background:#0d9b6f;}
-    .btn-danger{background:var(--danger);color:white;}
-    .link-box{background:#f1f5f9;padding:16px;border-radius:12px;font-family:monospace;font-size:14px;word-break:break-all;margin:20px 0;border:2px dashed #94a3b8;}
-    .stats{display:flex;justify-content:space-around;margin:30px 0;padding:20px;background:#f8fafc;border-radius:16px;}
-    .stat{text-align:center;}
-    .stat-num{font-size:28px;font-weight:700;color:var(--primary);}
-    .stat-label{font-size:14px;color:var(--gray);}
+    body{font-family:'Inter',sans-serif;background:var(--grad);min-height:100vh;color:#fff;padding:20px;}
+    .container{max-width:500px;margin:0 auto;}
+    .card{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:24px;padding:32px;box-shadow:0 20px 40px rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);}
+    h1{font-size:32px;text-align:center;margin-bottom:8px;}
+    p{text-align:center;color:#ddd;margin-bottom:24px;}
+    input,button{width:100%;padding:16px;border-radius:16px;margin:10px 0;font-size:16px;}
+    input{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:white;}
+    input:focus{outline:none;border-color:var(--p);}
+    button{background:var(--p);color:white;border:none;font-weight:600;cursor:pointer;transition:0.3s;}
+    button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(67,97,238,0.4);}
+    .btn-s{background:var(--s);}
+    .btn-d{background:var(--d);}
+    .link-box{background:rgba(0,0,0,0.2);padding:16px;border-radius:16px;font-family:monospace;font-size:15px;word-break:break-all;margin:20px 0;text-align:center;}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;}
+    .stat-box{background:rgba(255,255,255,0.1);padding:20px;border-radius:16px;text-align:center;}
+    .stat-num{font-size:28px;font-weight:700;}
+    canvas{margin:20px 0;border-radius:16px;}
     .hidden{display:none !important;}
-    .error{color:var(--danger);min-height:24px;margin-top:10px;font-weight:500;}
+    .error{color:#ff6b6b;margin-top:10px;}
+    .dark-toggle{position:fixed;top:20px;right:20px;font-size:24px;cursor:pointer;z-index:999;}
   </style>
 </head>
 <body>
 
-<div class="card" id="landing">
-  <h1>Daromad Link</h1>
-  <p>Har 1000 ta bosish = <strong>$1</strong><br/>Faqat tanlangan nashriyotchilar uchun</p>
-  <button class="btn-primary" id="showLoginBtn">Kirish</button>
-</div>
+<div class="dark-toggle" onclick="document.body.classList.toggle('dark')">Toggle Dark/Light</div>
 
-<div class="card hidden" id="login">
-  <h2>Kirish</h2>
-  <input id="email" type="email" placeholder="pub1@daromad.uz" />
-  <input id="pass" type="password" placeholder="Parol" />
-  <button class="btn-primary" id="loginBtn">Kirish</button>
-  <div class="error" id="error"></div>
-</div>
+<div class="container">
 
-<div class="card hidden" id="dash">
-  <h2>Salom, <span id="userName"></span>!</h2>
-  <p>Email: <strong id="email"></strong></p>
-  <div class="link-box" id="link"></div>
-  <button class="btn-success" id="copyBtn">Havolani nusxalash</button>
-
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-num" id="clicks">0</div>
-      <div class="stat-label">Bosishlar</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num" id="earn">$0.00</div>
-      <div class="stat-label">Daromad</div>
-    </div>
+  <!-- Landing -->
+  <div id="landing" class="card">
+    <h1>Daromad Link</h1>
+    <p>Har 1000 bosish = <strong>$1.00</strong><br>Professional reklama tarmog‘i</p>
+    <button class="btn-s" id="showLoginBtn">Kirish</button>
   </div>
 
-  <button class="btn-danger" id="logoutBtn">Chiqish</button>
+  <!-- Login -->
+  <div id="login" class="card hidden">
+    <h1 style="font-size:28px;">Kabinetga kirish</h1>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="pass" type="password" placeholder="Parol" />
+    <button id="loginBtn">Kirish</button>
+    <div class="error" id="error"></div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dash" class="card hidden">
+    <h1>Salom, <span id="userName"></span>!</h1>
+    <p id="email"></p>
+
+    <div class="link-box" id="link">Yuklanmoqda...</div>
+    <button class="btn-s" id="copyBtn">Havolani nusxalash</button>
+
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" id="clicks">0</div><div>Bosishlar</div></div>
+      <div class="stat-box"><div class="stat-num" id="earn">$0.00</div><div>Daromad</div></div>
+    </div>
+
+    <canvas id="chart"></canvas>
+
+    <button class="btn-s" id="payoutBtn">To‘lov so‘rash ($5+)</button>
+    <button class="btn-d" id="logoutBtn">Chiqish</button>
+  </div>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
-  authDomain: "daromad-link.firebaseapp.com",
-  projectId: "daromad-link",
-  storageBucket: "daromad-link.firebasestorage.app",
-  messagingSenderId: "770178829456",
-  appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"
-};
+const firebaseConfig = {apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain: "daromad-link.firebaseapp.com",projectId: "daromad-link",storageBucket: "daromad-link.firebasestorage.app",messagingSenderId: "770178829456",appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const landing = document.getElementById('landing');
-const loginDiv = document.getElementById('login');
-const dash = document.getElementById('dash');
-const errorEl = document.getElementById('error');
-
-document.getElementById('showLoginBtn').addEventListener('click', () => {
-  landing.classList.add('hidden');
-  loginDiv.classList.remove('hidden');
-});
-
-document.getElementById('loginBtn').addEventListener('click', () => {
-  const email = document.getElementById('email').value.trim();
-  const pass = document.getElementById('pass').value;
-  if (!email || !pass) {
-    errorEl.textContent = "Iltimos, email va parolni kiriting";
-    return;
-  }
-  errorEl.textContent = "Kirilmoqda...";
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(e => errorEl.textContent = e.message);
-});
-
-document.getElementById('copyBtn').addEventListener('click', () => {
-  navigator.clipboard.writeText(document.getElementById('link').innerText);
-  alert("Havola nusxalandi!");
-});
-
-document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+let chart;
 
 auth.onAuthStateChanged(async user => {
-  // Har doim faqat bitta sahifa ko‘rinsin
-  landing.classList.add('hidden');
-  loginDiv.classList.add('hidden');
-  dash.classList.add('hidden');
-  errorEl.textContent = "";
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('dash').classList.add('hidden');
 
   if (user) {
-    dash.classList.remove('hidden');
+    document.getElementById('dash').classList.remove('hidden');
     const name = user.email.split('@')[0];
     document.getElementById('userName').textContent = name;
     document.getElementById('email').textContent = user.email;
 
     const pubRef = db.collection("publishers").doc(user.uid);
-
-    // MUHIM: Faqat birinchi marta hujjat yaratamiz
-    const docSnap = await pubRef.get();
-    if (!docSnap.exists) {
-      await pubRef.set({
-        clicks: 0,
-        earnings: 0,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+    const snap = await pubRef.get();
+    if (!snap.exists) {
+      await pubRef.set({username: name, clicks:0, earnings:0, requests:[]});
+    } else if (!snap.data().username) {
+      await pubRef.update({username: name});
     }
 
-    // Havola
-    document.getElementById('link').textContent = `${location.origin}/daromad/${name}click.html`;
+    document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + name;
 
-    // Real-time statistika (refreshda 0 bo‘lmaydi!)
     pubRef.onSnapshot(doc => {
-      const data = doc.data();
-      if (data) {
-        document.getElementById('clicks').textContent = data.clicks || 0;
-        document.getElementById('earn').textContent = "$" + (data.earnings || 0).toFixed(2);
-      }
+      const d = doc.data();
+      document.getElementById('clicks').textContent = (d.clicks || 0).toLocaleString();
+      const earn = (d.earnings || 0).toFixed(2);
+      document.getElementById('earn').textContent = "$" + earn;
+
+      // Update chart
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById('chart'), {
+        type: 'line',
+        data: {labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{label: 'Daromad ($)', data: [0,0.5,1.2,2.8,4.1,parseFloat(earn)], borderColor: '#10b981', tension: 0.4, fill: true, backgroundColor: 'rgba(16,185,129,0.1)'}]},
+        options: {responsive:true, plugins:{legend:{display:false}}}
+      });
     });
 
+    document.getElementById('payoutBtn').onclick = () => {
+      const earn = parseFloat(document.getElementById('earn').textContent.replace('$',''));
+      if (earn < 5) return alert("Minimum $5 to‘lov");
+      if (confirm("To‘lov so‘raymizmi? ($" + earn.toFixed(2) + ")")) {
+        pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount: earn, date: new Date(), status: "pending"})});
+        alert("So‘rov yuborildi! Tez orada to‘laymiz.");
+      }
+    };
+
   } else {
-    landing.classList.remove('hidden');
+    document.getElementById('landing').classList.remove('hidden');
   }
 });
+
+document.getElementById('showLoginBtn').onclick = () => {document.getElementById('landing').classList.add('hidden');document.getElementById('login').classList.remove('hidden');};
+document.getElementById('loginBtn').onclick = () => {
+  const e = document.getElementById('email').value.trim();
+  const p = document.getElementById('pass').value;
+  if (!e || !p) return document.getElementById('error').textContent = "To‘ldiring";
+  auth.signInWithEmailAndPassword(e,p).catch(err=>document.getElementById('error').textContent=err.message);
+};
+document.getElementById('copyBtn').onclick = () => {navigator.clipboard.writeText(document.getElementById('link').textContent);alert("Nusxalandi!");};
+document.getElementById('logoutBtn').onclick = () => auth.signOut();
 </script>
 </body>
 </html>
