@@ -11,129 +11,136 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    :root{--p:#4361ee;--s:#10b981;--d:#ef4444;--w:#fbbf24;--g:#94a3b8;--bg:#0f0f1a;--card:#1a1a2e;--border:#16213e;}
+    :root{--p:#4361ee;--s:#10b981;--d:#ef4444;--w:#fbbf24;--bg:#0f0f1a;--card:#1a1a2e;--border:#16213e;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:#e2e8f0;min-height:100vh;display:flex;}
-    .sidebar{width:280px;background:linear-gradient(180deg,#16213e 0%,#0f0f1a 100%);position:fixed;height:100vh;padding:30px 20px;border-right:1px solid var(--border);overflow-y:auto;z-index:998;}
-    .sidebar h2{color:var(--p);font-size:24px;margin-bottom:40px;text-align:center;}
-    .nav-item{padding:14px 20px;border-radius:12px;margin:8px 0;cursor:pointer;transition:0.3s;display:flex;align-items:center;gap:12px;font-weight:500;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:#e2e8f0;min-height:100vh;}
+    .auth-container{display:flex;align-items:center;justify-content:center;height:100vh;padding:20px;}
+    .auth-card{background:var(--card);border-radius:20px;padding:40px 32px;width:100%;max-width:420px;box-shadow:0 20px 40px rgba(0,0,0,0.4);border:1px solid var(--border);}
+    .auth-card h1{font-size:28px;text-align:center;margin-bottom:30px;color:var(--p);}
+    input{width:100%;padding:16px;border-radius:12px;background:#16213e;border:none;color:white;margin:12px 0;font-size:16px;}
+    input:focus{outline:2px solid var(--p);}
+    button{background:var(--p);color:white;border:none;padding:16px;border-radius:12px;font-weight:600;cursor:pointer;width:100%;font-size:16px;margin-top:10px;transition:0.3s;}
+    button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(67,97,238,0.4);}
+    .btn-s{background:var(--s);}
+    .error{color:#ff6b6b;margin-top:10px;text-align:center;font-weight:500;}
+
+    /* Logged-in layout */
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:280px;background:linear-gradient(180deg,#16213e 0%,#0f0f1a 100%);padding:30px 20px;border-right:1px solid var(--border);}
+    .sidebar h2{color:var(--p);font-size:24px;text-align:center;margin-bottom:40px;}
+    .nav-item{padding:16px 20px;border-radius:12px;margin:8px 0;cursor:pointer;display:flex;align-items:center;gap:14px;font-weight:500;transition:0.3s;}
     .nav-item:hover{background:rgba(67,97,238,0.2);}
     .nav-item.active{background:var(--p);color:white;}
-    .main{margin-left:280px;flex:1;padding:30px;}
-    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
-    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin:30px 0;}
-    .stat-big{font-size:36px;font-weight:800;color:var(--s);}
-    .link-box{background:#16213e;padding:16px;border-radius:12px;font-family:monospace;margin:20px 0;text-align:center;font-size:15px;word-break:break-all;}
-    canvas{border-radius:16px;background:var(--card);padding:10px;}
-    button{background:var(--p);color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:600;cursor:pointer;transition:0.3s;}
-    button:hover{transform:translateY(-2px);}
-    .btn-s{background:var(--s);}
-    .btn-d{background:var(--d);}
-    .hidden{display:none !important;}
+    .main{flex:1;padding:30px;overflow-y:auto;background:var(--bg);}
+    .header h1{font-size:28px;font-weight:700;}
+    .card{background:var(--card);border-radius:16px;padding:24px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin:30px 0;}
+    .stat-big{font-size:38px;font-weight:800;color:var(--s);}
+    .link-box{background:#16213e;padding:18px;border-radius:12px;font-family:monospace;text-align:center;margin:20px 0;}
+    canvas{border-radius:16px;background:var(--card);}
     table{width:100%;border-collapse:collapse;margin-top:20px;}
-    th,td{padding:12px;text-align:left;border-bottom:1px solid var(--border);}
+    th,td{padding:14px;text-align:left;border-bottom:1px solid var(--border);}
     th{background:var(--p);color:white;}
-    .search input{width:100%;padding:12px;border-radius:12px;background:#16213e;border:none;color:white;margin-bottom:20px;}
-    .mobile-menu-btn{display:none;position:fixed;top:20px;left:20px;z-index:999;background:var(--p);color:white;padding:12px;border-radius:50%;font-size:20px;cursor:pointer;}
+    .hidden{display:none !important;}
+    .mobile-menu{display:none;position:fixed;top:20px;left:20px;z-index:999;background:var(--p);color:white;padding:14px;border-radius:50%;font-size:20px;cursor:pointer;}
     @media(max-width:992px){
-      .sidebar{left:-280px;transition:0.4s;}
-      .main{margin-left:0;}
-      .mobile-menu-btn{display:block;}
+      .sidebar{position:fixed;left:-280px;transition:0.4s;z-index:998;height:100vh;}
+      .main{margin-left:0;padding-top:70px;}
+      .mobile-menu{display:block;}
       .sidebar.open{left:0;}
     }
   </style>
 </head>
 <body>
 
-<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">
-  Menu
-</button>
-
-<div class="sidebar">
-  <h2>Daromad Link</h2>
-  <div class="nav-item active" data-section="dashboard">Bosh sahifa</div>
-  <div class="nav-item" data-section="stats">Statistika</div>
-  <div class="nav-item" data-section="profile">Profil</div>
-  <div class="nav-item" data-section="billing">To‘lovlar</div>
-  <div class="nav-item hidden" id="adminTab" data-section="admin">Admin Panel</div>
-  <div class="nav-item btn-d" style="margin-top:auto;" onclick="auth.signOut()">Chiqish</div>
+<!-- AUTH SCREENS (landing + login) -->
+<div id="authScreen" class="auth-container">
+  <div class="auth-card">
+    <h1>Daromad Link</h1>
+    <p style="text-align:center;color:#94a3b8;margin-bottom:30px;">Har 1000 bosish = <strong style="color:#10b981;font-size:24px;">$1.00</strong></p>
+    <div id="loginForm">
+      <input id="email" type="email" placeholder="Emailingiz" />
+      <input id="pass" type="password" placeholder="Parolingiz" />
+      <button id="loginBtn">Kirish</button>
+      <div class="error" id="error"></div>
+    </div>
+  </div>
 </div>
 
-<div class="main">
+<!-- MAIN APP (hidden until login) -->
+<div id="app" class="app hidden">
+  <button class="mobile-menu" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+    Menu
+  </button>
 
-  <!-- Landing -->
-  <div id="landing" class="section">
-    <div class="card" style="max-width:500px;margin:100px auto;text-align:center;">
-      <h1>Daromad Link</h1>
-      <p style="font-size:18px;margin:30px 0;">Har 1000 bosish = <strong style="color:#10b981;font-size:28px;">$1.00</strong></p>
-      <button class="btn-s" onclick="showSection('login')">Kirish</button>
-    </div>
+  <div class="sidebar">
+    <h2>Daromad Link</h2>
+    <div class="nav-item active" data-section="dashboard">Bosh sahifa</div>
+    <div class="nav-item" data-section="stats">Statistika</div>
+    <div class="nav-item" data-section="profile">Profil</div>
+    <div class="nav-item" data-section="billing">To‘lovlar</div>
+    <div class="nav-item hidden" id="adminTab" data-section="admin">Admin Panel</div>
+    <div class="nav-item" style="margin-top:auto;color:#ef4444;" onclick="auth.signOut()">Chiqish</div>
   </div>
 
-  <!-- Login -->
-  <div id="login" class="section hidden">
-    <div class="card" style="max-width:400px;margin:100px auto;">
-      <h1>Kirish</h1>
-      <input id="email" type="email" placeholder="Email"/>
-      <input id="pass" type="password" placeholder="Parol"/>
-      <button id="loginBtn">Kirish</button>
-      <div style="color:#ff6b6b;margin-top:10px;text-align:center;" id="error"></div>
+  <div class="main">
+    <!-- Dashboard -->
+    <div id="dashboard" class="section">
+      <div class="header"><h1>Salom, <span id="userName">...</span>!</h1></div>
+      <div class="grid">
+        <div class="card"><h3>Jami bosishlar</h3><div class="stat-big" id="totalClicks">0</div></div>
+        <div class="card"><h3>Daromad</h3><div class="stat-big" id="totalEarn">$0.00</div></div>
+      </div>
+      <div class="card"><h3>Sizning havola</h3><div class="link-box" id="link">...</div><button class="btn-s" onclick="copyLink()">Nusxalash</button></div>
+    </div>
+
+    <!-- Stats -->
+    <div id="stats" class="section hidden">
+      <div class="header"><h1>Statistika</h1></div>
+      <div class="grid">
+        <div class="card"><canvas id="dailyChart"></canvas></div>
+        <div class="card"><canvas id="earningsChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div id="profile" class="section hidden">
+      <div class="header"><h1>Profil</h1></div>
+      <div class="card">
+        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+        <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+        <p><strong>Ro‘yxatdan o‘tgan:</strong> <span id="joinedDate">-</span></p>
+        <hr style="margin:20px 0;border:none;border-top:1px solid #333;">
+        <h3>Karta ma'lumotlari</h3>
+        <input id="cardNumber" placeholder="8600 1234 5678 9012" style="margin:10px 0;" />
+        <button class="btn-s" onclick="saveCard()">Saqlash</button>
+        <p style="margin-top:10px;color:#94a3b8;font-size:14px;">Faqat admin ko‘radi</p>
+      </div>
+    </div>
+
+    <!-- Billing -->
+    <div id="billing" class="section hidden">
+      <div class="header"><h1>To‘lovlar</h1></div>
+      <div class="card">
+        <h3>Balans: <strong style="color:#10b981;font-size:32px;" id="balance">$0.00</strong></h3>
+        <button class="btn-s" id="requestPayout">To‘lov so‘rash (min $5)</button>
+        <h3 style="margin-top:30px;">Tarix</h3>
+        <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Status</th></tr></thead><tbody id="payoutTable"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin" class="section hidden">
+      <div class="header"><h1>Admin Panel</h1></div>
+      <div class="card">
+        <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="margin-bottom:20px;"/>
+        <table>
+          <thead><tr><th>User</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>So‘rov</th><th>Amal</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard" class="section hidden">
-    <div class="header"><h1>Salom, <span id="userName">...</span>!</h1></div>
-    <div class="grid">
-      <div class="card"><h3>Jami bosishlar</h3><div class="stat-big" id="totalClicks">0</div></div>
-      <div class="card"><h3>Daromad</h3><div class="stat-big" id="totalEarn">$0.00</div></div>
-    </div>
-    <div class="card"><h3>Sizning havola</h3><div class="link-box" id="link">...</div><button class="btn-s" onclick="copyLink()">Nusxalash</button></div>
-  </div>
-
-  <!-- Statistika -->
-  <div id="stats" class="section hidden">
-    <div class="header"><h1>Statistika</h1></div>
-    <div class="grid">
-      <div class="card"><canvas id="dailyChart"></canvas></div>
-      <div class="card"><canvas id="earningsChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- Profil -->
-  <div id="profile" class="section hidden">
-    <div class="header"><h1>Profil</h1></div>
-    <div class="card">
-      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
-      <p><strong>Username:</strong> <span id="profileUsername"></span></p>
-      <p><strong>Ro‘yxatdan o‘tgan:</strong> <span id="joinedDate">-</span></p>
-    </div>
-  </div>
-
-  <!-- To‘lovlar -->
-  <div id="billing" class="section hidden">
-    <div class="header"><h1>To‘lovlar</h1></div>
-    <div class="card">
-      <h3>Balans: <strong style="color:#10b981;font-size:28px;" id="balance">$0.00</strong></h3>
-      <button class="btn-s" id="requestPayout">To‘lov so‘rash (min $5)</button>
-      <h3 style="margin-top:30px;">Tarix</h3>
-      <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Status</th></tr></thead><tbody id="payoutTable"></tbody></table>
-    </div>
-  </div>
-
-  <!-- Admin Panel -->
-  <div id="admin" class="section hidden">
-    <div class="header"><h1>Admin Panel</h1></div>
-    <div class="card">
-      <input type="text" class="search" placeholder="Qidiruv (email/username)" id="userSearch" onkeyup="filterUsers()">
-      <table id="usersTable">
-        <thead><tr><th>Email</th><th>Username</th><th>Bosish</th><th>Daromad</th><th>So‘rovlar</th><th>Amal</th></tr></thead>
-        <tbody id="usersBody"></tbody>
-      </table>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -145,11 +152,10 @@ const db = firebase.firestore();
 let dailyChart, earningsChart;
 
 function showSection(id){
-  document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const tab = document.querySelector(`[data-section="${id}"]`);
-  if(tab) tab.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
 }
 
 function copyLink(){
@@ -157,98 +163,96 @@ function copyLink(){
   alert("Havola nusxalandi!");
 }
 
+async function saveCard(){
+  const card = document.getElementById('cardNumber').value.trim();
+  if(!card) return alert("Karta raqamini kiriting");
+  await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card});
+  alert("Karta saqlandi!");
+}
+
 auth.onAuthStateChanged(async user => {
-  if (!user) { showSection('landing'); return; }
+  if(!user){
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('authScreen').classList.remove('hidden');
+    return;
+  }
+
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
 
   const pubRef = db.collection("publishers").doc(user.uid);
   const snap = await pubRef.get();
   let data = snap.data() || {};
 
-  // Auto-create profile
-  if (!snap.exists) {
-    data = { username: user.email.split('@')[0], clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {} };
+  if(!snap.exists){
+    data = {username: user.email.split('@')[0], clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber:""};
     await pubRef.set(data);
   }
 
-  const isAdmin = data.isAdmin === true || user.email === "abrorahmeed@gmail.com";
-  if (isAdmin) document.getElementById('adminTab').classList.remove('hidden');
+  const isAdmin = data.isAdmin || user.email === "abrorahmeed@gmail.com";
+  if(isAdmin) document.getElementById('adminTab').classList.remove('hidden');
 
   const username = data.username || user.email.split('@')[0];
-  document.querySelectorAll('#userName, #profileUsername').forEach(el => el.textContent = username);
+  document.querySelectorAll('#userName, #profileUsername').forEach(e=>e.textContent=username);
   document.getElementById('profileEmail').textContent = user.email;
-  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds ? data.joined.seconds * 1000 : data.joined).toLocaleDateString('uz-UZ');
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds*1000 || data.joined).toLocaleDateString();
   document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
+  document.getElementById('cardNumber').value = data.cardNumber || "";
 
   showSection('dashboard');
 
-  // Real-time updates
   pubRef.onSnapshot(doc => {
     const d = doc.data();
-    document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
-    const earn = (d.earnings || 0).toFixed(2);
-    document.getElementById('totalEarn').textContent = "$" + earn;
-    document.getElementById('balance').textContent = "$" + earn;
+    document.getElementById('totalClicks').textContent = (d.clicks||0).toLocaleString();
+    const earn = (d.earnings||0).toFixed(2);
+    document.getElementById('totalEarn').textContent = "$"+earn;
+    document.getElementById('balance').textContent = "$"+earn;
 
-    // Daily chart (real data)
+    // REAL CHARTS — NO FAKE DATA
     const daily = d.dailyStats || {};
-    const dates = Object.keys(daily).slice(-7).sort();
-    const labels = dates.length ? dates.map(d => d.slice(5)) : ['Bugun'];
-    const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [d.clicks || 0];
+    const last7 = Object.keys(daily).slice(-7).sort();
+    const labels = last7.length ? last7.map(d=>d.slice(5)) : ["Bugun"];
+    const clicksData = last7.length ? last7.map(d=>daily[d]?.clicks||0) : [0];
 
-    if (dailyChart) dailyChart.destroy();
-    if (earningsChart) earningsChart.destroy();
+    if(dailyChart) dailyChart.destroy();
+    if(earningsChart) earningsChart.destroy();
 
-    dailyChart = new Chart(document.getElementById('dailyChart'), {
-      type: 'bar',
-      data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
-      options: { responsive: true, plugins: { legend: { display: false } } }
-    });
+    dailyChart = new Chart(document.getElementById('dailyChart'), {type:'bar',data:{labels,datasets:[{label:'Bosishlar',data:clicksData,backgroundColor:'#4361ee'}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+    earningsChart = new Chart(document.getElementById('earningsChart'), {type:'line',data:{labels:['Yan','Fev','Mar','Apr','May','Iyun'],datasets:[{label:'Daromad',data:[0,0,0,0,0,parseFloat(earn)],borderColor:'#10b981',tension:0.4,fill:true}]},options:{responsive:true}});
 
-    earningsChart = new Chart(document.getElementById('earningsChart'), {
-      type: 'line',
-      data: { labels: ['Yan','Fev','Mar','Apr','May','Iyun','Iyul','Avg','Sen','Okt','Noy','Dek'], 
-              datasets: [{ label: 'Daromad ($)', data: new Array(12).fill(0).map((_,i) => i === new Date().getMonth() ? parseFloat(earn) : 0), borderColor: '#10b981', tension: 0.4, fill: true }] },
-      options: { responsive: true }
-    });
-
-    // Payout history
     const tbody = document.getElementById('payoutTable');
     tbody.innerHTML = '';
-    (d.requests || []).forEach(r => {
+    (d.requests||[]).forEach(r=>{
       const tr = document.createElement('tr');
-      const date = r.date?.seconds ? new Date(r.date.seconds * 1000) : new Date(r.date);
-      tr.innerHTML = `<td>${date.toLocaleDateString('uz-UZ')}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#fbbf24'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
+      const date = new Date(r.date?.seconds*1000 || r.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#fbbf24'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
       tbody.appendChild(tr);
     });
   });
 
-  // Payout request
   document.getElementById('requestPayout').onclick = async () => {
     const earn = parseFloat(document.getElementById('balance').textContent.replace('$',''));
-    if (earn < 5) return alert("Minimum to‘lov $5");
-    if (confirm(`$${earn.toFixed(2)} so‘raymizmi?`)) {
-      await pubRef.update({
-        requests: firebase.firestore.FieldValue.arrayUnion({ amount: earn, date: new Date(), status: 'pending' })
-      });
-      alert("So‘rov muvaffaqiyatli yuborildi!");
+    if(earn < 5) return alert("Minimum $5");
+    if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
+      await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount:earn,date:new Date(),status:'pending'})});
+      alert("So‘rov yuborildi!");
     }
   };
 
-  // Admin panel
-  if (isAdmin) {
-    db.collection("publishers").onSnapshot(snap => {
+  if(isAdmin){
+    db.collection("publishers").onSnapshot(snap=>{
       const tbody = document.getElementById('usersBody');
       tbody.innerHTML = '';
-      snap.docs.forEach(doc => {
+      snap.docs.forEach(doc=>{
         const d = doc.data();
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${d.email || '—'}</td>
           <td>${d.username || '—'}</td>
-          <td>${(d.clicks||0).toLocaleString()}</td>
+          <td>${d.cardNumber || '<span style="color:#666">Yo‘q</span>'}</td>
+          <td>${(d.clicks||0)}</td>
           <td>$${(d.earnings||0).toFixed(2)}</td>
           <td>${(d.requests||[]).filter(r=>r.status!=='paid').length}</td>
-          <td><button class="btn-s" onclick="approvePayout('${doc.id}')">To‘lash</button></td>
+          <td><button class="btn-s" onclick="payUser('${doc.id}')">To‘lash</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -256,32 +260,30 @@ auth.onAuthStateChanged(async user => {
   }
 });
 
-window.approvePayout = async (uid) => {
-  if (!confirm("To‘lov tasdiqlansinmi?")) return;
+window.payUser = async (uid) => {
+  if(!confirm("Bu foydalanuvchiga to‘lov qilindi deb belgilaymizmi?")) return;
   const ref = db.collection("publishers").doc(uid);
   const snap = await ref.get();
   const data = snap.data();
-  const updated = (data.requests || []).map(r => ({...r, status: 'paid'}));
-  await ref.update({ requests: updated, earnings: 0 });
-  alert("To‘lov muvaffaqiyatli tasdiqlandi!");
+  const updatedRequests = (data.requests || []).map(r => ({...r, status:'paid'}));
+  await ref.update({ requests: updatedRequests, earnings: 0, clicks: 0 });
+  alert("To‘lov tasdiqlandi va balans nollandi!");
 };
 
-function filterUsers() {
+function filterUsers(){
   const term = document.getElementById('userSearch').value.toLowerCase();
-  document.querySelectorAll('#usersBody tr').forEach(tr => {
-    tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
-  });
+  document.querySelectorAll('#usersBody tr').forEach(tr=>tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none');
 }
 
 document.getElementById('loginBtn').onclick = () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value;
-  if (!email || !pass) return document.getElementById('error').textContent = "Iltimos, barcha maydonlarni to‘ldiring";
-  auth.signInWithEmailAndPassword(email, pass).catch(err => document.getElementById('error').textContent = err.message);
+  if(!email||!pass) return document.getElementById('error').textContent = "Barcha maydonlarni to‘ldiring";
+  auth.signInWithEmailAndPassword(email, pass).catch(e=>document.getElementById('error').textContent = e.message);
 };
 
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => showSection(item.dataset.section));
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>showSection(item.dataset.section));
 });
 </script>
 </body>
