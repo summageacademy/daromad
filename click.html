@@ -2,20 +2,20 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redirecting...</title>
+  <title>Yo‘naltirilmoqda...</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
     body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;}
-    .spin{border:6px solid #fff3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;}
+    .spin{border:6px solid #fff3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
     @keyframes s{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
   <h2>Bir soniya...</h2>
   <div class="spin"></div>
-  <p><strong>$0.001</strong> qo‘shildi!</p>
+  <p><strong>$0.001</strong> hisobingizga qo‘shildi!</p>
 
 <script>
 const firebaseConfig = {apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain: "daromad-link.firebaseapp.com",projectId: "daromad-link",storageBucket: "daromad-link.firebasestorage.app",messagingSenderId: "770178829456",appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
@@ -23,20 +23,28 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const params = new URLSearchParams(location.search);
-const username = params.get('u') || location.pathname.split('/').pop().replace('click.html','').replace('.html','');
+let username = params.get('u');
+if (!username) {
+  const path = location.pathname.split('/').pop();
+  username = path.replace('click.html','').replace('.html','');
+}
 
-const SPONSORS = ["https://summage.org","https://t.me/example","https://google.com"];
+const SPONSORS = ["https://summage.org","https://t.me/daromadlink","https://example.com"];
 
 if (username && username.length > 2) {
-  db.collection("publishers").where("username","==",username).limit(1).get().then(snap => {
+  const today = new Date().toISOString().split('T')[0];
+  db.collection("publishers").where("username", "==", username).limit(1).get().then(snap => {
     if (!snap.empty) {
-      snap.docs[0].ref.update({
+      const ref = snap.docs[0].ref;
+      // Increment clicks + earnings + daily stats
+      ref.update({
         clicks: firebase.firestore.FieldValue.increment(1),
-        earnings: firebase.firestore.FieldValue.increment(0.001)
+        earnings: firebase.firestore.FieldValue.increment(0.001),
+        [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
       });
     }
-    setTimeout(() => location.href = SPONSORS[Math.random()*SPONSORS.length|0], 800);
-  });
+    setTimeout(() => location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)], 800);
+  }).catch(() => setTimeout(() => location.href = SPONSORS[0], 800));
 } else {
   setTimeout(() => location.href = SPONSORS[0], 800);
 }
