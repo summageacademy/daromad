@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daromad Link | Admin Pro</title>
+  <title>Daromad Link | Professional Panel</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -11,54 +11,70 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    :root{--p:#4361ee;--s:#10b981;--d:#ef4444;--w:#fbbf24;--bg:#0f0f1a;--card:#1a1a2e;--border:#16213e;--text:#e2e8f0;}
+    :root{
+      --primary:#4361ee;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+      --bg:#0f0f1a;--card:#1a1a2e;--border:#2d2d44;--text:#e2e8f0;--muted:#94a3b8;
+    }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-    
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;}
+
     /* AUTH SCREEN */
-    #authScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#667eea,#764ba2);}
-    .auth-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:24px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 40px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);}
-    .auth-card h1{font-size:32px;text-align:center;margin-bottom:10px;color:white;}
-    .auth-card p{text-align:center;color:#ddd;margin-bottom:30px;font-size:18px;}
-    input{width:100%;padding:16px;border-radius:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;margin:12px 0;font-size:16px;}
-    input::placeholder{color:#bbb;}
-    input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(67,97,238,0.3);}
-    button{background:var(--p);color:white;border:none;padding:16px;border-radius:16px;font-weight:600;cursor:pointer;width:100%;font-size:17px;transition:0.3s;}
-    button:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(67,97,238,0.4);}
-    .error{color:#ff6b6b;text-align:center;margin-top:10px;font-weight:500;}
+    #authScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
+    .auth-box{background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);border-radius:24px;padding:48px 40px;width:100%;max-width:440px;box-shadow:0 25px 50px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);text-align:center;}
+    .auth-box h1{font-size:36px;font-weight:800;color:white;margin-bottom:12px;}
+    .auth-box p{font-size:18px;color:#ddd;margin-bottom:40px;}
+    .input-group{margin:16px 0;position:relative;}
+    .input-group input{width:100%;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:16px;transition:0.3s;}
+    .input-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,0.25);}
+    .input-group input::placeholder{color:#aaa;}
+    button{width:100%;padding:18px;border-radius:16px;background:var(--primary);color:white;border:none;font-size:17px;font-weight:600;cursor:pointer;transition:0.3s;margin-top:10px;}
+    button:hover{transform:translateY(-4px);box-shadow:0 15px 30px rgba(67,97,238,0.4);}
+    .error{color:#ff6b6b;margin-top:12px;font-size:14px;}
 
     /* MAIN APP */
-    #app{display:none;flex-direction:column;height:100vh;}
-    .header-mobile{background:var(--card);padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:997;}
-    .header-mobile h1{font-size:20px;}
-    .mobile-menu-btn{background:var(--p);color:white;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+    #app{display:none;height:100vh;}
+    .layout{display:flex;height:100vh;}
+    .sidebar{width:300px;background:var(--card);border-right:1px solid var(--border);padding:32px 24px;position:fixed;height:100%;left:0;top:0;z-index:998;overflow-y:auto;}
+    .sidebar h2{font-size:26px;font-weight:800;color:var(--primary);text-align:center;margin-bottom:50px;}
+    .nav-item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;margin:8px 0;cursor:pointer;font-weight:500;transition:0.3s;}
+    .nav-item:hover{background:rgba(67,97,238,0.15);}
+    .nav-item.active{background:var(--primary);color:white;}
+    .nav-item i{font-size:18px;width:24px;}
+    .main-content{flex:1;margin-left:300px;padding:40px;overflow-y:auto;background:var(--bg);}
 
-    .sidebar{width:280px;background:var(--card);border-right:1px solid var(--border);padding:20px;position:fixed;height:100%;top:0;left:-280px;transition:left 0.3s;z-index:998;overflow-y:auto;}
-    .sidebar.open{left:0;}
-    .sidebar h2{color:var(--p);font-size:24px;text-align:center;margin:20px 0;}
-    .nav-item{padding:16px 20px;border-radius:16px;margin:8px 0;cursor:pointer;display:flex;align-items:center;gap:14px;font-weight:500;transition:0.3s;}
-    .nav-item:hover{background:rgba(67,97,238,0.2);}
-    .nav-item.active{background:var(--p);color:white;}
-    .main{flex:1;padding:80px 20px 20px;overflow-y:auto;background:var(--bg);margin-left:0;transition:margin-left 0.3s;}
-    
-    .card{background:var(--card);border-radius:20px;padding:24px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.3);}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:20px 0;}
-    .stat-big{font-size:36px;font-weight:800;color:var(--s);}
-    .link-box{background:#16213e;padding:18px;border-radius:16px;font-family:monospace;text-align:center;margin:20px 0;font-size:15px;word-break:break-all;}
+    /* Cards & Layout */
+    .page-title{font-size:28px;font-weight:700;margin-bottom:32px;color:white;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;margin-bottom:40px;}
+    .stat-card{background:var(--card);border-radius:20px;padding:32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);transition:0.3s;}
+    .stat-card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.4);}
+    .stat-card h3{font-size:16px;color:var(--muted);margin-bottom:12px;font-weight:500;}
+    .stat-card .value{font-size:42px;font-weight:800;color:var(--success);}
+    .link-card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);}
+    .link-box{background:#16213e;padding:20px;border-radius:16px;font-family:monospace;font-size:15px;margin:20px 0;word-break:break-all;text-align:center;color:#10b981;}
+    .btn-primary{background:var(--primary);color:white;padding:14px 28px;border-radius:16px;border:none;font-weight:600;cursor:pointer;transition:0.3s;display:inline-block;}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(67,97,238,0.4);}
+    .btn-success{background:var(--success);}
     canvas{border-radius:16px;background:var(--card);padding:10px;}
-    table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px;}
-    th,td{padding:12px;text-align:left;border-bottom:1px solid var(--border);}
-    th{background:var(--p);color:white;}
-    .btn-s{background:var(--s);padding:8px 16px;font-size:14px;border-radius:12px;}
-    .btn-d{background:var(--d);padding:8px 16px;font-size:14px;border-radius:12px;}
-    .hidden{display:none !important;}
-    .copy-btn{font-size:12px;margin-left:8px;padding:4px 8px;background:#333;border-radius:8px;}
 
-    @media(min-width:992px){
-      #app{flex-direction:row;}
-      .sidebar{left:0 !important;position:relative;}
-      .main{margin-left:280px;padding:30px;}
-      .header-mobile,.mobile-menu-btn{display:none !important;}
+    /* Profile */
+    .profile-grid{grid-template-columns:1fr;max-width:600px;margin:0 auto;}
+    .profile-card h3{margin:24px 0 16px;font-size:20px;color:var(--primary);}
+    .profile-input{width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:16px;}
+
+    /* Admin */
+    table{width:100%;border-collapse:collapse;margin-top:20px;font-size:15px;}
+    th{background:var(--primary);color:white;padding:16px;text-align:left;}
+    td{padding:16px;border-bottom:1px solid var(--border);}
+    .copy-btn{background:#333;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;}
+
+    /* Mobile */
+    .mobile-menu-btn{display:none;background:var(--primary);color:white;width:56px;height:56px;border-radius:50%;position:fixed;bottom:20px;right:20px;z-index:999;box-shadow:0 10px 30px rgba(67,97,238,0.5);font-size:24px;align-items:center;justify-content:center;}
+    @media(max-width:992px){
+      .sidebar{position:fixed;left:-300px;transition:0.3s;z-index:998;}
+      .main-content{margin-left:0;padding:20px;padding-bottom:100px;}
+      .mobile-menu-btn{display:flex;}
+      .sidebar.open{left:0;}
+      .grid{grid-template-columns:1fr;gap:20px;}
     }
   </style>
 </head>
@@ -66,103 +82,105 @@
 
 <!-- AUTH -->
 <div id="authScreen">
-  <div class="auth-card">
+  <div class="auth-box">
     <h1>Daromad Link</h1>
-    <p>Har 1000 bosish = <strong style="color:#10b981;">$1.00</strong></p>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="pass" type="password" placeholder="Parol" />
+    <p>Har 1000 ta bosish = <strong style="color:#10b981;">$1.00</strong></p>
+    <div class="input-group"><input id="email" type="email" placeholder="Emailingizni kiriting" /></div>
+    <div class="input-group"><input id="pass" type="password" placeholder="Parolingizni kiriting" /></div>
     <button id="loginBtn">Kirish</button>
     <div class="error" id="error"></div>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app">
-  <div class="header-mobile">
-    <h1><span id="mobileUser">User</span></h1>
-    <div class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">
-      Menu
-    </div>
-  </div>
-
+<div id="app" class="layout">
   <div class="sidebar">
     <h2>Daromad Link</h2>
-    <div class="nav-item active" data-section="dashboard">Bosh sahifa</div>
-    <div class="nav-item" data-section="stats">Statistika</div>
-    <div class="nav-item" data-section="profile">Profil</div>
-    <div class="nav-item" data-section="billing">To‘lovlar</div>
-    <div class="nav-item hidden" id="adminTab" data-section="admin">Admin Panel</div>
-    <div class="nav-item" style="color:#ef4444;margin-top:auto;" onclick="auth.signOut()">Chiqish</div>
+    <div class="nav-item active" data-section="dashboard"><i class="fas fa-home"></i> Bosh sahifa</div>
+    <div class="nav-item" data-section="stats"><i class="fas fa-chart-line"></i> Statistika</div>
+    <div class="nav-item" data-section="profile"><i class="fas fa-user"></i> Profil</div>
+    <div class="nav-item" data-section="billing"><i class="fas fa-wallet"></i> To‘lovlar</div>
+    <div class="nav-item hidden" id="adminTab" data-section="admin"><i class="fas fa-cog"></i> Admin Panel</div>
+    <div class="nav-item" style="margin-top:auto;color:#ef4444;" onclick="auth.signOut()"><i class="fas fa-sign-out-alt"></i> Chiqish</div>
   </div>
 
-  <div class="main">
+  <div class="main-content">
+
     <!-- Dashboard -->
     <div id="dashboard" class="section">
-      <h1>Salom, <span id="userName">...</span>!</h1>
+      <h1 class="page-title">Salom, <span id="userName">...</span>!</h1>
       <div class="grid">
-        <div class="card"><h3>Bosishlar</h3><div class="stat-big" id="totalClicks">0</div></div>
-        <div class="card"><h3>Daromad</h3><div class="stat-big" id="totalEarn">$0.00</div></div>
+        <div class="stat-card"><h3>Jami bosishlar</h3><div class="value" id="totalClicks">0</div></div>
+        <div class="stat-card"><h3>Jami daromad</h3><div class="value" id="totalEarn">$0.00</div></div>
       </div>
-      <div class="card">
-        <h3>Havola</h3>
+      <div class="link-card">
+        <h3 style="margin-bottom:16px;">Sizning shaxsiy havola</h3>
         <div class="link-box" id="link">...</div>
-        <button class="btn-s" onclick="copyLink()">Nusxalash</button>
+        <button class="btn-primary" onclick="copyLink()">Nusxalash</button>
       </div>
     </div>
 
     <!-- Stats -->
     <div id="stats" class="section hidden">
-      <h1>Statistika</h1>
+      <h1 class="page-title">Statistika</h1>
       <div class="grid">
-        <div class="card"><canvas id="dailyChart"></canvas></div>
-        <div class="card"><canvas id="earningsChart"></canvas></div>
+        <div class="stat-card"><canvas id="dailyChart"></canvas></div>
+        <div class="stat-card"><canvas id="earningsChart"></canvas></div>
       </div>
     </div>
 
     <!-- Profile -->
     <div id="profile" class="section hidden">
-      <h1>Profil</h1>
-      <div class="card">
-        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
-        <p><strong>Username:</strong> <span id="profileUsername"></span></p>
-        <h3 style="margin-top:20px;">Karta raqami (to‘lov uchun)</h3>
-        <input id="cardNumber" placeholder="8600 xxxx xxxx xxxx" style="margin:10px 0;" />
-        <button class="btn-s" onclick="saveCard()">Saqlash</button>
+      <h1 class="page-title">Profil sozlamalari</h1>
+      <div class="grid profile-grid">
+        <div class="stat-card">
+          <p><strong>Email:</strong> <span id="profileEmail" style="color:var(--success);"></span></p>
+          <p><strong>Username:</strong> <span id="profileUsername" style="color:var(--success);"></span></p>
+          <p><strong>Ro‘yxatdan o‘tgan:</strong> <span id="joinedDate">-</span></p>
+          <hr style="margin:30px 0;border:none;border-top:1px solid var(--border);">
+          <h3>Karta raqami (to‘lov uchun)</h3>
+          <input type="text" class="profile-input" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19" />
+          <button class="btn-primary" onclick="saveCard()">Saqlash</button>
+          <p style="font-size:14px;color:var(--muted);margin-top:12px;">Faqat admin ko‘radi. To‘lov uchun kerak.</p>
+        </div>
       </div>
     </div>
 
     <!-- Billing -->
     <div id="billing" class="section hidden">
-      <h1>To‘lovlar</h1>
-      <div class="card">
-        <h3>Balans: <strong style="color:#10b981;font-size:32px;" id="balance">$0.00</strong></h3>
-        <button class="btn-s" id="requestPayout">So‘rash ($5+)</button>
-        <h3 style="margin-top:30px;">Tarix</h3>
-        <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Status</th></tr></thead><tbody id="payoutTable"></tbody></table>
+      <h1 class="page-title">To‘lovlar</h1>
+      <div class="grid">
+        <div class="stat-card">
+          <h3>Joriy balans</h3>
+          <div class="value" id="balance">$0.00</div>
+          <button class="btn-primary" style="margin-top:20px;" id="requestPayout">To‘lov so‘rash (min $5)</button>
+        </div>
+      </div>
+      <div class="stat-card">
+        <h3>To‘lov tarixi</h3>
+        <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Holati</th></tr></thead><tbody id="payoutTable"></tbody></table>
       </div>
     </div>
 
-    <!-- ADMIN PANEL -->
+    <!-- Admin Panel -->
     <div id="admin" class="section hidden">
-      <h1>Admin Panel <small style="color:#666;">(Jami: <span id="totalUsers">0</span> ta)</small></h1>
-      <div class="card">
-        <input type="text" placeholder="Qidiruv (ism/karta)" id="userSearch" onkeyup="filterUsers()" style="margin-bottom:20px;" />
-        <div style="overflow-x:auto;">
+      <h1 class="page-title">Admin Panel</h1>
+      <div class="stat-card">
+        <input type="text" placeholder="Qidiruv (username / karta)" id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
+        <div style="overflow-x:auto;border-radius:16px;">
           <table>
-            <thead><tr>
-              <th>User</th>
-              <th>Karta</th>
-              <th>Bosish</th>
-              <th>Daromad</th>
-              <th>So‘rov</th>
-              <th>Amallar</th>
-            </tr></thead>
+            <thead><tr><th>Foydalanuvchi</th><th>Karta raqami</th><th>Bosish</th><th>Daromad</th><th>So‘rov</th><th>Amal</th></tr></thead>
             <tbody id="usersBody"></tbody>
           </table>
         </div>
       </div>
     </div>
+
   </div>
+</div>
+
+<div class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+  Menu
 </div>
 
 <script>
@@ -182,14 +200,14 @@ function showSection(id){
 
 function copyLink(){
   navigator.clipboard.writeText(document.getElementById('link').textContent);
-  alert("Nusxalandi!");
+  alert("Havola nusxalandi!");
 }
 
 async function saveCard(){
-  const card = document.getElementById('cardNumber').value.trim();
-  if(card && !card.match(/^\d{16}$|^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/)) return alert("To‘g‘ri karta raqami kiriting");
+  let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
+  if(card && card.length !== 16) return alert("Karta raqami 16 ta raqamdan iborat bo‘lishi kerak");
   await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
-  alert("Saqlandi!");
+  alert("Karta raqami saqlandi!");
 }
 
 auth.onAuthStateChanged(async user => {
@@ -198,7 +216,6 @@ auth.onAuthStateChanged(async user => {
     document.getElementById('authScreen').style.display = 'flex';
     return;
   }
-
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
 
@@ -215,10 +232,11 @@ auth.onAuthStateChanged(async user => {
   if(isAdmin) document.getElementById('adminTab').classList.remove('hidden');
 
   const username = data.username || user.email.split('@')[0];
-  document.querySelectorAll('#userName, #profileUsername, #mobileUser').forEach(e=>e.textContent=username);
+  document.querySelectorAll('#userName, #profileUsername').forEach(e=>e.textContent=username);
   document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds*1000 || data.joined).toLocaleDateString('uz-UZ');
   document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
-  document.getElementById('cardNumber').value = data.cardNumber || "";
+  document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
 
   showSection('dashboard');
 
@@ -229,7 +247,6 @@ auth.onAuthStateChanged(async user => {
     document.getElementById('totalEarn').textContent = "$"+earn;
     document.getElementById('balance').textContent = "$"+earn;
 
-    // REAL CHARTS
     const daily = d.dailyStats || {};
     const dates = Object.keys(daily).slice(-7).sort();
     const labels = dates.length ? dates.map(d=>d.slice(5)) : ["Bugun"];
@@ -241,13 +258,12 @@ auth.onAuthStateChanged(async user => {
     dailyChart = new Chart(document.getElementById('dailyChart'), {type:'bar',data:{labels,datasets:[{label:'Bosishlar',data:clicksData,backgroundColor:'#4361ee'}]},options:{responsive:true,plugins:{legend:{display:false}}}});
     earningsChart = new Chart(document.getElementById('earningsChart'), {type:'line',data:{labels:['Yan','Fev','Mar','Apr','May','Iyun'],datasets:[{label:'Daromad',data:[0,0,0,0,0,parseFloat(earn)],borderColor:'#10b981',tension:0.4,fill:true}]},options:{responsive:true}});
 
-    // Payout table
     const tbody = document.getElementById('payoutTable');
     tbody.innerHTML = '';
     (d.requests||[]).forEach(r => {
       const tr = document.createElement('tr');
       const date = new Date(r.date?.seconds*1000 || r.date);
-      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#fbbf24'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#f59e0b'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
       tbody.appendChild(tr);
     });
   });
@@ -255,31 +271,27 @@ auth.onAuthStateChanged(async user => {
   document.getElementById('requestPayout').onclick = async () => {
     const earn = parseFloat(document.getElementById('balance').textContent.replace('$',''));
     if(earn < 5) return alert("Minimum $5");
-    if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
+    if(confirm(`$${earn.toFixed(2)} to‘lov so‘raymizmi?`)){
       await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount:earn,date:new Date(),status:'pending'})});
       alert("So‘rov yuborildi!");
     }
   };
 
-  // ADMIN PANEL — FULL POWER
   if(isAdmin){
     db.collection("publishers").onSnapshot(snap => {
-      document.getElementById('totalUsers').textContent = snap.size;
       const tbody = document.getElementById('usersBody');
       tbody.innerHTML = '';
       snap.docs.forEach(doc => {
         const d = doc.data();
+        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${d.username || '—'}</td>
-          <td>${d.cardNumber ? d.cardNumber + ' <button class="copy-btn" onclick="navigator.clipboard.writeText(\''+d.cardNumber+'\')">Copy</button>' : '—'}</td>
-          <td>${(d.clicks||0)}</td>
+          <td><strong>${d.username || '—'}</strong></td>
+          <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\''+d.cardNumber+'\')">Copy</button>' : ''}</td>
+          <td>${(d.clicks||0).toLocaleString()}</td>
           <td>$${(d.earnings||0).toFixed(2)}</td>
           <td>${(d.requests||[]).filter(r=>r.status!=='paid').length}</td>
-          <td>
-            <button class="btn-s" onclick="payUser('${doc.id}')">To‘lash</button>
-            <button class="btn-d" onclick="banUser('${doc.id}')" style="margin-left:5px;">Ban</button>
-          </td>
+          <td><button class="btn-success" style="padding:8px 16px;font-size:14px;" onclick="payUser('${doc.id}')">To‘lash</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -288,24 +300,18 @@ auth.onAuthStateChanged(async user => {
 });
 
 window.payUser = async (uid) => {
-  if(!confirm("To‘lov qilindi deb belgilaymizmi? Balance va clicks 0 bo‘ladi")) return;
+  if(!confirm("To‘lov tasdiqlansinmi? Balance va clicks 0 bo‘ladi")) return;
   const ref = db.collection("publishers").doc(uid);
   const snap = await ref.get();
   const data = snap.data();
   const updated = (data.requests || []).map(r => ({...r, status:'paid'}));
   await ref.update({requests: updated, earnings: 0, clicks: 0});
-  alert("To‘lov tasdiqlandi!");
-};
-
-window.banUser = async (uid) => {
-  if(!confirm("Bu foydalanuvchi bloklansinmi?")) return;
-  await db.collection("publishers").doc(uid).update({banned: true});
-  alert("Foydalanuvchi bloklandi");
+  alert("To‘lov muvaffaqiyatli amalga oshirildi!");
 };
 
 function filterUsers(){
   const term = document.getElementById('userSearch').value.toLowerCase();
-  document.querySelectorAll('#usersBody tr').forEach(tr=>{
+  document.querySelectorAll('#usersBody tr').forEach(tr => {
     tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
 }
@@ -313,12 +319,12 @@ function filterUsers(){
 document.getElementById('loginBtn').onclick = () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value;
-  if(!email||!pass) return document.getElementById('error').textContent = "To‘ldiring";
+  if(!email||!pass) return document.getElementById('error').textContent = "Iltimos, barcha maydonlarni to‘ldiring";
   auth.signInWithEmailAndPassword(email, pass).catch(e=>document.getElementById('error').textContent = e.message);
 };
 
-document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click',()=>showSection(item.dataset.section));
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => showSection(item.dataset.section));
 });
 </script>
 </body>
