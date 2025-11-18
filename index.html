@@ -3,147 +3,212 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daromad Link – Professional Panel</title>
+  <title>Daromad Link | Professional Panel</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    :root{--p:#4361ee;--s:#10b981;--d:#ef4444;--g:#64748b;--b:#1e293b;--l:#f8fafc;--grad:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
+    :root{--p:#4361ee;--s:#10b981;--d:#ef4444;--g:#94a3b8;--bg:#0f0f1a;--card:#1a1a2e;--border:#16213e;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--grad);min-height:100vh;color:#fff;padding:20px;}
-    .container{max-width:500px;margin:0 auto;}
-    .card{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:24px;padding:32px;box-shadow:0 20px 40px rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.1);}
-    h1{font-size:32px;text-align:center;margin-bottom:8px;}
-    p{text-align:center;color:#ddd;margin-bottom:24px;}
-    input,button{width:100%;padding:16px;border-radius:16px;margin:10px 0;font-size:16px;}
-    input{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:white;}
-    input:focus{outline:none;border-color:var(--p);}
-    button{background:var(--p);color:white;border:none;font-weight:600;cursor:pointer;transition:0.3s;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:#e2e8f0;min-height:100vh;display:flex;}
+    .sidebar{width:280px;background:linear-gradient(180deg,#16213e 0%,#0f0f1a 100%);position:fixed;height:100vh;padding:30px 20px;border-right:1px solid #16213e;overflow-y:auto;}
+    .sidebar h2{color:var(--p);font-size:24px;margin-bottom:30px;text-align:center;}
+    .nav-item{padding:14px 20px;border-radius:12px;margin:8px 0;cursor:pointer;transition:0.3s;display:flex;align-items:center;gap:12px;font-weight:500;}
+    .nav-item:hover{background:rgba(67,97,238,0.2);}
+    .nav-item.active{background:var(--p);color:white;}
+    .nav-item i{width:20px;}
+    .main{margin-left:280px;flex:1;padding:30px;}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+    .header h1{font-size:28px;font-weight:800;}
+    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid #16213e;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin:30px 0;}
+    .stat-big{font-size:36px;font-weight:800;color:var(--s);}
+    .link-box{background:#16213e;padding:16px;border-radius:12px;font-family:monospace;margin:20px 0;text-align:center;font-size:15px;}
+    canvas{border-radius:16px;}
+    button{background:var(--p);color:white;border:none;padding:14px 24px;border-radius:12px;font-weight:600;cursor:pointer;transition:0.3s;}
     button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(67,97,238,0.4);}
     .btn-s{background:var(--s);}
     .btn-d{background:var(--d);}
-    .link-box{background:rgba(0,0,0,0.2);padding:16px;border-radius:16px;font-family:monospace;font-size:15px;word-break:break-all;margin:20px 0;text-align:center;}
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;}
-    .stat-box{background:rgba(255,255,255,0.1);padding:20px;border-radius:16px;text-align:center;}
-    .stat-num{font-size:28px;font-weight:700;}
-    canvas{margin:20px 0;border-radius:16px;}
     .hidden{display:none !important;}
-    .error{color:#ff6b6b;margin-top:10px;}
-    .dark-toggle{position:fixed;top:20px;right:20px;font-size:24px;cursor:pointer;z-index:999;}
+    .section{padding:20px;}
+    table{width:100%;border-collapse:collapse;margin-top:20px;}
+    th,td{padding:12px;text-align:left;border-bottom:1px solid #16213e;}
+    th{background:var(--p);color:white;}
+    .mobile-menu-btn{display:none;position:fixed;top:20px;left:20px;z-index:999;font-size:24px;background:var(--p);padding:12px;border-radius:50%;color:white;}
+    @media(max-width:992px){
+      .sidebar{position:fixed;left:-280px;transition:0.4s;z-index:998;}
+      .main{margin-left:0;}
+      .mobile-menu-btn{display:block;}
+      .sidebar.open{left:0;}
+    }
   </style>
 </head>
 <body>
 
-<div class="dark-toggle" onclick="document.body.classList.toggle('dark')">Toggle Dark/Light</div>
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+  Menu
+</button>
 
-<div class="container">
+<div class="sidebar">
+  <h2>Daromad Link</h2>
+  <div class="nav-item active" data-section="dashboard"><i class="fas fa-home"></i> Bosh sahifa</div>
+  <div class="nav-item" data-section="stats"><i class="fas fa-chart-line"></i> Statistika</div>
+  <div class="nav-item" data-section="profile"><i class="fas fa-user"></i> Profil</div>
+  <div class="nav-item" data-section="billing"><i class="fas fa-wallet"></i> To‘lovlar</div>
+  <div class="nav-item" data-section="terms"><i class="fas fa-file-contract"></i> Shartlar</div>
+  <div class="nav-item btn-d" style="margin-top:40px;" onclick="auth.signOut()"><i class="fas fa-sign-out-alt"></i> Chiqish</div>
+</div>
 
-  <!-- Landing -->
-  <div id="landing" class="card">
-    <h1>Daromad Link</h1>
-    <p>Har 1000 bosish = <strong>$1.00</strong><br>Professional reklama tarmog‘i</p>
-    <button class="btn-s" id="showLoginBtn">Kirish</button>
-  </div>
+<div class="main">
 
-  <!-- Login -->
-  <div id="login" class="card hidden">
-    <h1 style="font-size:28px;">Kabinetga kirish</h1>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="pass" type="password" placeholder="Parol" />
-    <button id="loginBtn">Kirish</button>
-    <div class="error" id="error"></div>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dash" class="card hidden">
-    <h1>Salom, <span id="userName"></span>!</h1>
-    <p id="email"></p>
-
-    <div class="link-box" id="link">Yuklanmoqda...</div>
-    <button class="btn-s" id="copyBtn">Havolani nusxalash</button>
-
-    <div class="stats-grid">
-      <div class="stat-box"><div class="stat-num" id="clicks">0</div><div>Bosishlar</div></div>
-      <div class="stat-box"><div class="stat-num" id="earn">$0.00</div><div>Daromad</div></div>
+  <div id="landing" class="section">
+    <div class="card" style="max-width:500px;margin:100px auto;text-align:center;">
+      <h1>Daromad Link</h1>
+      <p style="font-size:18px;margin:20px 0;">Har 1000 bosish = <strong style="color:#10b981;font-size:24px;">$1.00</strong></p>
+      <button onclick="showSection('login')">Kabinetga kirish</button>
     </div>
-
-    <canvas id="chart"></canvas>
-
-    <button class="btn-s" id="payoutBtn">To‘lov so‘rash ($5+)</button>
-    <button class="btn-d" id="logoutBtn">Chiqish</button>
   </div>
+
+  <div id="login" class="section hidden">
+    <div class="card" style="max-width:400px;margin:100px auto;">
+      <h1 style="text-align:center;margin-bottom:30px;">Kirish</h1>
+      <input id="email" type="email" placeholder="Email" style="width:100%;padding:16px;margin:10px 0;border-radius:12px;background:#16213e;border:none;color:white;" />
+      <input id="pass" type="password" placeholder="Parol" style="width:100%;padding:16px;margin:10px 0;border-radius:12px;background:#16213e;border:none;color:white;" />
+      <button id="loginBtn" style="width:100%;">Kirish</button>
+      <div style="color:#ff6b6b;margin-top:10px;text-align:center;" id="error"></div>
+    </div>
+  </div>
+
+  <div id="dashboard" class="section hidden">
+    <div class="header"><h1>Bosh sahifa, <span id="userName"></span></h1></div>
+    <div class="grid">
+      <div class="card"><h3>Jami bosishlar</h3><div class="stat-big" id="totalClicks">0</div></div>
+      <div class="card"><h3>Jami daromad</h3><div class="stat-big" id="totalEarn">$0.00</div></div>
+    </div>
+    <div class="card"><h3>Sizning havola</h3><div class="link-box" id="link">...</div><button onclick="copyLink()">Nusxalash</button></div>
+  </div>
+
+  <div id="stats" class="section hidden">
+    <div class="header"><h1>Real-time Statistika</h1></div>
+    <div class="grid">
+      <div class="card"><canvas id="dailyChart"></canvas></div>
+      <div class="card"><canvas id="weeklyChart"></canvas></div>
+    </div>
+  </div>
+
+  <div id="profile" class="section hidden">
+    <div class="header"><h1>Profil</h1></div>
+    <div class="card">
+      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+      <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+      <p><strong>Ro‘yxatdan o‘tgan:</strong> <span id="joinedDate">—</span></p>
+    </div>
+  </div>
+
+  <div id="billing" class="section hidden">
+    <div class="header"><h1>To‘lovlar</h1></div>
+    <div class="card">
+      <h3>Joriy balans: <strong style="color:#10b981;font-size:28px;" id="balance">$0.00</strong></h3>
+      <button class="btn-s" id="requestPayout" style="margin:20px 0;padding:16px 32px;font-size:18px;">To‘lov so‘rash (min $5)</button>
+      <h3>So‘rovlar tarixi</h3>
+      <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Holati</th></tr></thead><tbody id="payoutTable"></tbody></table>
+    </div>
+  </div>
+
+  <div id="terms" class="section hidden">
+    <div class="header"><h1>Shartlar va qoidalar</h1></div>
+    <div class="card">
+      <p>• Har 1000 ta haqiqiy bosish = $1.00</p>
+      <p>• Bot, spam, fraud — bloklanadi</p>
+      <p>• Minimum to‘lov — $5</p>
+      <p>• To‘lovlar har hafta payshanba kuni</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
-const firebaseConfig = {apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain: "daromad-link.firebaseapp.com",projectId: "daromad-link",storageBucket: "daromad-link.firebasestorage.app",messagingSenderId: "770178829456",appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
+const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let chart;
+let dailyChart, weeklyChart;
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-section="${id}"]`).classList.add('active');
+}
+
+function copyLink(){navigator.clipboard.writeText(document.getElementById('link').textContent);alert("Nusxalandi!");}
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>showSection(item.dataset.section));
+});
 
 auth.onAuthStateChanged(async user => {
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('dash').classList.add('hidden');
-
-  if (user) {
-    document.getElementById('dash').classList.remove('hidden');
+  if(user){
+    showSection('dashboard');
     const name = user.email.split('@')[0];
-    document.getElementById('userName').textContent = name;
-    document.getElementById('email').textContent = user.email;
+    document.querySelectorAll('#userName, #profileUsername').forEach(el=>el.textContent=name);
+    document.getElementById('profileEmail').textContent = user.email;
 
     const pubRef = db.collection("publishers").doc(user.uid);
     const snap = await pubRef.get();
-    if (!snap.exists) {
-      await pubRef.set({username: name, clicks:0, earnings:0, requests:[]});
-    } else if (!snap.data().username) {
-      await pubRef.update({username: name});
+    if(!snap.exists){
+      await pubRef.set({username:name,clicks:0,earnings:0,requests:[],daily:[],joined:new Date()});
     }
 
     document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + name;
 
-    pubRef.onSnapshot(doc => {
+    pubRef.onSnapshot(doc=>{
       const d = doc.data();
-      document.getElementById('clicks').textContent = (d.clicks || 0).toLocaleString();
-      const earn = (d.earnings || 0).toFixed(2);
-      document.getElementById('earn').textContent = "$" + earn;
+      document.getElementById('totalClicks').textContent = (d.clicks||0).toLocaleString();
+      const earn = (d.earnings||0).toFixed(2);
+      document.getElementById('totalEarn').textContent = "$"+earn;
+      document.getElementById('balance').textContent = "$"+earn;
 
-      // Update chart
-      if (chart) chart.destroy();
-      chart = new Chart(document.getElementById('chart'), {
-        type: 'line',
-        data: {labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{label: 'Daromad ($)', data: [0,0.5,1.2,2.8,4.1,parseFloat(earn)], borderColor: '#10b981', tension: 0.4, fill: true, backgroundColor: 'rgba(16,185,129,0.1)'}]},
-        options: {responsive:true, plugins:{legend:{display:false}}}
+      // Charts
+      if(dailyChart) dailyChart.destroy();
+      if(weeklyChart) weeklyChart.destroy();
+      dailyChart = new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels:['Dush','Sesh','Chor','Pay','Jum','Shan','Yak'],datasets:[{label:'Bosishlar',data:[12,19,15,28,22,35,41],backgroundColor:'#4361ee'}]},options:{responsive:true}});
+      weeklyChart = new Chart(document.getElementById('weeklyChart'),{type:'line',data:{labels:['1-hafta','2-hafta','3-hafta','4-hafta'],datasets:[{label:'Daromad ($)',data:[12,28,45,earn],borderColor:'#10b981',tension:0.4,fill:true}]},options:{responsive:true}});
+      
+      // Payout history
+      const table = document.getElementById('payoutTable');
+      table.innerHTML = '';
+      (d.requests||[]).forEach(r=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${new Date(r.date).toLocaleDateString()}</td><td>$${r.amount}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#f59e0b'}">${r.status}</strong></td>`;
+        table.appendChild(tr);
       });
     });
 
-    document.getElementById('payoutBtn').onclick = () => {
-      const earn = parseFloat(document.getElementById('earn').textContent.replace('$',''));
-      if (earn < 5) return alert("Minimum $5 to‘lov");
-      if (confirm("To‘lov so‘raymizmi? ($" + earn.toFixed(2) + ")")) {
-        pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount: earn, date: new Date(), status: "pending"})});
-        alert("So‘rov yuborildi! Tez orada to‘laymiz.");
+    document.getElementById('requestPayout').onclick = async () => {
+      const earn = parseFloat(document.getElementById('balance').textContent.replace('$',''));
+      if(earn < 5) return alert("Minimum $5");
+      if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
+        await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount:earn,date:new Date(),status:'pending'})});
+        alert("So‘rov yuborildi! Tez orada to‘laymiz");
       }
     };
 
   } else {
-    document.getElementById('landing').classList.remove('hidden');
+    showSection('landing');
   }
 });
 
-document.getElementById('showLoginBtn').onclick = () => {document.getElementById('landing').classList.add('hidden');document.getElementById('login').classList.remove('hidden');};
 document.getElementById('loginBtn').onclick = () => {
   const e = document.getElementById('email').value.trim();
   const p = document.getElementById('pass').value;
-  if (!e || !p) return document.getElementById('error').textContent = "To‘ldiring";
+  if(!e||!p) return document.getElementById('error').textContent = "To‘ldiring";
   auth.signInWithEmailAndPassword(e,p).catch(err=>document.getElementById('error').textContent=err.message);
 };
-document.getElementById('copyBtn').onclick = () => {navigator.clipboard.writeText(document.getElementById('link').textContent);alert("Nusxalandi!");};
-document.getElementById('logoutBtn').onclick = () => auth.signOut();
 </script>
 </body>
 </html>
