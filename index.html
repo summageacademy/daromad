@@ -18,20 +18,19 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;}
 
-    /* AUTH SCREEN */
+    /* AUTH */
     #authScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
     .auth-box{background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);border-radius:24px;padding:48px 40px;width:100%;max-width:440px;box-shadow:0 25px 50px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);text-align:center;}
     .auth-box h1{font-size:36px;font-weight:800;color:white;margin-bottom:12px;}
     .auth-box p{font-size:18px;color:#ddd;margin-bottom:40px;}
-    .input-group{margin:16px 0;position:relative;}
+    .input-group{margin:16px 0;}
     .input-group input{width:100%;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:16px;transition:0.3s;}
     .input-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,0.25);}
-    .input-group input::placeholder{color:#aaa;}
     button{width:100%;padding:18px;border-radius:16px;background:var(--primary);color:white;border:none;font-size:17px;font-weight:600;cursor:pointer;transition:0.3s;margin-top:10px;}
     button:hover{transform:translateY(-4px);box-shadow:0 15px 30px rgba(67,97,238,0.4);}
     .error{color:#ff6b6b;margin-top:12px;font-size:14px;}
 
-    /* MAIN APP */
+    /* APP */
     #app{display:none;height:100vh;}
     .layout{display:flex;height:100vh;}
     .sidebar{width:300px;background:var(--card);border-right:1px solid var(--border);padding:32px 24px;position:fixed;height:100%;left:0;top:0;z-index:998;overflow-y:auto;}
@@ -42,39 +41,32 @@
     .nav-item i{font-size:18px;width:24px;}
     .main-content{flex:1;margin-left:300px;padding:40px;overflow-y:auto;background:var(--bg);}
 
-    /* Cards & Layout */
     .page-title{font-size:28px;font-weight:700;margin-bottom:32px;color:white;}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;margin-bottom:40px;}
     .stat-card{background:var(--card);border-radius:20px;padding:32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);transition:0.3s;}
-    .stat-card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.4);}
-    .stat-card h3{font-size:16px;color:var(--muted);margin-bottom:12px;font-weight:500;}
+    .stat-card:hover{transform:translateY(-8px);}
+    .stat-card h3{font-size:16px;color:var(--muted);margin-bottom:12px;}
     .stat-card .value{font-size:42px;font-weight:800;color:var(--success);}
     .link-card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);}
     .link-box{background:#16213e;padding:20px;border-radius:16px;font-family:monospace;font-size:15px;margin:20px 0;word-break:break-all;text-align:center;color:#10b981;}
     .btn-primary{background:var(--primary);color:white;padding:14px 28px;border-radius:16px;border:none;font-weight:600;cursor:pointer;transition:0.3s;display:inline-block;}
     .btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(67,97,238,0.4);}
-    .btn-success{background:var(--success);}
     canvas{border-radius:16px;background:var(--card);padding:10px;}
-
-    /* Profile */
-    .profile-grid{grid-template-columns:1fr;max-width:600px;margin:0 auto;}
-    .profile-card h3{margin:24px 0 16px;font-size:20px;color:var(--primary);}
-    .profile-input{width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:16px;}
-
-    /* Admin */
     table{width:100%;border-collapse:collapse;margin-top:20px;font-size:15px;}
     th{background:var(--primary);color:white;padding:16px;text-align:left;}
     td{padding:16px;border-bottom:1px solid var(--border);}
-    .copy-btn{background:#333;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;}
+    .copy-btn{background:#333;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;margin-left:8px;}
 
-    /* Mobile */
+    .section{display:none;}
+    .section.active{display:block;}
+
     .mobile-menu-btn{display:none;background:var(--primary);color:white;width:56px;height:56px;border-radius:50%;position:fixed;bottom:20px;right:20px;z-index:999;box-shadow:0 10px 30px rgba(67,97,238,0.5);font-size:24px;align-items:center;justify-content:center;}
     @media(max-width:992px){
-      .sidebar{position:fixed;left:-300px;transition:0.3s;z-index:998;}
+      .sidebar{left:-300px;transition:0.3s;}
       .main-content{margin-left:0;padding:20px;padding-bottom:100px;}
       .mobile-menu-btn{display:flex;}
       .sidebar.open{left:0;}
-      .grid{grid-template-columns:1fr;gap:20px;}
+      .grid{grid-template-columns:1fr;}
     }
   </style>
 </head>
@@ -96,18 +88,18 @@
 <div id="app" class="layout">
   <div class="sidebar">
     <h2>Daromad Link</h2>
-    <div class="nav-item active" data-section="dashboard"><i class="fas fa-home"></i> Bosh sahifa</div>
-    <div class="nav-item" data-section="stats"><i class="fas fa-chart-line"></i> Statistika</div>
-    <div class="nav-item" data-section="profile"><i class="fas fa-user"></i> Profil</div>
-    <div class="nav-item" data-section="billing"><i class="fas fa-wallet"></i> To‘lovlar</div>
-    <div class="nav-item hidden" id="adminTab" data-section="admin"><i class="fas fa-cog"></i> Admin Panel</div>
-    <div class="nav-item" style="margin-top:auto;color:#ef4444;" onclick="auth.signOut()"><i class="fas fa-sign-out-alt"></i> Chiqish</div>
+    <div class="nav-item active" data-section="dashboard">Bosh sahifa</div>
+    <div class="nav-item" data-section="stats">Statistika</div>
+    <div class="nav-item" data-section="profile">Profil</div>
+    <div class="nav-item" data-section="billing">To‘lovlar</div>
+    <div class="nav-item hidden" id="adminTab" data-section="admin">Admin Panel</div>
+    <div class="nav-item" style="margin-top:auto;color:#ef4444;" onclick="auth.signOut()">Chiqish</div>
   </div>
 
   <div class="main-content">
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="section">
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="section active">
       <h1 class="page-title">Salom, <span id="userName">...</span>!</h1>
       <div class="grid">
         <div class="stat-card"><h3>Jami bosishlar</h3><div class="value" id="totalClicks">0</div></div>
@@ -120,8 +112,8 @@
       </div>
     </div>
 
-    <!-- Stats -->
-    <div id="stats" class="section hidden">
+    <!-- STATS -->
+    <div id="stats" class="section">
       <h1 class="page-title">Statistika</h1>
       <div class="grid">
         <div class="stat-card"><canvas id="dailyChart"></canvas></div>
@@ -129,25 +121,25 @@
       </div>
     </div>
 
-    <!-- Profile -->
-    <div id="profile" class="section hidden">
+    <!-- PROFILE -->
+    <div id="profile" class="section">
       <h1 class="page-title">Profil sozlamalari</h1>
-      <div class="grid profile-grid">
+      <div class="grid" style="max-width:600px;margin:0 auto;">
         <div class="stat-card">
           <p><strong>Email:</strong> <span id="profileEmail" style="color:var(--success);"></span></p>
           <p><strong>Username:</strong> <span id="profileUsername" style="color:var(--success);"></span></p>
           <p><strong>Ro‘yxatdan o‘tgan:</strong> <span id="joinedDate">-</span></p>
           <hr style="margin:30px 0;border:none;border-top:1px solid var(--border);">
           <h3>Karta raqami (to‘lov uchun)</h3>
-          <input type="text" class="profile-input" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19" />
+          <input type="text" class="profile-input" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin:12px 0;" />
           <button class="btn-primary" onclick="saveCard()">Saqlash</button>
           <p style="font-size:14px;color:var(--muted);margin-top:12px;">Faqat admin ko‘radi. To‘lov uchun kerak.</p>
         </div>
       </div>
     </div>
 
-    <!-- Billing -->
-    <div id="billing" class="section hidden">
+    <!-- BILLING -->
+    <div id="billing" class="section">
       <h1 class="page-title">To‘lovlar</h1>
       <div class="grid">
         <div class="stat-card">
@@ -162,14 +154,14 @@
       </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="admin" class="section hidden">
+    <!-- ADMIN -->
+    <div id="admin" class="section">
       <h1 class="page-title">Admin Panel</h1>
       <div class="stat-card">
-        <input type="text" placeholder="Qidiruv (username / karta)" id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
-        <div style="overflow-x:auto;border-radius:16px;">
+        <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
+        <div style="overflow-x:auto;">
           <table>
-            <thead><tr><th>Foydalanuvchi</th><th>Karta raqami</th><th>Bosish</th><th>Daromad</th><th>So‘rov</th><th>Amal</th></tr></thead>
+            <thead><tr><th>Foydalanuvchi</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>So‘rov</th><th>Amal</th></tr></thead>
             <tbody id="usersBody"></tbody>
           </table>
         </div>
@@ -192,9 +184,9 @@ const db = firebase.firestore();
 let dailyChart, earningsChart;
 
 function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
 }
 
@@ -205,9 +197,9 @@ function copyLink(){
 
 async function saveCard(){
   let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
-  if(card && card.length !== 16) return alert("Karta raqami 16 ta raqamdan iborat bo‘lishi kerak");
+  if(card && card.length !== 16) return alert("16 ta raqam kiriting");
   await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
-  alert("Karta raqami saqlandi!");
+  alert("Saqlandi!");
 }
 
 auth.onAuthStateChanged(async user => {
@@ -238,8 +230,7 @@ auth.onAuthStateChanged(async user => {
   document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
   document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
 
-  showSection('dashboard');
-
+  // Real-time
   pubRef.onSnapshot(doc => {
     const d = doc.data();
     document.getElementById('totalClicks').textContent = (d.clicks||0).toLocaleString();
@@ -271,7 +262,7 @@ auth.onAuthStateChanged(async user => {
   document.getElementById('requestPayout').onclick = async () => {
     const earn = parseFloat(document.getElementById('balance').textContent.replace('$',''));
     if(earn < 5) return alert("Minimum $5");
-    if(confirm(`$${earn.toFixed(2)} to‘lov so‘raymizmi?`)){
+    if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
       await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount:earn,date:new Date(),status:'pending'})});
       alert("So‘rov yuborildi!");
     }
@@ -291,7 +282,7 @@ auth.onAuthStateChanged(async user => {
           <td>${(d.clicks||0).toLocaleString()}</td>
           <td>$${(d.earnings||0).toFixed(2)}</td>
           <td>${(d.requests||[]).filter(r=>r.status!=='paid').length}</td>
-          <td><button class="btn-success" style="padding:8px 16px;font-size:14px;" onclick="payUser('${doc.id}')">To‘lash</button></td>
+          <td><button class="btn-primary" style="padding:8px 16px;" onclick="payUser('${doc.id}')">To‘lash</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -300,13 +291,12 @@ auth.onAuthStateChanged(async user => {
 });
 
 window.payUser = async (uid) => {
-  if(!confirm("To‘lov tasdiqlansinmi? Balance va clicks 0 bo‘ladi")) return;
+  if(!confirm("To‘lov tasdiqlansinmi?")) return;
   const ref = db.collection("publishers").doc(uid);
-  const snap = await ref.get();
-  const data = snap.data();
+  const data = (await ref.get()).data();
   const updated = (data.requests || []).map(r => ({...r, status:'paid'}));
   await ref.update({requests: updated, earnings: 0, clicks: 0});
-  alert("To‘lov muvaffaqiyatli amalga oshirildi!");
+  alert("To‘lov amalga oshirildi!");
 };
 
 function filterUsers(){
@@ -319,7 +309,7 @@ function filterUsers(){
 document.getElementById('loginBtn').onclick = () => {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value;
-  if(!email||!pass) return document.getElementById('error').textContent = "Iltimos, barcha maydonlarni to‘ldiring";
+  if(!email||!pass) return document.getElementById('error').textContent = "To‘ldiring";
   auth.signInWithEmailAndPassword(email, pass).catch(e=>document.getElementById('error').textContent = e.message);
 };
 
