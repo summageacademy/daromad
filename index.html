@@ -29,14 +29,13 @@
     button{background:var(--p);color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:600;cursor:pointer;transition:0.3s;}
     button:hover{transform:translateY(-2px);}
     .btn-s{background:var(--s);}
-    .btn-w{background:var(--w);}
     .btn-d{background:var(--d);}
     .hidden{display:none !important;}
     table{width:100%;border-collapse:collapse;margin-top:20px;}
     th,td{padding:12px;text-align:left;border-bottom:1px solid var(--border);}
     th{background:var(--p);color:white;}
     .search input{width:100%;padding:12px;border-radius:12px;background:#16213e;border:none;color:white;margin-bottom:20px;}
-    .mobile-menu-btn{display:none;position:fixed;top:20px;left:20px;z-index:999;background:var(--p);color:white;padding:12px;border-radius:50%;font-size:20px;}
+    .mobile-menu-btn{display:none;position:fixed;top:20px;left:20px;z-index:999;background:var(--p);color:white;padding:12px;border-radius:50%;font-size:20px;cursor:pointer;}
     @media(max-width:992px){
       .sidebar{left:-280px;transition:0.4s;}
       .main{margin-left:0;}
@@ -57,13 +56,13 @@
   <div class="nav-item" data-section="stats">Statistika</div>
   <div class="nav-item" data-section="profile">Profil</div>
   <div class="nav-item" data-section="billing">To‘lovlar</div>
-  <div class="nav-item" data-section="admin" id="adminTab" class="hidden">Admin Panel</div>
+  <div class="nav-item hidden" id="adminTab" data-section="admin">Admin Panel</div>
   <div class="nav-item btn-d" style="margin-top:auto;" onclick="auth.signOut()">Chiqish</div>
 </div>
 
 <div class="main">
 
-  <!-- Landing & Login -->
+  <!-- Landing -->
   <div id="landing" class="section">
     <div class="card" style="max-width:500px;margin:100px auto;text-align:center;">
       <h1>Daromad Link</h1>
@@ -72,34 +71,37 @@
     </div>
   </div>
 
+  <!-- Login -->
   <div id="login" class="section hidden">
     <div class="card" style="max-width:400px;margin:100px auto;">
       <h1>Kirish</h1>
       <input id="email" type="email" placeholder="Email"/>
       <input id="pass" type="password" placeholder="Parol"/>
       <button id="loginBtn">Kirish</button>
-      <div style="color:#ff6b6b;margin-top:10px;" id="error"></div>
+      <div style="color:#ff6b6b;margin-top:10px;text-align:center;" id="error"></div>
     </div>
   </div>
 
-  <!-- User Sections -->
+  <!-- Dashboard -->
   <div id="dashboard" class="section hidden">
-    <div class="header"><h1>Salom, <span id="userName"></span></h1></div>
+    <div class="header"><h1>Salom, <span id="userName">...</span>!</h1></div>
     <div class="grid">
       <div class="card"><h3>Jami bosishlar</h3><div class="stat-big" id="totalClicks">0</div></div>
       <div class="card"><h3>Daromad</h3><div class="stat-big" id="totalEarn">$0.00</div></div>
     </div>
-    <div class="card"><h3>Havola</h3><div class="link-box" id="link">...</div><button class="btn-s" onclick="copyLink()">Nusxalash</button></div>
+    <div class="card"><h3>Sizning havola</h3><div class="link-box" id="link">...</div><button class="btn-s" onclick="copyLink()">Nusxalash</button></div>
   </div>
 
+  <!-- Statistika -->
   <div id="stats" class="section hidden">
     <div class="header"><h1>Statistika</h1></div>
     <div class="grid">
       <div class="card"><canvas id="dailyChart"></canvas></div>
-      <div class="card"><canvas id="monthlyChart"></canvas></div>
+      <div class="card"><canvas id="earningsChart"></canvas></div>
     </div>
   </div>
 
+  <!-- Profil -->
   <div id="profile" class="section hidden">
     <div class="header"><h1>Profil</h1></div>
     <div class="card">
@@ -109,23 +111,24 @@
     </div>
   </div>
 
+  <!-- To‘lovlar -->
   <div id="billing" class="section hidden">
     <div class="header"><h1>To‘lovlar</h1></div>
     <div class="card">
       <h3>Balans: <strong style="color:#10b981;font-size:28px;" id="balance">$0.00</strong></h3>
       <button class="btn-s" id="requestPayout">To‘lov so‘rash (min $5)</button>
-      <h3>Tarix</h3>
+      <h3 style="margin-top:30px;">Tarix</h3>
       <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Status</th></tr></thead><tbody id="payoutTable"></tbody></table>
     </div>
   </div>
 
-  <!-- ADMIN PANEL -->
+  <!-- Admin Panel -->
   <div id="admin" class="section hidden">
     <div class="header"><h1>Admin Panel</h1></div>
     <div class="card">
-      <input type="text" class="search" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()">
+      <input type="text" class="search" placeholder="Qidiruv (email/username)" id="userSearch" onkeyup="filterUsers()">
       <table id="usersTable">
-        <thead><tr><th>Email</th><th>Username</th><th>Bosish</th><th>Daromad</th><th>To‘lovlar</th><th>Amal</th></tr></thead>
+        <thead><tr><th>Email</th><th>Username</th><th>Bosish</th><th>Daromad</th><th>So‘rovlar</th><th>Amal</th></tr></thead>
         <tbody id="usersBody"></tbody>
       </table>
     </div>
@@ -139,71 +142,82 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUserDoc, isAdmin = false;
-let dailyChart, monthlyChart;
+let dailyChart, earningsChart;
 
 function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+  document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const tab = document.querySelector(`[data-section="${id}"]`);
+  if(tab) tab.classList.add('active');
 }
 
-function copyLink(){navigator.clipboard.writeText(document.getElementById('link').textContent);alert("Nusxalandi!");}
+function copyLink(){
+  navigator.clipboard.writeText(document.getElementById('link').textContent);
+  alert("Havola nusxalandi!");
+}
 
 auth.onAuthStateChanged(async user => {
-  if(!user){
-    showSection('landing');
-    return;
-  }
+  if (!user) { showSection('landing'); return; }
 
   const pubRef = db.collection("publishers").doc(user.uid);
   const snap = await pubRef.get();
-  const data = snap.data() || {};
+  let data = snap.data() || {};
 
-  // Auto create profile
-  if(!snap.exists){
-    await pubRef.set({username:user.email.split('@')[0],clicks:0,earnings:0,requests:[],joined:new Date(),dailyStats:{}});
+  // Auto-create profile
+  if (!snap.exists) {
+    data = { username: user.email.split('@')[0], clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {} };
+    await pubRef.set(data);
   }
 
-  isAdmin = data.isAdmin === true || user.email === "abrorahmeed@gmail.com";
-  if(isAdmin) document.getElementById('adminTab').classList.remove('hidden');
+  const isAdmin = data.isAdmin === true || user.email === "abrorahmeed@gmail.com";
+  if (isAdmin) document.getElementById('adminTab').classList.remove('hidden');
 
-  const name = data.username || user.email.split('@')[0];
-  document.querySelectorAll('#userName, #profileUsername').forEach(e=>e.textContent=name);
+  const username = data.username || user.email.split('@')[0];
+  document.querySelectorAll('#userName, #profileUsername').forEach(el => el.textContent = username);
   document.getElementById('profileEmail').textContent = user.email;
-  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds*1000 || Date.now()).toLocaleDateString();
-  document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + name;
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds ? data.joined.seconds * 1000 : data.joined).toLocaleDateString('uz-UZ');
+  document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
 
   showSection('dashboard');
 
-  // Real-time user stats
+  // Real-time updates
   pubRef.onSnapshot(doc => {
     const d = doc.data();
-    document.getElementById('totalClicks').textContent = (d.clicks||0).toLocaleString();
-    const earn = (d.earnings||0).toFixed(2);
-    document.getElementById('totalEarn').textContent = "$"+earn;
-    document.getElementById('balance').textContent = "$"+earn;
+    document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
+    const earn = (d.earnings || 0).toFixed(2);
+    document.getElementById('totalEarn').textContent = "$" + earn;
+    document.getElementById('balance').textContent = "$" + earn;
 
-    // Real charts (no fake data)
-    const today = new Date().toISOString().split('T')[0];
+    // Daily chart (real data)
     const daily = d.dailyStats || {};
-    const last7 = Object.keys(daily).slice(-7).map(k=>({date:k, clicks:daily[k]?.clicks||0}));
-    const labels = last7.length ? last7.map(x=>x.date.slice(5)) : ['Bugun'];
-    const clicksData = last7.length ? last7.map(x=>x.clicks) : [d.clicks||0];
+    const dates = Object.keys(daily).slice(-7).sort();
+    const labels = dates.length ? dates.map(d => d.slice(5)) : ['Bugun'];
+    const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [d.clicks || 0];
 
-    if(dailyChart) dailyChart.destroy();
-    if(monthlyChart) monthlyChart.destroy();
+    if (dailyChart) dailyChart.destroy();
+    if (earningsChart) earningsChart.destroy();
 
-    dailyChart = new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels,datasets:[{label:'Bosishlar (oxirgi 7 kun)',data:clicksData,backgroundColor:'#4361ee'}]},options:{responsive:true}});
-    monthlyChart = new Chart(document.getElementById('monthlyChart'),{type:'line',data:{labels:['Yan','Fev','Mar','Apr','May','Iyun'],datasets:[{label:'Daromad',data:[0,0,0,0,0,parseFloat(earn)],borderColor:'#10b981',tension:0.4,fill:true}]},options:{responsive:true}});
-    
+    dailyChart = new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    earningsChart = new Chart(document.getElementById('earningsChart'), {
+      type: 'line',
+      data: { labels: ['Yan','Fev','Mar','Apr','May','Iyun','Iyul','Avg','Sen','Okt','Noy','Dek'], 
+              datasets: [{ label: 'Daromad ($)', data: new Array(12).fill(0).map((_,i) => i === new Date().getMonth() ? parseFloat(earn) : 0), borderColor: '#10b981', tension: 0.4, fill: true }] },
+      options: { responsive: true }
+    });
+
     // Payout history
     const tbody = document.getElementById('payoutTable');
     tbody.innerHTML = '';
-    (d.requests||[]).forEach(r=>{
+    (d.requests || []).forEach(r => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${new Date(r.date?.seconds*1000 || r.date).toLocaleDateString()}</td><td>$${r.amount?.toFixed(2)||0}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#fbbf24'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
+      const date = r.date?.seconds ? new Date(r.date.seconds * 1000) : new Date(r.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString('uz-UZ')}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#fbbf24'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
       tbody.appendChild(tr);
     });
   });
@@ -211,27 +225,29 @@ auth.onAuthStateChanged(async user => {
   // Payout request
   document.getElementById('requestPayout').onclick = async () => {
     const earn = parseFloat(document.getElementById('balance').textContent.replace('$',''));
-    if(earn < 5) return alert("Minimum $5");
-    if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
-      await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount:earn,date:new Date(),status:'pending'})});
-      alert("So‘rov yuborildi!");
+    if (earn < 5) return alert("Minimum to‘lov $5");
+    if (confirm(`$${earn.toFixed(2)} so‘raymizmi?`)) {
+      await pubRef.update({
+        requests: firebase.firestore.FieldValue.arrayUnion({ amount: earn, date: new Date(), status: 'pending' })
+      });
+      alert("So‘rov muvaffaqiyatli yuborildi!");
     }
   };
 
-  // ADMIN PANEL
-  if(isAdmin){
-    db.collection("publishers").onSnapshot(snap=>{
+  // Admin panel
+  if (isAdmin) {
+    db.collection("publishers").onSnapshot(snap => {
       const tbody = document.getElementById('usersBody');
       tbody.innerHTML = '';
-      snap.docs.forEach(doc=>{
+      snap.docs.forEach(doc => {
         const d = doc.data();
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${doc.id === user.uid ? '<strong>(Siz)</strong> ' : ''}${d.email || '—'}</td>
+          <td>${d.email || '—'}</td>
           <td>${d.username || '—'}</td>
           <td>${(d.clicks||0).toLocaleString()}</td>
           <td>$${(d.earnings||0).toFixed(2)}</td>
-          <td>${(d.requests||[]).length} ta</td>
+          <td>${(d.requests||[]).filter(r=>r.status!=='paid').length}</td>
           <td><button class="btn-s" onclick="approvePayout('${doc.id}')">To‘lash</button></td>
         `;
         tbody.appendChild(tr);
@@ -240,33 +256,32 @@ auth.onAuthStateChanged(async user => {
   }
 });
 
-// Global function for admin
 window.approvePayout = async (uid) => {
-  if(!confirm("Bu foydalanuvchiga to‘lov qilindi deb belgilaymizmi?")) return;
+  if (!confirm("To‘lov tasdiqlansinmi?")) return;
   const ref = db.collection("publishers").doc(uid);
   const snap = await ref.get();
-  const requests = snap.data().requests || [];
-  const updated = requests.map(r=>({...r, status:'paid'}));
-  await ref.update({requests: updated, earnings: 0});
-  alert("To‘lov tasdiqlandi!");
+  const data = snap.data();
+  const updated = (data.requests || []).map(r => ({...r, status: 'paid'}));
+  await ref.update({ requests: updated, earnings: 0 });
+  alert("To‘lov muvaffaqiyatli tasdiqlandi!");
 };
 
-function filterUsers(){
+function filterUsers() {
   const term = document.getElementById('userSearch').value.toLowerCase();
-  document.querySelectorAll('#usersBody tr').forEach(tr=>{
+  document.querySelectorAll('#usersBody tr').forEach(tr => {
     tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
 }
 
 document.getElementById('loginBtn').onclick = () => {
-  const e = document.getElementById('email').value.trim();
-  const p = document.getElementById('pass').value;
-  if(!e||!p) return document.getElementById('error').textContent = "To‘ldiring";
-  auth.signInWithEmailAndPassword(e,p).catch(err=>document.getElementById('error').textContent=err.message);
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('pass').value;
+  if (!email || !pass) return document.getElementById('error').textContent = "Iltimos, barcha maydonlarni to‘ldiring";
+  auth.signInWithEmailAndPassword(email, pass).catch(err => document.getElementById('error').textContent = err.message);
 };
 
-document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click',()=>showSection(item.dataset.section));
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => showSection(item.dataset.section));
 });
 </script>
 </body>
