@@ -18,96 +18,108 @@
       --gradient:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
     }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;transition:opacity 0.4s;}
     .loading{opacity:0;transform:translateY(20px);}
     .loaded{opacity:1;transform:none;transition:all 0.6s cubic-bezier(0.4,0,0.2,1);}
 
     /* AUTH SCREENS */
-    #authScreen,#signupScreen{display:none;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--gradient);}
-    .auth-box,.signup-box{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:24px;padding:48px 40px;width:100%;max-width:480px;box-shadow:0 25px 50px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);text-align:center;animation:fadeIn 0.8s;}
+    #authScreen, #signupScreen{display:none;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--gradient);}
+    .auth-box, .signup-box{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:24px;padding:48px 40px;width:100%;max-width:480px;box-shadow:0 25px 50px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);text-align:center;animation:fadeIn 0.8s;}
     @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
-    .auth-box h1,.signup-box h1{font-size:38px;font-weight:800;color:white;margin-bottom:8px;background:linear-gradient(90deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .auth-box p,.signup-box p{font-size:18px;color:#ddd;margin-bottom:30px;}
+    .auth-box h1, .signup-box h1{font-size:38px;font-weight:800;color:white;margin-bottom:8px;background:linear-gradient(90deg,#fff,#ccc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .auth-box p, .signup-box p{font-size:18px;color:#ddd;margin-bottom:30px;}
     .input-group{margin:18px 0;}
-    .input-group input{width:100%;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:16px;transition:.3s;}
+    .input-group input{width:100%;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;font-size:16px;transition:0.3s;}
     .input-group input::placeholder{color:#aaa;}
     .input-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,0.3);}
-    button{width:100%;padding:18px;border-radius:16px;background:var(--primary);color:white;border:none;font-size:17px;font-weight:600;cursor:pointer;transition:.3s;margin-top:10px;position:relative;overflow:hidden;}
+    button{width:100%;padding:18px;border-radius:16px;background:var(--primary);color:white;border:none;font-size:17px;font-weight:600;cursor:pointer;transition:0.3s;margin-top:10px;position:relative;overflow:hidden;}
+    button::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.2);transform:translateX(-100%);transition:0.4s;}
+    button:hover::after{transform:translateX(100%);}
     button:hover{transform:translateY(-4px);box-shadow:0 15px 30px rgba(67,97,238,0.4);}
-    button:disabled{background:#333;cursor:not-allowed;}
-    .error{color:#ff6b6b;margin-top:12px;font-size:14px;}
+    button:disabled{background:#333;cursor:not-allowed;transform:none;box-shadow:none;}
+    .error{color:#ff6b6b;margin-top:12px;font-size:14px;opacity:0;transition:0.3s;}
+    .error.show{opacity:1;}
     .switch-text{margin-top:20px;color:#ccc;font-size:15px;}
     .switch-text span{color:var(--primary);cursor:pointer;text-decoration:underline;}
+    .success-msg{color:#10b981;font-size:18px;margin-top:20px;font-weight:600;display:none;}
 
     /* APP */
     #app{display:none;height:100vh;flex-direction:column;}
     .layout{display:flex;height:100vh;}
-    .sidebar{width:300px;background:var(--card);border-right:1px solid var(--border);padding:32px 24px;position:fixed;height:100%;left:0;top:0;z-index:998;overflow-y:auto;transition:left .3s;}
+    .sidebar{width:300px;background:var(--card);border-right:1px solid var(--border);padding:32px 24px;position:fixed;height:100%;left:0;top:0;z-index:998;overflow-y:auto;transition:left 0.3s ease;}
     .sidebar h2{font-size:26px;font-weight:800;color:var(--primary);text-align:center;margin-bottom:50px;}
-    .nav-item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;margin:8px 0;cursor:pointer;font-weight:500;transition:.3s;}
+    .nav-item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:16px;margin:8px 0;cursor:pointer;font-weight:500;transition:0.3s;position:relative;overflow:hidden;}
+    .nav-item::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:var(--primary);transform:scaleY(0);transition:0.3s;}
     .nav-item:hover{background:rgba(67,97,238,0.15);}
     .nav-item.active{background:var(--primary);color:white;}
+    .nav-item.active::before{transform:scaleY(1);}
     .nav-item i{font-size:18px;width:24px;}
-    .main-content{flex:1;margin-left:300px;padding:40px;overflow-y:auto;background:var(--bg);}
+    .main-content{flex:1;margin-left:300px;padding:40px;overflow-y:auto;background:var(--bg);transition:margin-left 0.3s ease;}
     .page-title{font-size:30px;font-weight:700;margin-bottom:32px;color:white;background:linear-gradient(90deg,#fff,#aaa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;margin-bottom:40px;}
-    .stat-card{background:var(--card);border-radius:20px;padding:32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);transition:.4s;}
-    .stat-card:hover{transform:translateY(-10px);}
+    .stat-card{background:var(--card);border-radius:20px;padding:32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);transition:0.4s;}
+    .stat-card:hover{transform:translateY(-10px);box-shadow:0 20px 40px rgba(0,0,0,0.4);}
+    .stat-card h3{font-size:16px;color:var(--muted);margin-bottom:12px;}
     .stat-card .value{font-size:44px;font-weight:800;background:linear-gradient(90deg,var(--success),#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .link-card{background:var(--card);border-radius:20px;padding:32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);}
-    .link-box{background:#16213e;padding:20px;border-radius:16px;font-family:monospace;font-size:16px;margin:20px 0;word-break:break-all;color:#10b981;border:2px dashed #334155;transition:.3s;}
+    .link-card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);text-align:center;}
+    .link-box{background:#16213e;padding:20px;border-radius:16px;font-family:monospace;font-size:16px;margin:20px 0;word-break:break-all;color:#10b981;border:2px dashed #334155;transition:0.3s;}
     .link-box:hover{border-color:var(--primary);}
-    .btn-primary{background:var(--primary);color:white;padding:14px 32px;border-radius:16px;border:none;font-weight:600;cursor:pointer;transition:.3s;}
+    .btn-primary{background:var(--primary);color:white;padding:14px 32px;border-radius:16px;border:none;font-weight:600;cursor:pointer;transition:0.3s;display:inline-block;position:relative;overflow:hidden;}
     .btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(67,97,238,0.4);}
-    .btn-danger{background:var(--danger);color:white;padding:8px 16px;border-radius:12px;border:none;cursor:pointer;font-size:14px;}
+    .btn-primary:active{transform:translateY(0);}
+    .btn-danger{background:var(--danger);color:white;padding:8px 16px;border-radius:12px;border:none;cursor:pointer;font-size:14px;transition:0.2s;}
+    .btn-danger:hover{background:#dc2626;}
     canvas{border-radius:16px;background:var(--card);padding:10px;}
     table{width:100%;border-collapse:collapse;margin-top:20px;font-size:15px;}
     th{background:var(--primary);color:white;padding:16px;text-align:left;}
     td{padding:16px;border-bottom:1px solid var(--border);}
-    .copy-btn{background:#333;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;margin-left:8px;}
+    .copy-btn{background:#333;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;margin-left:8px;transition:0.2s;}
     .copy-btn:hover{background:var(--primary);}
-    .section{display:none;opacity:0;transition:opacity .4s;}
+    .section{display:none;opacity:0;transition:opacity 0.4s;}
     .section.active{display:block;opacity:1;}
-    .hamburger{display:none;background:var(--primary);color:white;width:56px;height:56px;border-radius:50%;position:fixed;bottom:20px;right:20px;z-index:999;box-shadow:0 10px 30px rgba(67,97,238,0.5);font-size:24px;align-items:center;justify-content:center;cursor:pointer;}
+    .hamburger{display:none;background:var(--primary);color:white;width:56px;height:56px;border-radius:50%;position:fixed;bottom:20px;right:20px;z-index:999;box-shadow:0 10px 30px rgba(67,97,238,0.5);font-size:24px;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;}
+    .hamburger:active{transform:scale(0.9);}
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:997;display:none;}
     .overlay.active{display:block;}
     .empty{text-align:center;color:var(--muted);padding:40px;font-size:18px;}
     @media(max-width:992px){
       .sidebar{left:-300px;}
-      .main-content{margin-left:0;padding:20px;padding-bottom:100.5px;}
+      .main-content{margin-left:0;padding:20px;padding-bottom:100px;}
       .hamburger{display:flex;}
       .sidebar.open{left:0;}
       .overlay.active{display:block;}
-      .grid{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr;gap:20px;}
+      .page-title{font-size:26px;}
     }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN SCREEN -->
 <div id="authScreen" style="display:flex;">
   <div class="auth-box">
     <h1>Daromad Link</h1>
     <p>Har 1000 ta bosish = <strong style="color:#10b981;">$1.00</strong></p>
-    <div class="input-group"><input id="loginEmail" type="email" placeholder="Email" autocomplete="email"/></div>
-    <div class="input-group"><input id="loginPass" type="password" placeholder="Parol" autocomplete="current-password"/></div>
+    <div class="input-group"><input id="loginEmail" type="email" placeholder="Email" autocomplete="email" /></div>
+    <div class="input-group"><input id="loginPass" type="password" placeholder="Parol" autocomplete="current-password" /></div>
     <button id="loginBtn">Kirish</button>
     <div class="error" id="loginError"></div>
-    <div class="switch-text">Hisobingiz yoʻqmi? <span onclick="document.getElementById('authScreen').style.display='none';document.getElementById('signupScreen').style.display='flex';">Roʻyxatdan oʻtish</span></div>
+    <div class="switch-text">Hisobingiz yoʻqmi? <span onclick="showSignup()">Roʻyxatdan oʻtish</span></div>
   </div>
 </div>
 
-<!-- INSTANT SIGNUP -->
+<!-- SIGNUP SCREEN -->
 <div id="signupScreen">
   <div class="signup-box">
     <h1>Roʻyxatdan oʻtish</h1>
     <p>Bepul hisob oching va darhol daromad boshlang</p>
-    <div class="input-group"><input id="regName" type="text" placeholder="Ismingiz (masalan: Ali)" required/></div>
-    <div class="input-group"><input id="regEmail" type="email" placeholder="Email" required/></div>
-    <div class="input-group"><input id="regPass" type="password" placeholder="Parol (6+ belgidan)" required/></div>
+    <div class="input-group"><input id="regName" type="text" placeholder="Ismingiz" required /></div>
+    <div class="input-group"><input id="regEmail" type="email" placeholder="Email" required /></div>
+    <div class="input-group"><input id="regPass" type="password" placeholder="Parol (6+ belgidan)" required /></div>
     <button id="signupBtn">Hisob ochish</button>
     <div class="error" id="signupError"></div>
-    <div class="switch-text"><span onclick="document.getElementById('signupScreen').style.display='none';document.getElementById('authScreen').style.display='flex';">← Kirish sahifasiga qaytish</span></div>
+    <div class="switch-text"><span onclick="showLogin()">← Kirish sahifasiga qaytish</span></div>
+    <div class="success-msg" id="signupSuccess" style="display:none;">Hisob ochildi! Avtomatik kirish...</div>
   </div>
 </div>
 
@@ -125,6 +137,7 @@
   </div>
 
   <div class="main-content">
+    <!-- DASHBOARD -->
     <div id="dashboard" class="section active">
       <h1 class="page-title">Salom, <span id="userName">...</span>!</h1>
       <div class="grid">
@@ -138,21 +151,29 @@
       </div>
     </div>
 
+    <!-- STATS -->
     <div id="stats" class="section">
       <h1 class="page-title">Statistika</h1>
       <div class="grid">
-        <div class="stat-card"><h3 style="text-align:center;margin-bottom:20px;">Oxirgi 7 kun</h3><canvas id="dailyChart"></canvas></div>
-        <div class="stat-card"><h3 style="text-align:center;margin-bottom:20px;">Daromad o‘sishi</h3><canvas id="earningsChart"></canvas></div>
+        <div class="stat-card">
+          <h3 style="text-align:center;margin-bottom:20px;">Oxirgi 7 kun</h3>
+          <canvas id="dailyChart"></canvas>
+        </div>
+        <div class="stat-card">
+          <h3 style="text-align:center;margin-bottom:20px;">Daromad oʻsishi</h3>
+          <canvas id="earningsChart"></canvas>
+        </div>
       </div>
     </div>
 
+    <!-- PROFILE -->
     <div id="profile" class="section">
       <h1 class="page-title">Profil</h1>
       <div class="grid" style="max-width:600px;margin:0 auto;">
         <div class="stat-card">
           <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
           <p><strong>Username:</strong> <span id="profileUsername">-</span></p>
-          <p><strong>Ro‘yxatdan o‘tgan:</strong> <span id="joinedDate">-</span></p>
+          <p><strong>Roʻyxatdan oʻtgan:</strong> <span id="joinedDate">-</span></p>
           <hr style="margin:30px 0;border:none;border-top:1px solid var(--border);">
           <h3>Karta raqami</h3>
           <input type="text" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin:12px 0;" />
@@ -161,19 +182,20 @@
       </div>
     </div>
 
+    <!-- BILLING -->
     <div id="billing" class="section">
-      <h1 class="page-title">To‘lovlar</h1>
+      <h1 class="page-title">Toʻlovlar</h1>
       <div class="grid">
         <div class="stat-card">
           <h3>Balans</h3>
           <div class="value" id="balance">$0.00</div>
-          <button class="btn-primary" id="requestPayout">So‘rash ($5+)</button>
-          <p id="pendingNotice" style="margin-top:12px;color:#f59e0b;font-weight:600;display:none;">Sizda so‘rov bor. Kutilyapti...</p>
+          <button class="btn-primary" id="requestPayout">Soʻrash ($5+)</button>
+          <p id="pendingNotice" style="margin-top:12px;color:#f59e0b;font-weight:600;display:none;">Sizda soʻrov bor. Kutilyapti...</p>
         </div>
       </div>
       <div class="stat-card">
         <h3>Tarix</h3>
-        <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Status</th></tr></thead><tbody id="payoutTable"><tr><td colspan="3" class="empty">Hali to‘lov yo‘q</td></tr></tbody></table>
+        <table><thead><tr><th>Sana</th><th>Miqdor</th><th>Status</th></tr></thead><tbody id="payoutTable"><tr><td colspan="3" class="empty">Hali toʻlov yoʻq</td></tr></tbody></table>
       </div>
     </div>
 
@@ -183,27 +205,16 @@
       <div class="stat-card">
         <h3>Yangi roʻyxatdan oʻtganlar (oxirgi 50 ta)</h3>
         <div style="overflow-x:auto;margin-bottom:40px;">
-          <table>
-            <thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Sana</th><th>Bosish</th><th>Daromad</th><th>Amal</th></tr></thead>
-            <tbody id="newUsersBody"><tr><td colspan="7" class="empty">Yuklanmoqda...</td></tr></tbody>
-          </table>
+          <table><thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Sana</th><th>Bosish</th><th>Daromad</th><th>Amal</th></tr></thead><tbody id="newUsersBody"><tr><td colspan="7" class="empty">Yuklanmoqda...</td></tr></tbody></table>
         </div>
-
         <h3>Aktiv foydalanuvchilar</h3>
         <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
         <div style="overflow-x:auto;">
-          <table>
-            <thead><tr><th>User</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>So‘rov</th><th>Amal</th></tr></thead>
-            <tbody id="usersBody"><tr><td colspan="6" class="empty">Yuklanmoqda...</td></tr></tbody>
-          </table>
+          <table><thead><tr><th>User</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>Soʻrov</th><th>Amal</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="empty">Yuklanmoqda...</td></tr></tbody></table>
         </div>
-
-        <h3 style="margin-top:40px;">To‘lovlar tarixi</h3>
+        <h3 style="margin-top:40px;">Toʻlovlar tarixi</h3>
         <div style="overflow-x:auto;">
-          <table>
-            <thead><tr><th>Sana</th><th>Foydalanuvchi</th><th>Miqdor</th><th>Karta</th></tr></thead>
-            <tbody id="adminPayoutLog"><tr><td colspan="4" class="empty">Hali to‘lov yo‘q</td></tr></tbody>
-          </table>
+          <table><thead><tr><th>Sana</th><th>Foydalanuvchi</th><th>Miqdor</th><th>Karta</th></tr></thead><tbody id="adminPayoutLog"><tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr></tbody></table>
         </div>
       </div>
     </div>
@@ -219,216 +230,319 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 let dailyChart, earningsChart;
 
+function showLogin() {
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('signupScreen').style.display = 'none';
+}
+
+function showSignup() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('signupScreen').style.display = 'flex';
+}
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('active');
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  setTimeout(() => el.classList.add('active'), 10);
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
+}
+
+function copyLink() {
+  const link = document.getElementById('link').textContent;
+  navigator.clipboard.writeText(link);
+  const btn = event.target;
+  const old = btn.textContent;
+  btn.textContent = "Nusxalandi!";
+  btn.style.background = "#10b981";
+  setTimeout(() => { btn.textContent = old; btn.style.background = ""; }, 2000);
+}
+
+function logout() {
+  auth.signOut().then(() => location.reload());
+}
+
+async function saveCard() {
+  let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
+  if (card && card.length !== 16) return alert("16 ta raqam kiriting");
+  await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
+  alert("Saqlandi!");
+}
+
+function celebrate() {
+  confetti({particleCount: 120, spread: 70, origin: { y: 0.6 }});
+}
+
+function filterUsers() {
+  const term = document.getElementById('userSearch').value.toLowerCase();
+  document.querySelectorAll('#usersBody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
+  });
+}
+
+window.payUser = async (uid) => {
+  if (!confirm("Toʻlov tasdiqlansinmi?")) return;
+  const ref = db.collection("publishers").doc(uid);
+  const snap = await ref.get();
+  const data = snap.data();
+  const updated = (data.requests || []).map(r => r.status === 'pending' ? {...r, status:'paid'} : r);
+  await ref.update({requests: updated, earnings: 0, clicks: 0});
+  alert("Toʻlov amalga oshirildi!");
+};
+
+window.deleteUser = async (uid) => {
+  if (!confirm("Bu foydalanuvchi butunlay oʻchirilsinmi?")) return;
+  await db.collection("publishers").doc(uid).delete();
+  alert("Foydalanuvchi oʻchirildi");
+};
+
 // Card formatting
-document.getElementById('cardNumber')?.addEventListener('input', e => {
-  let v = e.target.value.replace(/\D/g,'').substring(0,16);
-  v = v.replace(/(\d{4})/g,'$1 ').trim();
+document.getElementById('cardNumber')?.addEventListener('input', function (e) {
+  let v = e.target.value.replace(/\D/g, '').substring(0,16);
+  v = v.replace(/(\d{4})/g, '$1 ').trim();
   e.target.value = v;
 });
 
-// Instant signup
-document.getElementById('signupBtn').onclick = async () => {
+// Instant signup with auto-login fix
+document.getElementById('signupBtn').addEventListener('click', async () => {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const pass = document.getElementById('regPass').value;
   const error = document.getElementById('signupError');
-  if (!name || !email || pass.length < 6) return error.textContent = "Barcha maydonlarni toʻldiring (parol 6+ belgidan)";
-  document.getElementById('signupBtn').disabled = true;
+  const btn = document.getElementById('signupBtn');
+  const success = document.getElementById('signupSuccess');
+
+  if (!name || !email || pass.length < 6) {
+    error.textContent = "Barcha maydonlarni toʻldiring (parol 6+ belgidan)";
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  error.classList.remove('show');
+  success.style.display = 'none';
+
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    const username = name.toLowerCase().replace(/\s+/g,'') + Math.floor(Math.random()*9999);
+    const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 9999);
     await db.collection("publishers").doc(cred.user.uid).set({
-      username, displayName:name, email, clicks:0, earnings:0, requests:[], joined:new Date(), dailyStats:{}, cardNumber:""
+      username, displayName: name, email, clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber: ""
     });
-    alert("Hisob muvaffaqiyatli ochildi! Endi kirishingiz mumkin");
-    document.getElementById('signupScreen').style.display='none';
-    document.getElementById('authScreen').style.display='flex';
-  } catch(e) {
-    error.textContent = e.message.includes("email-already-in-use") ? "Bu email allaqachon ishlatilgan" : "Xato yuz berdi";
+    success.style.display = 'block';
+    setTimeout(() => location.reload(), 1500);  // Reload to trigger dashboard
+  } catch (e) {
+    const msg = e.message.includes("email-already-in-use") ? "Bu email allaqachon ishlatilgan" : "Xato yuz berdi: " + e.message;
+    error.textContent = msg;
+    error.classList.add('show');
   }
-  document.getElementById('signupBtn').disabled = false;
-};
+  btn.disabled = false;
+});
 
-function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.querySelector('.overlay').classList.toggle('active');}
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
-}
-function copyLink(){navigator.clipboard.writeText(document.getElementById('link').textContent);const b=event.target;b.textContent="Nusxalandi!";b.style.background="#10b981";setTimeout(()=>{b.textContent="Nusxalash";b.style.background=""},2000);}
-function logout(){auth.signOut().then(()=>location.reload());}
-async function saveCard(){
-  let c=document.getElementById('cardNumber').value.replace(/\s/g,'');
-  if(c && c.length!==16) return alert("16 ta raqam kiriting");
-  await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber:c||null});
-  alert("Saqlandi!");
-}
-function celebrate(){confetti({particleCount:120,spread:70,origin:{y:0.6}});}
-function filterUsers(){const t=document.getElementById('userSearch').value.toLowerCase();document.querySelectorAll('#usersBody tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(t)?'':'none');}
-window.payUser=async(uid)=>{
-  if(!confirm("To‘lov tasdiqlansinmi?")) return;
-  const ref=db.collection("publishers").doc(uid); const snap=await ref.get(); const d=snap.data();
-  const updated=(d.requests||[]).map(r=>r.status==='pending'?{...r,status:'paid'}:r);
-  await ref.update({requests:updated,earnings:0,clicks:0});
-  alert("To‘lov amalga oshirildi!");
-};
-window.deleteUser=async(uid)=>{
-  if(!confirm("Bu foydalanuvchi butunlay oʻchirilsinmi?")) return;
-  await db.collection("publishers").doc(uid).delete();
-  await auth.getUser(uid).then(u=>auth.deleteUser(u.uid)).catch(()=>{});
-  alert("Foydalanuvchi oʻchirildi");
-};
+// Login
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const error = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
 
-auth.onAuthStateChanged(async user=>{
-  if(!user){
-    document.getElementById('app').style.display='none';
-    document.getElementById('authScreen').style.display='flex';
+  if (!email || !pass) {
+    error.textContent = "Toʻldiring";
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  error.classList.remove('show');
+
+  auth.signInWithEmailAndPassword(email, pass).catch(e => {
+    error.textContent = "Notoʻgʻri email yoki parol";
+    error.classList.add('show');
+    btn.disabled = false;
+  });
+});
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('signupScreen').style.display = 'none';
     document.body.classList.add('loaded');
     return;
   }
-  document.getElementById('authScreen').style.display='none';
-  document.getElementById('signupScreen').style.display='none';
-  document.getElementById('app').style.display='flex';
+
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('signupScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
   document.getElementById('app').classList.add('loaded');
   document.body.classList.add('loaded');
 
-  const pubRef=db.collection("publishers").doc(user.uid);
-  const snap=await pubRef.get();
-  let data=snap.data()||{};
-  if(!snap.exists){
-    data={username:user.email.split('@')[0],displayName:"",clicks:0,earnings:0,requests:[],joined:new Date(),dailyStats:{},cardNumber:""};
+  const pubRef = db.collection("publishers").doc(user.uid);
+  const snap = await pubRef.get();
+  let data = snap.data() || {};
+
+  if (!snap.exists) {
+    data = {username: user.email.split('@')[0], displayName: "", clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {}, cardNumber: ""};
     await pubRef.set(data);
   }
-  const isAdmin=user.email==="abrorahmeed@gmail.com";
-  if(isAdmin) document.getElementById('adminTab').style.display='flex';
 
-  const username=data.username||user.email.split('@')[0];
-  document.querySelectorAll('#userName,#profileUsername').forEach(e=>e.textContent=username);
-  document.getElementById('profileEmail').textContent=user.email;
-  document.getElementById('joinedDate').textContent=new Date(data.joined?.seconds*1000||data.joined).toLocaleDateString('uz-UZ');
-  document.getElementById('link').textContent=location.origin+"/daromad/click.html?u="+username;
-  document.getElementById('cardNumber').value=data.cardNumber?data.cardNumber.replace(/(\d{4})/g,'$1 ').trim():"";
+  const isAdmin = user.email === "abrorahmeed@gmail.com";
+  if (isAdmin) document.getElementById('adminTab').style.display = 'flex';
 
-  pubRef.onSnapshot(doc=>{
-    const d=doc.data();
-    document.getElementById('totalClicks').textContent=(d.clicks||0).toLocaleString();
-    const earn=(d.earnings||0).toFixed(2);
-    document.getElementById('totalEarn').textContent="$"+earn;
-    document.getElementById('balance').textContent="$"+earn;
-    const pending=(d.requests||[]).some(r=>r.status==='pending');
-    const btn=document.getElementById('requestPayout');
-    const notice=document.getElementById('pendingNotice');
-    if(pending||earn<5){btn.disabled=true;btn.textContent=pending?"Kutilyapti...":"Minimum $5";notice.style.display=pending?"block":"none";}
-    else{btn.disabled=false;btn.textContent="So‘rash";notice.style.display="none";}
+  const username = data.username || user.email.split('@')[0];
+  document.querySelectorAll('#userName, #profileUsername').forEach(e => e.textContent = username);
+  document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds * 1000 || data.joined).toLocaleDateString('uz-UZ');
+  document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
+  document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
+
+  pubRef.onSnapshot((doc) => {
+    if (!doc.exists) return;  // Safety check
+    const d = doc.data();
+    document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
+    const earn = (d.earnings || 0).toFixed(2);
+    document.getElementById('totalEarn').textContent = "$" + earn;
+    document.getElementById('balance').textContent = "$" + earn;
+
+    const pending = (d.requests || []).some(r => r.status === 'pending');
+    const btn = document.getElementById('requestPayout');
+    const notice = document.getElementById('pendingNotice');
+    if (pending || parseFloat(earn) < 5) {
+      btn.disabled = true;
+      btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
+      notice.style.display = pending ? "block" : "none";
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Soʻrash";
+      notice.style.display = "none";
+    }
 
     // Charts
-    const daily=d.dailyStats||{};
-    const dates=Object.keys(daily).sort().slice(-7);
-    const labels=dates.length?dates.map(d=>d.slice(5).replace('-','/')):["Bugun"];
-    const clicksData=dates.length?dates.map(d=>daily[d]?.clicks||0):[0];
-    if(dailyChart) dailyChart.destroy();
-    if(earningsChart) earningsChart.destroy();
-    dailyChart=new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels,datasets:[{label:'Bosishlar',data:clicksData,backgroundColor:'#4361ee'}]},options:{responsive:true,plugins:{legend:{display:false}}}});
-    earningsChart=new Chart(document.getElementById('earningsChart'),{type:'line',data:{labels:['Yan','Fev','Mar','Apr','May','Iyun','Iyul','Avg','Sen','Okt','Noy','Dek'],datasets:[{label:'Daromad',data:Array(12).fill(0).map((_,i)=>i+1===new Date().getMonth()+1?parseFloat(earn):0),borderColor:'#10b981',tension:0.4,fill:true}]},options:{responsive:true}});
+    const daily = d.dailyStats || {};
+    const dates = Object.keys(daily).sort().slice(-7);
+    const labels = dates.length ? dates.map(d => d.slice(5).replace('-', '/')) : ["Bugun"];
+    const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [0];
+    if (dailyChart) dailyChart.destroy();
+    if (earningsChart) earningsChart.destroy();
+    dailyChart = new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: {labels, datasets: [{label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee'}]},
+      options: {responsive: true, plugins: {legend: {display: false}}}
+    });
+    earningsChart = new Chart(document.getElementById('earningsChart'), {
+      type: 'line',
+      data: {
+        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
+        datasets: [{
+          label: 'Daromad',
+          data: Array(12).fill(0).map((_, i) => i + 1 === new Date().getMonth() + 1 ? parseFloat(earn) : 0),
+          borderColor: '#10b981',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {responsive: true}
+    });
 
     // Payout history
-    const tbody=document.getElementById('payoutTable'); tbody.innerHTML='';
-    const requests=d.requests||[];
-    if(!requests.length) tbody.innerHTML='<tr><td colspan="3" class="empty">Hali to‘lov yo‘q</td></tr>';
-    requests.forEach(r=>{
-      const tr=document.createElement('tr');
-      const date=new Date(r.date?.seconds*1000||r.date);
-      tr.innerHTML=`<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#f59e0b'}">${r.status==='paid'?'To‘landi':'Kutilyapti'}</strong></td>`;
+    const tbody = document.getElementById('payoutTable');
+    tbody.innerHTML = '';
+    const requests = d.requests || [];
+    if (!requests.length) tbody.innerHTML = '<tr><td colspan="3" class="empty">Hali toʻlov yoʻq</td></tr>';
+    requests.forEach(r => {
+      const tr = document.createElement('tr');
+      const date = new Date(r.date?.seconds * 1000 || r.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status === 'paid' ? '#10b981' : '#f59e0b'}">${r.status === 'paid' ? 'Toʻlandi' : 'Kutilyapti'}</strong></td>`;
       tbody.appendChild(tr);
     });
   });
 
-  if(isAdmin){
+  if (isAdmin) {
     // New users monitoring
-    db.collection("publishers").orderBy("joined","desc").limit(50).onSnapshot(snap=>{
-      const tbody=document.getElementById('newUsersBody'); tbody.innerHTML='';
-      snap.docs.forEach((doc,i)=>{
-        const d=doc.data();
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${i+1}</td>
-          <td>${d.displayName||d.username||'-'}</td>
+    db.collection("publishers").orderBy("joined", "desc").limit(50).onSnapshot((snap) => {
+      const tbody = document.getElementById('newUsersBody');
+      tbody.innerHTML = '';
+      snap.docs.forEach((doc, i) => {
+        const d = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${d.displayName || d.username || '-'}</td>
           <td>${d.email}</td>
-          <td>${new Date(d.joined?.seconds*1000||d.joined).toLocaleDateString('uz-UZ')}</td>
-          <td>${(d.clicks||0).toLocaleString()}</td>
-          <td>$${(d.earnings||0).toFixed(2)}</td>
+          <td>${new Date(d.joined?.seconds * 1000 || d.joined).toLocaleDateString('uz-UZ')}</td>
+          <td>${(d.clicks || 0).toLocaleString()}</td>
+          <td>$${(d.earnings || 0).toFixed(2)}</td>
           <td><button class="btn-danger" onclick="deleteUser('${doc.id}')">Oʻchirish</button></td>
         `;
         tbody.appendChild(tr);
       });
+      if (!snap.size) tbody.innerHTML = '<tr><td colspan="7" class="empty">Yangi foydalanuvchi yoʻq</td></tr>';
     });
 
     // Active users
-    db.collection("publishers").onSnapshot(snap=>{
-      const tbody=document.getElementById('usersBody'); tbody.innerHTML='';
-      snap.docs.forEach(doc=>{
-        const d=doc.data();
-        const pendingCount=(d.requests||[]).filter(r=>r.status==='pending').length;
-        const card=d.cardNumber?d.cardNumber.replace(/(\d{4})/g,'$1 ').trim():'—';
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td><strong>${d.username||'—'}</strong></td>
-          <td>${card} ${d.cardNumber?'<button class="copy-btn" onclick="navigator.clipboard.writeText(\''+d.cardNumber+'\')">Copy</button>':''}</td>
-          <td>${(d.clicks||0).toLocaleString()}</td>
-          <td>$${(d.earnings||0).toFixed(2)}</td>
+    db.collection("publishers").onSnapshot((snap) => {
+      const tbody = document.getElementById('usersBody');
+      tbody.innerHTML = '';
+      snap.docs.forEach((doc) => {
+        const d = doc.data();
+        const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
+        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${d.username || '—'}</strong></td>
+          <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + d.cardNumber + '\')">Copy</button>' : ''}</td>
+          <td>${(d.clicks || 0).toLocaleString()}</td>
+          <td>$${(d.earnings || 0).toFixed(2)}</td>
           <td>${pendingCount}</td>
-          <td>${pendingCount>0?'<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\''+doc.id+'\')">To‘lash</button>':'—'}</td>
+          <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\'' + doc.id + '\')">Toʻlash</button>' : '—'}</td>
         `;
         tbody.appendChild(tr);
       });
-      if(!snap.size) tbody.innerHTML='<tr><td colspan="6" class="empty">Foydalanuvchi yo‘q</td></tr>';
+      if (!snap.size) tbody.innerHTML = '<tr><td colspan="6" class="empty">Foydalanuvchi yoʻq</td></tr>';
     });
 
     // Payout log
-    const logBody=document.getElementById('adminPayoutLog');
-    db.collection("publishers").get().then(snap=>{
-      logBody.innerHTML=''; const payments=[];
-      snap.docs.forEach(doc=>{
-        const d=doc.data();
-        (d.requests||[]).forEach(r=>r.status==='paid'&&payments.push({date:r.date,username:d.username||'—',amount:r.amount,card:d.cardNumber?d.cardNumber.replace(/(\d{4})/g,'$1 ').trim():'—'}));
+    const logBody = document.getElementById('adminPayoutLog');
+    db.collection("publishers").get().then((snap) => {
+      logBody.innerHTML = '';
+      const payments = [];
+      snap.docs.forEach((doc) => {
+        const d = doc.data();
+        (d.requests || []).forEach(r => r.status === 'paid' && payments.push({date: r.date, username: d.username || '—', amount: r.amount, card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'}));
       });
-      payments.sort((a,b)=>(b.date?.seconds||0)-(a.date?.seconds||0));
-      if(!payments.length) logBody.innerHTML='<tr><td colspan="4" class="empty">Hali to‘lov yo‘q</td></tr>';
-      payments.forEach(p=>{
-        const tr=document.createElement('tr');
-        const date=new Date(p.date?.seconds*1000||p.date);
-        tr.innerHTML=`<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
+      payments.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+      if (!payments.length) logBody.innerHTML = '<tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr>';
+      payments.forEach(p => {
+        const tr = document.createElement('tr');
+        const date = new Date(p.date?.seconds * 1000 || p.date);
+        tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
         logBody.appendChild(tr);
       });
     });
   }
 
-  document.getElementById('requestPayout').onclick=async()=>{
-    const earn=parseFloat(document.getElementById('balance').textContent.replace('$',''));
-    if(earn<5) return alert("Minimum $5 kerak");
-    if((data.requests||[]).some(r=>r.status==='pending')) return alert("Sizda allaqachon so‘rov bor!");
-    if(confirm(`$${earn.toFixed(2)} so‘raymizmi?`)){
-      await pubRef.update({requests:firebase.firestore.FieldValue.arrayUnion({amount:earn,date:new Date(),status:'pending'})});
+  document.getElementById('requestPayout').onclick = async () => {
+    const earn = parseFloat(document.getElementById('balance').textContent.replace('$', ''));
+    if (earn < 5) return alert("Minimum $5 kerak");
+    if ((data.requests || []).some(r => r.status === 'pending')) return alert("Sizda allaqachon soʻrov bor!");
+    if (confirm(`$${earn.toFixed(2)} soʻraymizmi?`)) {
+      await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount: earn, date: new Date(), status: 'pending'})});
       celebrate();
-      alert("So‘rov yuborildi! Tez orada to‘lov keladi");
+      alert("Soʻrov yuborildi! Tez orada toʻlov keladi");
     }
   };
 });
 
-document.getElementById('loginBtn').onclick=()=>{
-  const email=document.getElementById('loginEmail').value.trim();
-  const pass=document.getElementById('loginPass').value;
-  if(!email||!pass) return document.getElementById('loginError').textContent="To‘ldiring";
-  document.getElementById('loginBtn').disabled=true;
-  auth.signInWithEmailAndPassword(email,pass).catch(e=>{
-    document.getElementById('loginError').textContent="Noto‘g‘ri email yoki parol";
-    document.getElementById('loginBtn').disabled=false;
+document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+  item.addEventListener('click', () => {
+    showSection(item.dataset.section);
+    if (window.innerWidth <= 992) toggleSidebar();
   });
-};
-
-document.querySelectorAll('.nav-item[data-section]').forEach(item=>{
-  item.addEventListener('click',()=>{showSection(item.dataset.section);if(window.innerWidth<=992) toggleSidebar();});
 });
 </script>
 </body>
