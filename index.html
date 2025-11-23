@@ -3,43 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daromad Link — Earn from Your Links | Uzbekistan Ad Network</title>
-
-  <!-- SEO & Social -->
-  <meta name="description" content="Daromad Link — monetise your links easily. Share short links, earn from every click. Fast payouts, transparent stats and a simple dashboard for publishers in Uzbekistan." />
-  <meta name="keywords" content="daromad, daromad link, link monetization, ad network, publishers, earn from links, Uzbekistan, pay publishers" />
-  <link rel="canonical" href="https://yourdomain.example/" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Daromad Link — Earn from Your Links" />
-  <meta property="og:description" content="Monetize your links with an easy publisher dashboard. See clicks, earnings and request payouts quickly." />
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="uz_UZ" />
-  <meta property="og:image" content="https://yourdomain.example/og-image.png" />
-  <meta property="og:url" content="https://yourdomain.example/" />
-
-  <!-- Structured data (Organization) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Daromad Link",
-    "url": "https://yourdomain.example/",
-    "description": "Monetize and earn from your links. Publisher dashboard with analytics and payouts.",
-    "sameAs": []
-  }
-  </script>
-
-  <!-- Performance Hints -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Daromad Link | Pro Panel</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#0d9488">
-
   <style>
   :root {
     --primary: #0d9488;          /* Main Teal */
@@ -56,63 +27,62 @@
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;}
   body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;transition:opacity 0.4s;}
   .loading{opacity:0;transform:translateY(20px);}
   .loaded{opacity:1;transform:none;transition:all 0.6s cubic-bezier(0.4,0,0.2,1);}
 
-  /* LANDING */
-  #landing{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:40px;background:linear-gradient(180deg, rgba(15,23,42,0.9), rgba(13,148,136,0.06) 60%);}
-  .hero{
-    max-width:1100px;width:100%;display:grid;grid-template-columns:1fr 460px;gap:28px;align-items:center;
-  }
-  .hero-left h1{
-    font-size:44px;color:white;margin-bottom:12px;font-weight:800;line-height:1.05;
-    background:linear-gradient(90deg,#ffffff,#a0aec0);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  }
-  .hero-left p{color:#cbd5e1;font-size:18px;margin-bottom:22px;}
-  .features{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px;}
-  .feature{background:rgba(255,255,255,0.03);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);font-size:14px;color:var(--muted);}
-
-  .hero-right{background:var(--card);padding:28px;border-radius:20px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.35);}
-  .cta-btn{display:flex;gap:12px;flex-wrap:wrap}
-  .cta-btn .btn{padding:14px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:700;}
-  .btn-primary-hero{background:var(--primary);color:white}
-  .btn-outline{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.08)}
-
-  /* AUTH SCREENS (make them modals over the landing) */
+  /* AUTH SCREENS */
   #authScreen, #signupScreen{
     display:none;align-items:center;justify-content:center;min-height:100vh;padding:20px;
-    position:fixed;inset:0;z-index:1200;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.6));
+    background:var(--gradient);
   }
   .auth-box, .signup-box{
-    background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);border-radius:24px;
-    padding:28px 26px;width:100%;max-width:480px;
-    box-shadow:0 25px 50px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);
-    text-align:center;animation:fadeIn 0.35s;
+    background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:24px;
+    padding:48px 40px;width:100%;max-width:480px;
+    box-shadow:0 25px 50px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);
+    text-align:center;animation:fadeIn 0.8s;
   }
-  @keyframes fadeIn{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+  @keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
   .auth-box h1, .signup-box h1{
-    font-size:28px;font-weight:800;color:white;margin-bottom:8px;
+    font-size:38px;font-weight:800;color:white;margin-bottom:8px;
     background:linear-gradient(90deg,#ffffff,#a0aec0);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   }
-  .auth-box p, .signup-box p{font-size:14px;color:#cbd5e1;margin-bottom:18px;}
-  .input-group{margin:12px 0;}
+  .auth-box p, .signup-box p{font-size:18px;color:#cbd5e1;margin-bottom:30px;}
+  .input-group{margin:18px 0;}
   .input-group input{
-    width:100%;padding:14px 16px;border-radius:12px;
-    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
-    color:white;font-size:15px;transition:0.3s;
+    width:100%;padding:18px 20px;border-radius:16px;
+    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);
+    color:white;font-size:16px;transition:0.3s;
   }
   .input-group input::placeholder{color:#94a3b8;}
   .input-group input:focus{
     outline:none;border-color:var(--primary-light);
-    box-shadow:0 0 0 4px rgba(13,148,136,0.12);
+    box-shadow:0 0 0 4px rgba(13,148,136,0.3);
   }
-  .error{color:#ff6b6b;margin-top:8px;font-size:13px;opacity:0;transition:0.2s;}
+
+  button{
+    width:100%;padding:18px;border-radius:16px;
+    background:var(--primary);color:white;border:none;
+    font-size:17px;font-weight:600;cursor:pointer;transition:0.3s;
+    margin-top:10px;position:relative;overflow:hidden;
+  }
+  button::after{
+    content:'';position:absolute;inset:0;background:rgba(255,255,255,0.2);
+    transform:translateX(-100%);transition:0.4s;
+  }
+  button:hover::after{transform:translateX(100%);}
+  button:hover{
+    background:var(--primary-light);
+    transform:translateY(-4px);
+    box-shadow:0 15px 35px rgba(13,148,136,0.4);
+  }
+  button:disabled{background:#334155;cursor:not-allowed;transform:none;box-shadow:none;}
+  .error{color:#ff6b6b;margin-top:12px;font-size:14px;opacity:0;transition:0.3s;}
   .error.show{opacity:1;}
-  .success-msg{color:#10b981;font-size:15px;margin-top:10px;font-weight:600;display:none;}
+  .switch-text{margin-top:20px;color:#94a3b8;font-size:15px;}
+  .switch-text span{color:var(--primary-light);cursor:pointer;text-decoration:underline;}
+  .success-msg{color:#10b981;font-size:18px;margin-top:20px;font-weight:600;display:none;}
 
   /* APP */
   #app{display:none;height:100vh;flex-direction:column;}
@@ -134,8 +104,12 @@
     content:'';position:absolute;left:0;top:0;height:100%;width:4px;
     background:var(--primary-light);transform:scaleY(0);transition:0.3s;
   }
-  .nav-item:hover{background:rgba(13,148,136,0.10);}
-  .nav-item.active{background:var(--primary-light);color:white;}
+  .nav-item:hover{
+    background:rgba(13,148,136,0.15);
+  }
+  .nav-item.active{
+    background:var(--primary-light);color:white;
+  }
   .nav-item.active::before{transform:scaleY(1);}
   .nav-item i{font-size:18px;width:24px;}
 
@@ -153,135 +127,118 @@
     gap:28px;margin-bottom:40px;
   }
   .stat-card{
-    background:var(--card);border-radius:20px;padding:24px;text-align:center;
+    background:var(--card);border-radius:20px;padding:32px;text-align:center;
     box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);
     transition:0.4s;
   }
-  .stat-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,0.45);}
+  .stat-card:hover{
+    transform:translateY(-10px);box-shadow:0 20px 40px rgba(0,0,0,0.5);
+  }
   .stat-card h3{font-size:16px;color:var(--muted);margin-bottom:12px;}
   .stat-card .value{
-    font-size:36px;font-weight:800;
+    font-size:44px;font-weight:800;
     background:linear-gradient(90deg,#10b981,#34d399);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   }
-  .link-card{background:var(--card);border-radius:20px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);text-align:center;}
-  .link-box{background:#16213e;padding:14px;border-radius:12px;font-family:monospace;font-size:15px;margin:12px 0;word-break:break-all;color:#10b981;border:2px dashed var(--border);transition:0.3s;}
+  .link-card{
+    background:var(--card);border-radius:20px;padding:32px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border);text-align:center;
+  }
+  .link-box{
+    background:#16213e;padding:20px;border-radius:16px;
+    font-family:monospace;font-size:16px;margin:20px 0;word-break:break-all;
+    color:#10b981;border:2px dashed var(--border);transition:0.3s;
+  }
   .link-box:hover{border-color:var(--primary-light);}
 
-  .btn-primary{background:var(--primary);color:white;padding:12px 18px;border-radius:12px;border:none;font-weight:700;cursor:pointer;transition:0.25s;display:inline-block;position:relative;overflow:hidden;}
-  .btn-primary:hover{background:var(--primary-light);transform:translateY(-3px);box-shadow:0 12px 28px rgba(13,148,136,0.45);}
-  .btn-danger{background:var(--danger);color:white;padding:8px 16px;border-radius:10px;border:none;cursor:pointer;font-size:14px;}
+  .btn-primary{
+    background:var(--primary);color:white;padding:14px 32px;
+    border-radius:16px;border:none;font-weight:600;cursor:pointer;
+    transition:0.3s;display:inline-block;position:relative;overflow:hidden;
+  }
+  .btn-primary:hover{
+    background:var(--primary-light);
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px rgba(13,148,136,0.5);
+  }
+  .btn-danger{
+    background:var(--danger);color:white;padding:8px 16px;
+    border-radius:12px;border:none;cursor:pointer;font-size:14px;
+  }
   .btn-danger:hover{background:#dc2626;}
 
-  canvas{border-radius:12px;background:var(--card);padding:10px;}
-  table{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px;}
-  th{background:var(--primary-light);color:white;padding:12px;text-align:left;}
-  td{padding:12px;border-bottom:1px solid var(--border);}
+  canvas{border-radius:16px;background:var(--card);padding:10px;}
+  table{width:100%;border-collapse:collapse;margin-top:20px;font-size:15px;}
+  th{background:var(--primary-light);color:white;padding:16px;text-align:left;}
+  td{padding:16px;border-bottom:1px solid var(--border);}
+  .copy-btn{
+    background:#334155;padding:6px 12px;border-radius:8px;
+    font-size:12px;cursor:pointer;margin-left:8px;transition:0.2s;
+  }
+  .copy-btn:hover{background:var(--primary-light);}
 
   .section{display:none;opacity:0;transition:opacity 0.4s;}
   .section.active{display:block;opacity:1;}
 
-  .hamburger{display:none;background:var(--primary-light);color:white;width:56px;height:56px;border-radius:50%;position:fixed;bottom:20px;right:20px;z-index:999;box-shadow:0 10px 30px rgba(13,148,136,0.5);font-size:24px;align-items:center;justify-content:center;cursor:pointer;}
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:997;display:none;}
+  .hamburger{
+    display:none;background:var(--primary-light);color:white;
+    width:56px;height:56px;border-radius:50%;position:fixed;
+    bottom:20px;right:20px;z-index:999;
+    box-shadow:0 10px 30px rgba(13,148,136,0.5);
+    font-size:24px;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .hamburger:active{transform:scale(0.9);}
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:997;display:none;
+  }
   .overlay.active{display:block;}
-  .empty{text-align:center;color:var(--muted);padding:20px;font-size:15px;}
+  .empty{text-align:center;color:var(--muted);padding:40px;font-size:18px;}
 
   @media(max-width:992px){
-    .hero{grid-template-columns:1fr;gap:18px;}
     .sidebar{left:-300px;}
     .main-content{margin-left:0;padding:20px;padding-bottom:100px;}
     .hamburger{display:flex;}
     .sidebar.open{left:0;}
     .overlay.active{display:block;}
     .grid{grid-template-columns:1fr;gap:20px;}
-    .page-title{font-size:22px;}
+    .page-title{font-size:26px;}
   }
-  </style>
+</style>
 </head>
-<body class="loading">
+<body>
 
-<!-- LANDING PAGE (VISIBLE TO NEW VISITORS) -->
-<div id="landing">
-  <div class="hero" role="main" aria-labelledby="hero-title">
-    <div class="hero-left">
-      <h1 id="hero-title">Earn from every click — simple, transparent, fast.</h1>
-      <p>Daromad Link helps publishers monetize shared links. Share your unique link, get detailed stats, and withdraw earnings quickly. Trusted by creators and teams across Uzbekistan.</p>
-
-      <div class="features" aria-hidden="false">
-        <div class="feature"><strong>Fast payouts</strong><div style="color:var(--muted);font-size:13px;">Request payout when balance ≥ $5</div></div>
-        <div class="feature"><strong>Real-time stats</strong><div style="color:var(--muted);font-size:13px;">Daily clicks, trends and graphs</div></div>
-        <div class="feature"><strong>Easy onboarding</strong><div style="color:var(--muted);font-size:13px;">Create account in seconds</div></div>
-        <div class="feature"><strong>Secure</strong><div style="color:var(--muted);font-size:13px;">Built on Firebase auth & Firestore</div></div>
-      </div>
-
-      <div style="margin-top:22px;">
-        <small style="color:var(--muted);">CPM Example:</small>
-        <div style="margin-top:8px;background:#0b1320;padding:12px;border-radius:10px;border:1px dashed rgba(255,255,255,0.04);font-family:monospace;">
-          Har 1000 bosish = <strong style="color:var(--success);">$1.00</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-right" aria-label="Get started">
-      <h2 style="font-size:20px;margin-bottom:8px;">Boshlash oson</h2>
-      <p style="color:var(--muted);margin-bottom:14px;">Hisob oching, havolani oling va bo'lishishni boshlang.</p>
-
-      <div class="cta-btn" style="margin-bottom:16px;">
-        <button class="btn btn-primary-hero" onclick="showLogin()">Kirish</button>
-        <button class="btn btn-outline" onclick="showSignup()">Roʻyxatdan oʻtish</button>
-      </div>
-
-      <div style="margin-top:10px;">
-        <small style="color:var(--muted);">Bir nazar bilan</small>
-        <ul style="margin-top:10px;color:var(--muted);font-size:14px;line-height:1.6;">
-          <li>Dashboard bilan real vaqtda statistikani kuzatish</li>
-          <li>Payoutlar va karta ma'lumotlarini xavfsiz saqlash</li>
-          <li>Admin panel — oson boshqaruv</li>
-        </ul>
-      </div>
-
-      <hr style="margin:18px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)">
-
-      <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;">
-        <div style="font-size:13px;color:var(--muted);">Savollar? <a style="color:var(--primary-light);text-decoration:underline;" href="mailto:support@yourdomain.example">support@yourdomain.example</a></div>
-        <div style="font-size:13px;color:var(--muted);">Taqdim etildi — <strong style="color:#fff">Daromad Link</strong></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- LOGIN MODAL (hidden until clicked) -->
-<div id="authScreen" aria-hidden="true">
-  <div class="auth-box" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <h1 id="auth-title">Kirish</h1>
-    <p>Hisobingiz bilan tizimga kiring</p>
+<!-- LOGIN SCREEN -->
+<div id="authScreen" style="display:flex;">
+  <div class="auth-box">
+    <h1>Daromad Link</h1>
+    <p>Har 1000 ta bosish = <strong style="color:#10b981;">$1.00</strong></p>
     <div class="input-group"><input id="loginEmail" type="email" placeholder="Email" autocomplete="email" /></div>
     <div class="input-group"><input id="loginPass" type="password" placeholder="Parol" autocomplete="current-password" /></div>
-    <button id="loginBtn" class="btn-primary">Kirish</button>
+    <button id="loginBtn">Kirish</button>
     <div class="error" id="loginError"></div>
-    <div style="margin-top:12px;color:var(--muted);font-size:13px;">Hisobingiz yoʻqmi? <a style="color:var(--primary-light);cursor:pointer;text-decoration:underline;" onclick="showSignup()">Roʻyxatdan oʻtish</a></div>
+    <div class="switch-text">Hisobingiz yoʻqmi? <span onclick="showSignup()">Roʻyxatdan oʻtish</span></div>
   </div>
 </div>
 
-<!-- SIGNUP MODAL -->
-<div id="signupScreen" aria-hidden="true">
-  <div class="signup-box" role="dialog" aria-modal="true" aria-labelledby="signup-title">
-    <h1 id="signup-title">Roʻyxatdan oʻtish</h1>
-    <p>Bepul hisob oching va darhol daromadingizni boshlang</p>
+<!-- SIGNUP SCREEN -->
+<div id="signupScreen">
+  <div class="signup-box">
+    <h1>Roʻyxatdan oʻtish</h1>
+    <p>Bepul hisob oching va darhol daromad boshlang</p>
     <div class="input-group"><input id="regName" type="text" placeholder="Ismingiz" required /></div>
     <div class="input-group"><input id="regEmail" type="email" placeholder="Email" required /></div>
     <div class="input-group"><input id="regPass" type="password" placeholder="Parol (6+ belgidan)" required /></div>
-    <button id="signupBtn" class="btn-primary">Hisob ochish</button>
+    <button id="signupBtn">Hisob ochish</button>
     <div class="error" id="signupError"></div>
-    <div style="margin-top:12px;color:var(--muted);font-size:13px;"><a style="color:var(--primary-light);cursor:pointer;text-decoration:underline;" onclick="showLogin()">← Kirish sahifasiga qaytish</a></div>
+    <div class="switch-text"><span onclick="showLogin()">← Kirish sahifasiga qaytish</span></div>
     <div class="success-msg" id="signupSuccess" style="display:none;">Hisob ochildi! Avtomatik kirish...</div>
   </div>
 </div>
 
 <!-- MAIN APP -->
-<div id="app" class="layout loading" aria-hidden="true">
+<div id="app" class="layout loading">
   <div class="overlay" onclick="toggleSidebar()"></div>
-  <div class="sidebar" role="navigation" aria-label="Sidebar">
+  <div class="sidebar">
     <h2>Daromad Link</h2>
     <div class="nav-item active" data-section="dashboard"><i class="fas fa-home"></i> Bosh sahifa</div>
     <div class="nav-item" data-section="stats"><i class="fas fa-chart-line"></i> Statistika</div>
@@ -302,7 +259,7 @@
       <div class="link-card">
         <h3>Sizning havola</h3>
         <div class="link-box" id="link">Yuklanmoqda...</div>
-        <button class="btn-primary" onclick="copyLink(event)">Nusxalash</button>
+        <button class="btn-primary" onclick="copyLink()">Nusxalash</button>
       </div>
     </div>
 
@@ -312,11 +269,11 @@
       <div class="grid">
         <div class="stat-card">
           <h3 style="text-align:center;margin-bottom:20px;">Oxirgi 7 kun</h3>
-          <canvas id="dailyChart" aria-label="Daily clicks chart"></canvas>
+          <canvas id="dailyChart"></canvas>
         </div>
         <div class="stat-card">
           <h3 style="text-align:center;margin-bottom:20px;">Daromad oʻsishi</h3>
-          <canvas id="earningsChart" aria-label="Earnings growth chart"></canvas>
+          <canvas id="earningsChart"></canvas>
         </div>
       </div>
     </div>
@@ -329,9 +286,9 @@
           <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
           <p><strong>Username:</strong> <span id="profileUsername">-</span></p>
           <p><strong>Roʻyxatdan oʻtgan:</strong> <span id="joinedDate">-</span></p>
-          <hr style="margin:20px 0;border:none;border-top:1px solid var(--border);">
+          <hr style="margin:30px 0;border:none;border-top:1px solid var(--border);">
           <h3>Karta raqami</h3>
-          <input type="text" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19" style="width:100%;padding:12px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin:12px 0;" />
+          <input type="text" id="cardNumber" placeholder="8600 1234 5678 9012" maxlength="19" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin:12px 0;" />
           <button class="btn-primary" onclick="saveCard()">Saqlash</button>
         </div>
       </div>
@@ -359,15 +316,15 @@
       <h1 class="page-title">Admin Panel</h1>
       <div class="stat-card">
         <h3>Yangi roʻyxatdan oʻtganlar (oxirgi 50 ta)</h3>
-        <div style="overflow-x:auto;margin-bottom:20px;">
+        <div style="overflow-x:auto;margin-bottom:40px;">
           <table><thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Sana</th><th>Bosish</th><th>Daromad</th><th>Amal</th></tr></thead><tbody id="newUsersBody"><tr><td colspan="7" class="empty">Yuklanmoqda...</td></tr></tbody></table>
         </div>
         <h3>Aktiv foydalanuvchilar</h3>
-        <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:12px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:12px;" />
+        <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
         <div style="overflow-x:auto;">
           <table><thead><tr><th>User</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>Soʻrov</th><th>Amal</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="empty">Yuklanmoqda...</td></tr></tbody></table>
         </div>
-        <h3 style="margin-top:20px;">Toʻlovlar tarixi</h3>
+        <h3 style="margin-top:40px;">Toʻlovlar tarixi</h3>
         <div style="overflow-x:auto;">
           <table><thead><tr><th>Sana</th><th>Foydalanuvchi</th><th>Miqdor</th><th>Karta</th></tr></thead><tbody id="adminPayoutLog"><tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr></tbody></table>
         </div>
@@ -378,41 +335,21 @@
 
 <div class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
 
-<!-- FIREBASE + LIBS (deferred for smoother first paint) -->
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
 <script>
-/* ============================
-   Lightweight Utilities & UX
-   ============================ */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let dailyChart, earningsChart;
 
 function showLogin() {
-  $('#authScreen').style.display = 'flex';
-  $('#authScreen').setAttribute('aria-hidden','false');
-  $('#signupScreen').style.display = 'none';
-  $('#signupScreen').setAttribute('aria-hidden','true');
-  // Blur landing slightly for focus
-  document.getElementById('landing') && (document.getElementById('landing').style.filter = 'blur(4px) brightness(0.85)');
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('signupScreen').style.display = 'none';
 }
+
 function showSignup() {
-  $('#signupScreen').style.display = 'flex';
-  $('#signupScreen').setAttribute('aria-hidden','false');
-  $('#authScreen').style.display = 'none';
-  $('#authScreen').setAttribute('aria-hidden','true');
-  document.getElementById('landing') && (document.getElementById('landing').style.filter = 'blur(4px) brightness(0.85)');
-}
-function hideAuthModals() {
-  $('#authScreen').style.display = 'none';
-  $('#authScreen')?.setAttribute('aria-hidden','true');
-  $('#signupScreen').style.display = 'none';
-  $('#signupScreen')?.setAttribute('aria-hidden','true');
-  document.getElementById('landing') && (document.getElementById('landing').style.filter = '');
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('signupScreen').style.display = 'flex';
 }
 
 function toggleSidebar() {
@@ -420,346 +357,50 @@ function toggleSidebar() {
   document.querySelector('.overlay').classList.toggle('active');
 }
 
-/* Close modals when clicking outside modal box */
-['authScreen','signupScreen'].forEach(id=>{
-  const el = document.getElementById(id);
-  el && el.addEventListener('click', (e) => {
-    if (e.target === el) hideAuthModals();
-  });
-});
-
-/* Simple smooth show section */
 function showSection(id) {
-  $$('.section').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  document.querySelectorAll('.section').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
   const el = document.getElementById(id);
-  if (!el) return;
   el.style.display = 'block';
   setTimeout(() => el.classList.add('active'), 10);
-  $$('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
 }
 
-/* Copy link fix (use event parameter) */
-function copyLink(e) {
-  try {
-    const link = document.getElementById('link').textContent || '';
-    navigator.clipboard.writeText(link);
-    const btn = e?.target || e?.srcElement;
-    if (!btn) return;
-    const old = btn.textContent;
-    btn.textContent = "Nusxalandi!";
-    btn.style.background = "#10b981";
-    setTimeout(() => { btn.textContent = old; btn.style.background = ""; }, 2000);
-  } catch (err) {
-    alert("Nusxalashda xato: " + (err.message || err));
-  }
+function copyLink() {
+  const link = document.getElementById('link').textContent;
+  navigator.clipboard.writeText(link);
+  const btn = event.target;
+  const old = btn.textContent;
+  btn.textContent = "Nusxalandi!";
+  btn.style.background = "#10b981";
+  setTimeout(() => { btn.textContent = old; btn.style.background = ""; }, 2000);
 }
 
-/* Logout */
 function logout() {
-  try { firebase.auth().signOut().then(() => location.reload()); } catch(e){ location.reload(); }
+  auth.signOut().then(() => location.reload());
 }
 
-/* Format card input */
-document.addEventListener('input', (ev) => {
-  if (ev.target && ev.target.id === 'cardNumber') {
-    let v = ev.target.value.replace(/\D/g, '').substring(0,16);
-    v = v.replace(/(\d{4})/g, '$1 ').trim();
-    ev.target.value = v;
-  }
-});
+async function saveCard() {
+  let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
+  if (card && card.length !== 16) return alert("16 ta raqam kiriting");
+  await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
+  alert("Saqlandi!");
+}
 
-/* Small celebration wrapper */
 function celebrate() {
-  try { confetti({particleCount: 120, spread: 70, origin: { y: 0.6 }}); } catch(e){}
+  confetti({particleCount: 120, spread: 70, origin: { y: 0.6 }});
 }
 
-/* Filtering users in admin table */
 function filterUsers() {
-  const term = (document.getElementById('userSearch')?.value || '').toLowerCase();
-  $$('#usersBody tr').forEach(tr => {
+  const term = document.getElementById('userSearch').value.toLowerCase();
+  document.querySelectorAll('#usersBody tr').forEach(tr => {
     tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
 }
 
-/* ============================
-   Firebase app logic (kept original)
-   ============================ */
-const firebaseConfig = {
-  apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
-  authDomain:"daromad-link.firebaseapp.com",
-  projectId:"daromad-link",
-  storageBucket:"daromad-link.firebasestorage.app",
-  messagingSenderId:"770178829456",
-  appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"
-};
-
-/* Initialize only after SDK loaded (defers allow it to be available earlier but we check) */
-function initFirebaseWhenReady(){
-  if (!window.firebase || !firebase.initializeApp) {
-    // if firebase not loaded yet, try again shortly
-    setTimeout(initFirebaseWhenReady, 150);
-    return;
-  }
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  let dailyChart, earningsChart;
-
-  // Signup flow
-  document.getElementById('signupBtn').addEventListener('click', async () => {
-    const name = (document.getElementById('regName').value || '').trim();
-    const email = (document.getElementById('regEmail').value || '').trim().toLowerCase();
-    const pass = document.getElementById('regPass').value || '';
-    const error = document.getElementById('signupError');
-    const btn = document.getElementById('signupBtn');
-    const success = document.getElementById('signupSuccess');
-
-    if (!name || !email || pass.length < 6) {
-      error.textContent = "Barcha maydonlarni toʻldiring (parol 6+ belgidan)";
-      error.classList.add('show');
-      return;
-    }
-
-    btn.disabled = true;
-    error.classList.remove('show');
-    success.style.display = 'none';
-
-    try {
-      const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 9999);
-      await db.collection("publishers").doc(cred.user.uid).set({
-        username, displayName: name, email, clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber: ""
-      });
-      success.style.display = 'block';
-      setTimeout(() => location.reload(), 1200);
-    } catch (e) {
-      const msg = (e && e.code && e.code.includes("email-already-in-use")) ? "Bu email allaqachon ishlatilgan" : "Xato yuz berdi: " + (e.message || e);
-      error.textContent = msg;
-      error.classList.add('show');
-    }
-    btn.disabled = false;
-  });
-
-  // Login
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    const email = (document.getElementById('loginEmail').value || '').trim();
-    const pass = document.getElementById('loginPass').value || '';
-    const error = document.getElementById('loginError');
-    const btn = document.getElementById('loginBtn');
-
-    if (!email || !pass) {
-      error.textContent = "Toʻldiring";
-      error.classList.add('show');
-      return;
-    }
-
-    btn.disabled = true;
-    error.classList.remove('show');
-
-    auth.signInWithEmailAndPassword(email, pass).catch(e => {
-      error.textContent = "Notoʻgʻri email yoki parol";
-      error.classList.add('show');
-      btn.disabled = false;
-    });
-  });
-
-  /* App state */
-  auth.onAuthStateChanged(async (user) => {
-    // Hide landing when logged in
-    if (!user) {
-      // show landing to new visitors
-      document.getElementById('app').style.display = 'none';
-      document.getElementById('app').setAttribute('aria-hidden','true');
-      document.getElementById('authScreen').style.display = 'none';
-      document.getElementById('signupScreen').style.display = 'none';
-      document.getElementById('landing').style.display = 'flex';
-      document.getElementById('landing').setAttribute('aria-hidden','false');
-      document.body.classList.add('loaded');
-      return;
-    }
-
-    // User logged in -> hide landing and show app
-    document.getElementById('landing').style.display = 'none';
-    document.getElementById('landing').setAttribute('aria-hidden','true');
-    document.getElementById('authScreen').style.display = 'none';
-    document.getElementById('signupScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('app').classList.add('loaded');
-    document.getElementById('app').setAttribute('aria-hidden','false');
-    document.body.classList.add('loaded');
-
-    const pubRef = db.collection("publishers").doc(user.uid);
-    const snap = await pubRef.get();
-    let data = snap.data() || {};
-
-    if (!snap.exists) {
-      data = {username: user.email.split('@')[0], displayName: "", clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {}, cardNumber: ""};
-      await pubRef.set(data);
-    }
-
-    const isAdmin = user.email === "abrorahmeed@gmail.com";
-    if (isAdmin) document.getElementById('adminTab').style.display = 'flex';
-
-    const username = data.username || user.email.split('@')[0];
-    document.querySelectorAll('#userName, #profileUsername').forEach(e => e.textContent = username);
-    document.getElementById('profileEmail').textContent = user.email;
-    document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds * 1000 || data.joined).toLocaleDateString('uz-UZ');
-    document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
-    document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
-
-    // Reactive updates
-    pubRef.onSnapshot((doc) => {
-      if (!doc.exists) return;
-      const d = doc.data();
-      document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
-      const earn = (d.earnings || 0).toFixed(2);
-      document.getElementById('totalEarn').textContent = "$" + earn;
-      document.getElementById('balance').textContent = "$" + earn;
-
-      const pending = (d.requests || []).some(r => r.status === 'pending');
-      const btn = document.getElementById('requestPayout');
-      const notice = document.getElementById('pendingNotice');
-      if (pending || parseFloat(earn) < 5) {
-        btn.disabled = true;
-        btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
-        notice.style.display = pending ? "block" : "none";
-      } else {
-        btn.disabled = false;
-        btn.textContent = "Soʻrash";
-        notice.style.display = "none";
-      }
-
-      // Charts
-      const daily = d.dailyStats || {};
-      const dates = Object.keys(daily).sort().slice(-7);
-      const labels = dates.length ? dates.map(dd => dd.slice(5).replace('-', '/')) : ["Bugun"];
-      const clicksData = dates.length ? dates.map(dd => daily[dd]?.clicks || 0) : [0];
-      if (window.dailyChartInstance) try{window.dailyChartInstance.destroy();}catch(e){}
-      if (window.earningsChartInstance) try{window.earningsChartInstance.destroy();}catch(e){}
-
-      try {
-        window.dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
-          type: 'bar',
-          data: {labels, datasets: [{label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee'}]},
-          options: {responsive: true, plugins: {legend: {display: false}}}
-        });
-      } catch(e){}
-
-      try {
-        window.earningsChartInstance = new Chart(document.getElementById('earningsChart'), {
-          type: 'line',
-          data: {
-            labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
-            datasets: [{
-              label: 'Daromad',
-              data: Array(12).fill(0).map((_, i) => i + 1 === new Date().getMonth() + 1 ? parseFloat(earn) : 0),
-              borderColor: '#10b981',
-              tension: 0.4,
-              fill: true
-            }]
-          },
-          options: {responsive: true}
-        });
-      } catch(e){}
-
-      // Payout history
-      const tbody = document.getElementById('payoutTable');
-      tbody.innerHTML = '';
-      const requests = d.requests || [];
-      if (!requests.length) tbody.innerHTML = '<tr><td colspan="3" class="empty">Hali toʻlov yoʻq</td></tr>';
-      requests.forEach(r => {
-        const tr = document.createElement('tr');
-        const date = new Date(r.date?.seconds * 1000 || r.date);
-        tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${(r.amount||0).toFixed(2)}</td><td><strong style="color:${r.status === 'paid' ? '#10b981' : '#f59e0b'}">${r.status === 'paid' ? 'Toʻlandi' : 'Kutilyapti'}</strong></td>`;
-        tbody.appendChild(tr);
-      });
-    });
-
-    if (isAdmin) {
-      // New users monitoring
-      db.collection("publishers").orderBy("joined", "desc").limit(50).onSnapshot((snap) => {
-        const tbody = document.getElementById('newUsersBody');
-        tbody.innerHTML = '';
-        snap.docs.forEach((doc, i) => {
-          const d = doc.data();
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td>${d.displayName || d.username || '-'}</td>
-            <td>${d.email}</td>
-            <td>${new Date(d.joined?.seconds * 1000 || d.joined).toLocaleDateString('uz-UZ')}</td>
-            <td>${(d.clicks || 0).toLocaleString()}</td>
-            <td>$${(d.earnings || 0).toFixed(2)}</td>
-            <td><button class="btn-danger" onclick="deleteUser('${doc.id}')">Oʻchirish</button></td>
-          `;
-          tbody.appendChild(tr);
-        });
-        if (!snap.size) tbody.innerHTML = '<tr><td colspan="7" class="empty">Yangi foydalanuvchi yoʻq</td></tr>';
-      });
-
-      // Active users
-      db.collection("publishers").onSnapshot((snap) => {
-        const tbody = document.getElementById('usersBody');
-        tbody.innerHTML = '';
-        snap.docs.forEach((doc) => {
-          const d = doc.data();
-          const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
-          const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${d.username || '—'}</strong></td>
-            <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\\'${d.cardNumber}\\')">Copy</button>' : ''}</td>
-            <td>${(d.clicks || 0).toLocaleString()}</td>
-            <td>$${(d.earnings || 0).toFixed(2)}</td>
-            <td>${pendingCount}</td>
-            <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\\'' + doc.id + '\\')">Toʻlash</button>' : '—'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-        if (!snap.size) tbody.innerHTML = '<tr><td colspan="6" class="empty">Foydalanuvchi yoʻq</td></tr>';
-      });
-
-      // Payout log
-      const logBody = document.getElementById('adminPayoutLog');
-      db.collection("publishers").get().then((snap) => {
-        logBody.innerHTML = '';
-        const payments = [];
-        snap.docs.forEach((doc) => {
-          const d = doc.data();
-          (d.requests || []).forEach(r => r.status === 'paid' && payments.push({date: r.date, username: d.username || '—', amount: r.amount, card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'}));
-        });
-        payments.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
-        if (!payments.length) logBody.innerHTML = '<tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr>';
-        payments.forEach(p => {
-          const tr = document.createElement('tr');
-          const date = new Date(p.date?.seconds * 1000 || p.date);
-          tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${(p.amount||0).toFixed(2)}</td><td>${p.card}</td>`;
-          logBody.appendChild(tr);
-        });
-      });
-    }
-
-    // Request payout handler
-    document.getElementById('requestPayout').onclick = async () => {
-      const earn = parseFloat(document.getElementById('balance').textContent.replace('$', '')) || 0;
-      const snapDoc = await pubRef.get();
-      const dataLatest = snapDoc.exists ? snapDoc.data() : {};
-      if (earn < 5) return alert("Minimum $5 kerak");
-      if ((dataLatest.requests || []).some(r => r.status === 'pending')) return alert("Sizda allaqachon soʻrov bor!");
-      if (confirm(`$${earn.toFixed(2)} soʻraymizmi?`)) {
-        await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount: earn, date: new Date(), status: 'pending'})});
-        celebrate();
-        alert("Soʻrov yuborildi! Tez orada toʻlov keladi");
-      }
-    };
-  });
-}
-
-/* Admin helper functions accessible in global scope */
 window.payUser = async (uid) => {
   if (!confirm("Toʻlov tasdiqlansinmi?")) return;
-  const ref = firebase.firestore().collection("publishers").doc(uid);
+  const ref = db.collection("publishers").doc(uid);
   const snap = await ref.get();
   const data = snap.data();
   const updated = (data.requests || []).map(r => r.status === 'pending' ? {...r, status:'paid'} : r);
@@ -769,49 +410,252 @@ window.payUser = async (uid) => {
 
 window.deleteUser = async (uid) => {
   if (!confirm("Bu foydalanuvchi butunlay oʻchirilsinmi?")) return;
-  await firebase.firestore().collection("publishers").doc(uid).delete();
+  await db.collection("publishers").doc(uid).delete();
   alert("Foydalanuvchi oʻchirildi");
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Try to initialize firebase after libs loaded
-  initFirebaseWhenReady();
+// Card formatting
+document.getElementById('cardNumber')?.addEventListener('input', function (e) {
+  let v = e.target.value.replace(/\D/g, '').substring(0,16);
+  v = v.replace(/(\d{4})/g, '$1 ').trim();
+  e.target.value = v;
+});
 
-  // Attach nav events
-  document.querySelectorAll('.nav-item[data-section]').forEach(item => {
-    item.addEventListener('click', () => {
-      showSection(item.dataset.section);
-      if (window.innerWidth <= 992) toggleSidebar();
+// Instant signup with auto-login fix
+document.getElementById('signupBtn').addEventListener('click', async () => {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const error = document.getElementById('signupError');
+  const btn = document.getElementById('signupBtn');
+  const success = document.getElementById('signupSuccess');
+
+  if (!name || !email || pass.length < 6) {
+    error.textContent = "Barcha maydonlarni toʻldiring (parol 6+ belgidan)";
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  error.classList.remove('show');
+  success.style.display = 'none';
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 9999);
+    await db.collection("publishers").doc(cred.user.uid).set({
+      username, displayName: name, email, clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber: ""
     });
-  });
+    success.style.display = 'block';
+    setTimeout(() => location.reload(), 1500);  // Reload to trigger dashboard
+  } catch (e) {
+    const msg = e.message.includes("email-already-in-use") ? "Bu email allaqachon ishlatilgan" : "Xato yuz berdi: " + e.message;
+    error.textContent = msg;
+    error.classList.add('show');
+  }
+  btn.disabled = false;
+});
 
-  // Small accessibility: close modals on escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      hideAuthModals();
-    }
-  });
+// Login
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const error = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
 
-  // remove loading class after paint
-  requestAnimationFrame(()=>{
-    document.body.classList.remove('loading');
-    document.body.classList.add('loaded');
+  if (!email || !pass) {
+    error.textContent = "Toʻldiring";
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  error.classList.remove('show');
+
+  auth.signInWithEmailAndPassword(email, pass).catch(e => {
+    error.textContent = "Notoʻgʻri email yoki parol";
+    error.classList.add('show');
+    btn.disabled = false;
   });
 });
 
-/* Small helper for saving card (uses current auth user) */
-async function saveCard() {
-  try {
-    const card = (document.getElementById('cardNumber').value || '').replace(/\s/g,'');
-    if (card && card.length !== 16) return alert("16 ta raqam kiriting");
-    const uid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
-    if (!uid) return alert("Tizimga kirishingiz kerak");
-    await firebase.firestore().collection("publishers").doc(uid).update({cardNumber: card || null});
-    alert("Saqlandi!");
-  } catch (e) {
-    alert("Xatolik: " + (e.message || e));
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('signupScreen').style.display = 'none';
+    document.body.classList.add('loaded');
+    return;
   }
-}
+
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('signupScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').classList.add('loaded');
+  document.body.classList.add('loaded');
+
+  const pubRef = db.collection("publishers").doc(user.uid);
+  const snap = await pubRef.get();
+  let data = snap.data() || {};
+
+  if (!snap.exists) {
+    data = {username: user.email.split('@')[0], displayName: "", clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {}, cardNumber: ""};
+    await pubRef.set(data);
+  }
+
+  const isAdmin = user.email === "abrorahmeed@gmail.com";
+  if (isAdmin) document.getElementById('adminTab').style.display = 'flex';
+
+  const username = data.username || user.email.split('@')[0];
+  document.querySelectorAll('#userName, #profileUsername').forEach(e => e.textContent = username);
+  document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds * 1000 || data.joined).toLocaleDateString('uz-UZ');
+  document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
+  document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
+
+  pubRef.onSnapshot((doc) => {
+    if (!doc.exists) return;  // Safety check
+    const d = doc.data();
+    document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
+    const earn = (d.earnings || 0).toFixed(2);
+    document.getElementById('totalEarn').textContent = "$" + earn;
+    document.getElementById('balance').textContent = "$" + earn;
+
+    const pending = (d.requests || []).some(r => r.status === 'pending');
+    const btn = document.getElementById('requestPayout');
+    const notice = document.getElementById('pendingNotice');
+    if (pending || parseFloat(earn) < 5) {
+      btn.disabled = true;
+      btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
+      notice.style.display = pending ? "block" : "none";
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Soʻrash";
+      notice.style.display = "none";
+    }
+
+    // Charts
+    const daily = d.dailyStats || {};
+    const dates = Object.keys(daily).sort().slice(-7);
+    const labels = dates.length ? dates.map(d => d.slice(5).replace('-', '/')) : ["Bugun"];
+    const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [0];
+    if (dailyChart) dailyChart.destroy();
+    if (earningsChart) earningsChart.destroy();
+    dailyChart = new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: {labels, datasets: [{label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee'}]},
+      options: {responsive: true, plugins: {legend: {display: false}}}
+    });
+    earningsChart = new Chart(document.getElementById('earningsChart'), {
+      type: 'line',
+      data: {
+        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
+        datasets: [{
+          label: 'Daromad',
+          data: Array(12).fill(0).map((_, i) => i + 1 === new Date().getMonth() + 1 ? parseFloat(earn) : 0),
+          borderColor: '#10b981',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {responsive: true}
+    });
+
+    // Payout history
+    const tbody = document.getElementById('payoutTable');
+    tbody.innerHTML = '';
+    const requests = d.requests || [];
+    if (!requests.length) tbody.innerHTML = '<tr><td colspan="3" class="empty">Hali toʻlov yoʻq</td></tr>';
+    requests.forEach(r => {
+      const tr = document.createElement('tr');
+      const date = new Date(r.date?.seconds * 1000 || r.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status === 'paid' ? '#10b981' : '#f59e0b'}">${r.status === 'paid' ? 'Toʻlandi' : 'Kutilyapti'}</strong></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+
+  if (isAdmin) {
+    // New users monitoring
+    db.collection("publishers").orderBy("joined", "desc").limit(50).onSnapshot((snap) => {
+      const tbody = document.getElementById('newUsersBody');
+      tbody.innerHTML = '';
+      snap.docs.forEach((doc, i) => {
+        const d = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${d.displayName || d.username || '-'}</td>
+          <td>${d.email}</td>
+          <td>${new Date(d.joined?.seconds * 1000 || d.joined).toLocaleDateString('uz-UZ')}</td>
+          <td>${(d.clicks || 0).toLocaleString()}</td>
+          <td>$${(d.earnings || 0).toFixed(2)}</td>
+          <td><button class="btn-danger" onclick="deleteUser('${doc.id}')">Oʻchirish</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (!snap.size) tbody.innerHTML = '<tr><td colspan="7" class="empty">Yangi foydalanuvchi yoʻq</td></tr>';
+    });
+
+    // Active users
+    db.collection("publishers").onSnapshot((snap) => {
+      const tbody = document.getElementById('usersBody');
+      tbody.innerHTML = '';
+      snap.docs.forEach((doc) => {
+        const d = doc.data();
+        const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
+        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${d.username || '—'}</strong></td>
+          <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + d.cardNumber + '\')">Copy</button>' : ''}</td>
+          <td>${(d.clicks || 0).toLocaleString()}</td>
+          <td>$${(d.earnings || 0).toFixed(2)}</td>
+          <td>${pendingCount}</td>
+          <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\'' + doc.id + '\')">Toʻlash</button>' : '—'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (!snap.size) tbody.innerHTML = '<tr><td colspan="6" class="empty">Foydalanuvchi yoʻq</td></tr>';
+    });
+
+    // Payout log
+    const logBody = document.getElementById('adminPayoutLog');
+    db.collection("publishers").get().then((snap) => {
+      logBody.innerHTML = '';
+      const payments = [];
+      snap.docs.forEach((doc) => {
+        const d = doc.data();
+        (d.requests || []).forEach(r => r.status === 'paid' && payments.push({date: r.date, username: d.username || '—', amount: r.amount, card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'}));
+      });
+      payments.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+      if (!payments.length) logBody.innerHTML = '<tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr>';
+      payments.forEach(p => {
+        const tr = document.createElement('tr');
+        const date = new Date(p.date?.seconds * 1000 || p.date);
+        tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
+        logBody.appendChild(tr);
+      });
+    });
+  }
+
+  document.getElementById('requestPayout').onclick = async () => {
+    const earn = parseFloat(document.getElementById('balance').textContent.replace('$', ''));
+    if (earn < 5) return alert("Minimum $5 kerak");
+    if ((data.requests || []).some(r => r.status === 'pending')) return alert("Sizda allaqachon soʻrov bor!");
+    if (confirm(`$${earn.toFixed(2)} soʻraymizmi?`)) {
+      await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount: earn, date: new Date(), status: 'pending'})});
+      celebrate();
+      alert("Soʻrov yuborildi! Tez orada toʻlov keladi");
+    }
+  };
+});
+
+document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+  item.addEventListener('click', () => {
+    showSection(item.dataset.section);
+    if (window.innerWidth <= 992) toggleSidebar();
+  });
+});
 </script>
 </body>
 </html>
