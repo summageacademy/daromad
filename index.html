@@ -203,12 +203,155 @@
     .grid{grid-template-columns:1fr;gap:20px;}
     .page-title{font-size:26px;}
   }
+    /* LANDING PAGE */
+#landingPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--gradient);
+}
+.landing-box {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 60px 40px; /* Slightly more padding for hero feel */
+  width: 100%;
+  max-width: 600px; /* Wider than auth-box for balance */
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  text-align: center;
+  animation: fadeIn 0.8s;
+}
+.landing-box h1 {
+  font-size: 48px; /* Larger for hero impact */
+  font-weight: 800;
+  color: white;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #ffffff, #a0aec0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.landing-box p {
+  font-size: 18px;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+.landing-box .description {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+.button-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+.btn-secondary {
+  flex: 1;
+  min-width: 180px;
+  padding: 18px;
+  border-radius: 16px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+  max-width: 200px; /* Prevent over-stretch */
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(13,148,136,0.2);
+}
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  transform: translateX(-100%);
+  transition: 0.4s;
+}
+.btn-secondary:hover::after {
+  transform: translateX(100%);
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 40px;
+  color: var(--muted);
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--primary-light);
+  text-decoration: none;
+  transition: 0.3s;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+  color: white;
+}
+
+/* Mobile adjustments for landing */
+@media (max-width: 992px) {
+  .landing-box {
+    padding: 40px 24px;
+    max-width: 90%;
+  }
+  .landing-box h1 {
+    font-size: 36px;
+  }
+  .button-group {
+    flex-direction: column;
+  }
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    max-width: none;
+  }
+  .footer-links {
+    gap: 16px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  .footer-links {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
 </style>
 </head>
 <body>
-
+<!-- LANDING PAGE -->
+<div id="landingPage" style="display: flex;">
+  <div class="landing-box">
+    <h1>Daromad Link</h1>
+    <p>Har 1000 ta bosish = <strong style="color: var(--success);">$1.00</strong></p>
+    <p class="description">O'z havolangizni do'stlaringiz bilan ulashing va har bir bosish uchun daromad toping!</p>
+    <div class="button-group">
+      <button class="btn-primary" onclick="showSignup()">Roʻyxatdan oʻtish</button>
+      <button class="btn-secondary" onclick="showLogin()">Kirish</button>
+    </div>
+    <div class="footer-links">
+      <a href="/about-us" target="_blank">Biz haqimizda</a>
+      <a href="/contacts" target="_blank">Aloqa</a>
+      <a href="/terms" target="_blank">Foydalanish shartlari</a>
+      <a href="/privacy-policy" target="_blank">Maxfiylik siyosati</a>
+    </div>
+  </div>
+</div>
 <!-- LOGIN SCREEN -->
-<div id="authScreen" style="display:flex;">
+<div id="authScreen" style="display:none;">
   <div class="auth-box">
     <h1>Daromad Link</h1>
     <p>Har 1000 ta bosish = <strong style="color:#10b981;">$1.00</strong></p>
@@ -343,11 +486,12 @@ const db = firebase.firestore();
 let dailyChart, earningsChart;
 
 function showLogin() {
+  document.getElementById('landingPage').style.display = 'none';
   document.getElementById('authScreen').style.display = 'flex';
   document.getElementById('signupScreen').style.display = 'none';
 }
-
 function showSignup() {
+  document.getElementById('landingPage').style.display = 'none';
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('signupScreen').style.display = 'flex';
 }
@@ -481,13 +625,17 @@ document.getElementById('loginBtn').addEventListener('click', () => {
 
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('authScreen').style.display = 'flex';
+    // User is NOT logged in → show Landing Page for new visitors
+    document.getElementById('landingPage').style.display = 'flex';
+    document.getElementById('authScreen').style.display = 'none';
     document.getElementById('signupScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
     document.body.classList.add('loaded');
     return;
   }
 
+  // User IS logged in → hide all auth/landing screens and show the main app
+  document.getElementById('landingPage').style.display = 'none';
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('signupScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
@@ -499,7 +647,16 @@ auth.onAuthStateChanged(async (user) => {
   let data = snap.data() || {};
 
   if (!snap.exists) {
-    data = {username: user.email.split('@')[0], displayName: "", clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {}, cardNumber: ""};
+    data = {
+      username: user.email.split('@')[0],
+      displayName: "",
+      clicks: 0,
+      earnings: 0,
+      requests: [],
+      joined: new Date(),
+      dailyStats: {},
+      cardNumber: ""
+    };
     await pubRef.set(data);
   }
 
@@ -514,8 +671,9 @@ auth.onAuthStateChanged(async (user) => {
   document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
 
   pubRef.onSnapshot((doc) => {
-    if (!doc.exists) return;  // Safety check
+    if (!doc.exists) return;
     const d = doc.data();
+
     document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
     const earn = (d.earnings || 0).toFixed(2);
     document.getElementById('totalEarn').textContent = "$" + earn;
@@ -524,6 +682,7 @@ auth.onAuthStateChanged(async (user) => {
     const pending = (d.requests || []).some(r => r.status === 'pending');
     const btn = document.getElementById('requestPayout');
     const notice = document.getElementById('pendingNotice');
+
     if (pending || parseFloat(earn) < 5) {
       btn.disabled = true;
       btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
@@ -534,18 +693,21 @@ auth.onAuthStateChanged(async (user) => {
       notice.style.display = "none";
     }
 
-    // Charts
+    // Charts update
     const daily = d.dailyStats || {};
     const dates = Object.keys(daily).sort().slice(-7);
     const labels = dates.length ? dates.map(d => d.slice(5).replace('-', '/')) : ["Bugun"];
     const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [0];
+
     if (dailyChart) dailyChart.destroy();
     if (earningsChart) earningsChart.destroy();
+
     dailyChart = new Chart(document.getElementById('dailyChart'), {
       type: 'bar',
-      data: {labels, datasets: [{label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee'}]},
-      options: {responsive: true, plugins: {legend: {display: false}}}
+      data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
+      options: { responsive: true, plugins: { legend: { display: false } } }
     });
+
     earningsChart = new Chart(document.getElementById('earningsChart'), {
       type: 'line',
       data: {
@@ -558,10 +720,10 @@ auth.onAuthStateChanged(async (user) => {
           fill: true
         }]
       },
-      options: {responsive: true}
+      options: { responsive: true }
     });
 
-    // Payout history
+    // Payout history table
     const tbody = document.getElementById('payoutTable');
     tbody.innerHTML = '';
     const requests = d.requests || [];
@@ -574,8 +736,8 @@ auth.onAuthStateChanged(async (user) => {
     });
   });
 
+  // Admin panel features (unchanged)
   if (isAdmin) {
-    // New users monitoring
     db.collection("publishers").orderBy("joined", "desc").limit(50).onSnapshot((snap) => {
       const tbody = document.getElementById('newUsersBody');
       tbody.innerHTML = '';
@@ -596,7 +758,6 @@ auth.onAuthStateChanged(async (user) => {
       if (!snap.size) tbody.innerHTML = '<tr><td colspan="7" class="empty">Yangi foydalanuvchi yoʻq</td></tr>';
     });
 
-    // Active users
     db.collection("publishers").onSnapshot((snap) => {
       const tbody = document.getElementById('usersBody');
       tbody.innerHTML = '';
@@ -618,7 +779,6 @@ auth.onAuthStateChanged(async (user) => {
       if (!snap.size) tbody.innerHTML = '<tr><td colspan="6" class="empty">Foydalanuvchi yoʻq</td></tr>';
     });
 
-    // Payout log
     const logBody = document.getElementById('adminPayoutLog');
     db.collection("publishers").get().then((snap) => {
       logBody.innerHTML = '';
@@ -643,7 +803,13 @@ auth.onAuthStateChanged(async (user) => {
     if (earn < 5) return alert("Minimum $5 kerak");
     if ((data.requests || []).some(r => r.status === 'pending')) return alert("Sizda allaqachon soʻrov bor!");
     if (confirm(`$${earn.toFixed(2)} soʻraymizmi?`)) {
-      await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount: earn, date: new Date(), status: 'pending'})});
+      await pubRef.update({
+        requests: firebase.firestore.FieldValue.arrayUnion({
+          amount: earn,
+          date: new Date(),
+          status: 'pending'
+        })
+      });
       celebrate();
       alert("Soʻrov yuborildi! Tez orada toʻlov keladi");
     }
