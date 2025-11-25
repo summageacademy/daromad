@@ -203,150 +203,189 @@
     .grid{grid-template-columns:1fr;gap:20px;}
     .page-title{font-size:26px;}
   }
-    /* LANDING PAGE */
+  /* NEW MODERN LANDING PAGE – EXACTLY LIKE YOUR PICTURE */
 #landingPage {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 20px;
-  background: var(--gradient);
-}
-.landing-box {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 60px 40px; /* Slightly more padding for hero feel */
-  width: 100%;
-  max-width: 600px; /* Wider than auth-box for balance */
-  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.15);
-  text-align: center;
-  animation: fadeIn 0.8s;
-}
-.landing-box h1 {
-  font-size: 48px; /* Larger for hero impact */
-  font-weight: 800;
-  color: white;
-  margin-bottom: 8px;
-  background: linear-gradient(90deg, #ffffff, #a0aec0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.landing-box p {
-  font-size: 18px;
-  color: #cbd5e1;
-  margin-bottom: 16px;
-}
-.landing-box .description {
-  font-size: 16px;
-  color: var(--muted);
-  margin-bottom: 30px;
-}
-.button-group {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin: 30px 0;
-  flex-wrap: wrap;
-}
-.btn-secondary {
-  flex: 1;
-  min-width: 180px;
-  padding: 18px;
-  border-radius: 16px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
+  background: linear-gradient(135deg, #1a0033 0%, #0d0d2b 50%, #000000 100%);
   position: relative;
   overflow: hidden;
-  max-width: 200px; /* Prevent over-stretch */
-}
-.btn-secondary:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: var(--primary-light);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(13,148,136,0.2);
-}
-.btn-secondary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.1);
-  transform: translateX(-100%);
-  transition: 0.4s;
-}
-.btn-secondary:hover::after {
-  transform: translateX(100%);
-}
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 40px;
-  color: var(--muted);
-  font-size: 14px;
-  flex-wrap: wrap;
-}
-.footer-links a {
-  color: var(--primary-light);
-  text-decoration: none;
-  transition: 0.3s;
-}
-.footer-links a:hover {
-  text-decoration: underline;
-  color: white;
+  padding: 20px;
 }
 
-/* Mobile adjustments for landing */
-@media (max-width: 992px) {
-  .landing-box {
-    padding: 40px 24px;
-    max-width: 90%;
-  }
-  .landing-box h1 {
-    font-size: 36px;
-  }
-  .button-group {
-    flex-direction: column;
-  }
-  .btn-primary, .btn-secondary {
-    width: 100%;
-    max-width: none;
-  }
-  .footer-links {
-    gap: 16px;
-    font-size: 13px;
-  }
+/* Floating background shapes */
+#landingPage::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #9333ea 0%, transparent 70%);
+  top: -200px; left: -200px;
+  opacity: 0.4;
+  animation: float 20s infinite linear;
 }
-@media (max-width: 600px) {
-  .footer-links {
-    flex-direction: column;
-    gap: 8px;
-  }
+#landingPage::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #06b6d4 0%, transparent 60%);
+  bottom: -150px; right: -150px;
+  opacity: 0.3;
+  animation: float 25s infinite linear reverse;
+}
+
+/* Cyan falling lines (like in the picture) */
+.landing-lines {
+  position: absolute;
+  top: 0; right: 10%;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, #06b6d4, transparent);
+  opacity: 0.6;
+  animation: fall 12s linear infinite;
+}
+.landing-lines:nth-child(2) { right: 20%; animation-delay: 3s; height: 80%; }
+.landing-lines:nth-child(3) { right: 30%; animation-delay: 7s; height: 90%; }
+
+@keyframes float { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(100px, 100px) rotate(360deg); } }
+@keyframes fall { 0% { transform: translateY(-100vh); } 100% { transform: translateY(100vh); } }
+
+.landing-box {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 560px;
+  padding: 40px 20px;
+  animation: fadeInUp 1s ease-out;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.landing-box h1 {
+  font-size: 78px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #ffffff, #c4b5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.landing-box .subtitle {
+  font-size: 20px;
+  color: #e0e7ff;
+  margin-bottom: 32px;
+  line-height: 1.6;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Animated dots */
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 40px 0;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #9333ea;
+  opacity: 0.4;
+  animation: pulse 2s infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.3s; background: #06b6d4; }
+.dot:nth-child(3) { animation-delay: 0.6s; }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+/* Buttons – exactly like the picture */
+.landing-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+.landing-btn {
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 17px;
+  min-width: 200px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-readmore {
+  background: #9333ea;
+  color: white;
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.4);
+}
+.btn-readmore:hover {
+  background: #a855f7;
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.5);
+}
+.btn-signin {
+  background: transparent;
+  color: white;
+  border: 2px solid #9333ea !important;
+}
+.btn-signin:hover {
+  background: #9333ea;
+  transform: translateY(-4px);
+}
+
+/* Mobile – completely different but keeps the vibe */
+@media (max-width: 768px) {
+  .landing-box h1 { font-size: 52px; }
+  .landing-box .subtitle { font-size: 17px; }
+  .landing-buttons { flex-direction: column; align-items: center; }
+  .landing-btn { width: 80%; max-width: 300px; }
+  .landing-lines { display: none; } /* Too much on small screens */
+}
+@media (max-width: 480px) {
+  .landing-box h1 { font-size: 44px; }
+  .landing-box { padding: 20px 15px; }
 }
 </style>
 </head>
 <body>
-<!-- LANDING PAGE -->
-<div id="landingPage" style="display: flex;">
+<!-- NEW MODERN LANDING PAGE -->
+<div id="landingPage" style="display:flex;">
+  <div class="landing-lines"></div>
+  <div class="landing-lines"></div>
+  <div class="landing-lines"></div>
+
   <div class="landing-box">
     <h1>Daromad Link</h1>
-    <p>Har 1000 ta bosish = <strong style="color: var(--success);">$1.00</strong></p>
-    <p class="description">O'z havolangizni do'stlaringiz bilan ulashing va har bir bosish uchun daromad toping!</p>
-    <div class="button-group">
-      <button class="btn-primary" onclick="showSignup()">Roʻyxatdan oʻtish</button>
-      <button class="btn-secondary" onclick="showLogin()">Kirish</button>
+    <p class="subtitle">
+      Har 1000 ta bosish = <strong style="color:#06b6d4;">$1.00</strong><br>
+      Havolani ulashing, doʻstlaringiz bossa — siz pul ishlaysiz!
+    </p>
+
+    <div class="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </div>
-    <div class="footer-links">
-      <a href="/about-us" target="_blank">Biz haqimizda</a>
-      <a href="/contacts" target="_blank">Aloqa</a>
-      <a href="/terms" target="_blank">Foydalanish shartlari</a>
-      <a href="/privacy-policy" target="_blank">Maxfiylik siyosati</a>
+
+    <div class="landing-buttons">
+      <button class="landing-btn btn-readmore" onclick="showSignup()">Roʻyxatdan oʻtish</button>
+      <button class="landing-btn btn-signin" onclick="showLogin()">Kirish</button>
     </div>
   </div>
 </div>
