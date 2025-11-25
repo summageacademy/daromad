@@ -96,9 +96,8 @@
   @media(max-width:992px){.sidebar{left:-300px;}.main-content{margin-left:0;padding:20px;padding-bottom:100px;}.hamburger{display:flex;}.sidebar.open{left:0;}.overlay.active{display:block;}.grid{grid-template-columns:1fr;gap:20px;}.page-title{font-size:26px;}}
   @media(max-width:768px){.landing-box h1{font-size:52px;}.landing-box .subtitle{font-size:17px;}.landing-buttons{flex-direction:column;align-items:center;}.landing-btn{width:80%;max-width:300px;}.landing-lines{display:none;}}
   @media(max-width:480px){.landing-box h1{font-size:44px;}.landing-box{padding:20px 15px;}}
-    /* FINAL FIX — ADD THIS AT THE END OF YOUR <style> */
-  .section{display:none !important;}
-  #dashboard,.section.active{display:block !important;opacity:1;}
+  .section:not(.active):not(#dashboard) { display:none !important; }
+  #dashboard { display:block; } /* dashboard is default */
 </style>
 </head>
 <body>
@@ -279,12 +278,26 @@ function toggleSidebar() {
 }
 
 function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
-  const el = document.getElementById(id);
-  el.style.display = 'block';
-  setTimeout(() => el.classList.add('active'), 10);
+  // HIDE ALL sections first — using both class and inline style
+  document.querySelectorAll('.section').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+
+  // Show only the selected one
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
+    setTimeout(() => target.classList.add('active'), 10);
+  }
+
+  // Update sidebar active state
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelector(`[data-section="${id}"]`)?.classList.add('active');
+  const navItem = document.querySelector(`[data-section="${id}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Mobile: close sidebar after click
+  if (window.innerWidth <= 992) toggleSidebar();
 }
 
 function copyLink() {
