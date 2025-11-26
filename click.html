@@ -6,47 +6,104 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;}
+    body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;}
     .spin{border:6px solid #fff3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
     @keyframes s{to{transform:rotate(360deg)}}
+    .msg{margin-top:15px;font-size:14px;line-height:1.5;}
   </style>
 </head>
 <body>
-  <h2>Bir soniya...</h2>
+  <h2>Bir soniya kutib turing...</h2>
   <div class="spin"></div>
-  <p><strong>$0.001</strong> hisobingizga qo‘shildi!</p>
+  <div class="msg" id="msg"><strong>$0.001</strong> hisobingizga qo‘shildi!</div>
 
 <script>
-const firebaseConfig = {apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain: "daromad-link.firebaseapp.com",projectId: "daromad-link",storageBucket: "daromad-link.firebasestorage.app",messagingSenderId: "770178829456",appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
+const firebaseConfig = {
+  apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
+  authDomain: "daromad-link.firebaseapp.com",
+  projectId: "daromad-link",
+  storageBucket: "daromad-link.firebasestorage.app",
+  messagingSenderId: "770178829456",
+  appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15",
+  databaseURL: "https://daromad-link-default-rtdb.asia-southeast1.firebasedatabase.app"  // ← VERY IMPORTANT
+};
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const rtdb = firebase.database();
 
 const params = new URLSearchParams(location.search);
-let username = params.get('u');
-if (!username) {
-  const path = location.pathname.split('/').pop();
-  username = path.replace('click.html','').replace('.html','');
+let username = params.get('u') || '';
+
+// Fallback if someone opens just click.html without ?u=
+if (!username || username.length < 3) {
+  redirect();
 }
 
-const SPONSORS = ["https://summage.org/blogs/blog1.html","https://summage.org/blogs/blog2.html","https://summage.org/blogs/blog3.html"];
+// Get real IP
+let userIP = "unknown_ip";
+fetch('https://api.ipify.org?format=json')
+  .then(r => r.json())
+  .then(j => userIP = j.ip || "no_ip")
+  .catch(() => userIP = "no_ip")
+  .finally(() => processClick());
 
-if (username && username.length > 2) {
-  const today = new Date().toISOString().split('T')[0];
-  db.collection("publishers").where("username", "==", username).limit(1).get().then(snap => {
-    if (!snap.empty) {
-      const ref = snap.docs[0].ref;
-      // Increment clicks + earnings + daily stats
-      ref.update({
-        clicks: firebase.firestore.FieldValue.increment(1),
-        earnings: firebase.firestore.FieldValue.increment(0.001),
-        [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
-      });
+function processClick() {
+  const ipRef = rtdb.ref(`clicks/${userIP}`);
+  const now = Date.now();
+  const threeHours = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
+  ipRef.once('value').then(snap => {
+    const data = snap.val();
+
+    if (!data || (now - data.lastClick) > threeHours) {
+      // VALID CLICK → give money
+      db.collection("publishers")
+        .where("username", "==", username)
+        .limit(1)
+        .get()
+        .then(query => {
+          if (!query.empty) {
+            const userRef = query.docs[0].ref;
+            const today = new Date().toISOString().split('T')[0];
+
+            userRef.update({
+              clicks: firebase.firestore.FieldValue.increment(1),
+              earnings: firebase.firestore.FieldValue.increment(0.001),
+              [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
+            });
+          }
+        })
+        .finally(() => {
+          // Record this click time (even if user doesn't exist)
+          ipRef.set({ lastClick: now, username: username });
+          document.getElementById("msg").innerHTML = "<strong>$0.001</strong> hisobingizga qo‘shildi!";
+          redirect();
+        });
+
+    } else {
+      // Already clicked in last 3 hours
+      const remaining = Math.ceil((threeHours - (now - data.lastClick)) / 60000);
+      document.getElementById("msg").innerHTML = 
+        `Siz oxirgi 3 soat ichida bosgansiz<br>
+         Keyingi hisoblanadigan bosish: <strong>${remaining} daqiqa</strong> dan keyin`;
+      setTimeout(redirect, 2000);
     }
-    setTimeout(() => location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)], 800);
-  }).catch(() => setTimeout(() => location.href = SPONSORS[0], 800));
-} else {
-  setTimeout(() => location.href = SPONSORS[0], 800);
+  });
+}
+
+const SPONSORS = [
+  "https://summage.org/blogs/blog1.html",
+  "https://summage.org/blogs/blog2.html",
+  "https://summage.org/blogs/blog3.html"
+];
+
+function redirect() {
+  setTimeout(() => {
+    location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)];
+  }, 1200);
 }
 </script>
 </body>
