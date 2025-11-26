@@ -1,233 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Us | Ufq Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Haqimizda | Daromad Link</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background: #f6f9fc;
-      color: #1a1a1a;
-      line-height: 1.6;
+    :root{
+      --bg:#0f0a1a;--card:#1a0f30;--border:#332266;--text:#e0d4ff;--muted:#9990c7;
+      --primary:#9333ea;--primary-light:#a855f7;--accent:#06b6d4;--success:#22c55e;
+      --gradient:linear-gradient(135deg,#1a0033 0%,#0f0a1a 50%,#000000 100%);
     }
-
-    /* NAVBAR */
-    header {
-      width: 100%;
-      background: white;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 12px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
+      background-image:radial-gradient(circle at top left,rgba(147,51,234,0.15),transparent 50%),
+                       radial-gradient(circle at bottom right,rgba(6,182,212,0.15),transparent 50%);
     }
+    body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;border-radius:50%;
+      background:radial-gradient(circle,#9333ea 0%,transparent 70%);opacity:0.08;animation:float 30s infinite linear;}
+    body::after{content:'';position:fixed;bottom:-150px;right:-150px;width:500px;height:500px;border-radius:50%;
+      background:radial-gradient(circle,#06b6d4 0%,transparent 60%);opacity:0.08;animation:float 35s infinite linear reverse;}
+    @keyframes float{0%{transform:translate(0,0) rotate(0deg);}100%{transform:translate(80px,80px) rotate(360deg);}}
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #5e17eb;
+    .container{max-width:1200px;margin:0 auto;padding:20px;}
+
+    /* Header */
+    header{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(15,10,26,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-wrap:wrap;}
+    .logo{font-size:26px;font-weight:900;background:linear-gradient(90deg,#fff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-links{display:flex;gap:24px;flex-wrap:wrap;}
+    .nav-links a{color:var(--text);text-decoration:none;font-weight:500;transition:.3s;}
+    .nav-links a:hover{color:#a855f7;}
+    .hamburger{display:none;cursor:pointer;font-size:24px;}
+
+    /* Hero */
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 20px 80px;position:relative;}
+    .hero h1{font-size:60px;font-weight:900;background:linear-gradient(90deg,#ffffff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:20px;}
+    .hero p{font-size:20px;max-width:800px;margin:0 auto 40px;line-height:1.7;color:#cbd5e1;}
+
+    /* Cards */
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;margin:60px 0;}
+    .card{background:var(--card);border-radius:20px;padding:32px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,.4);transition:.4s;position:relative;overflow:hidden;}
+    .card:hover{transform:translateY(-12px);box-shadow:0 20px 40px rgba(147,51,234,.4);}
+    .card h3{font-size:24px;margin-bottom:16px;color:#a855f7;}
+    .card i{font-size:48px;margin-bottom:20px;color:var(--accent);}
+
+    /* Team */
+    .team{margin:80px 0;}
+    .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:32px;}
+    .member{text-align:center;}
+    .avatar{width:140px;height:140px;border-radius:50%;margin:0 auto 20px;background:linear-gradient(45deg,#9333ea,#06b6d4);display:grid;place-items:center;font-size:48px;color:white;font-weight:bold;}
+
+    /* Footer */
+    footer{background:#0d0616;padding:60px 20px 30px;border-top:1px solid var(--border);}
+    .footer-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-bottom:50px;}
+    .footer-links h4{color:#a855f7;margin-bottom:20px;}
+    .footer-links a{display:block;color:#9990c7;margin:8px 0;text-decoration:none;transition:.3s;}
+    .footer-links a:hover{color:#fff;}
+    .copyright{text-align:center;color:#666;margin-top:40px;}
+
+    /* Mobile */
+    @media(max-width:992px){
+      .nav-links{display:none;flex-direction:column;width:100%;background:rgba(26,15,48,.95);position:absolute;top:100%;left:0;padding:20px;border-radius:0 0 16px 16px;}
+      .nav-links.active{display:flex;}
+      .hamburger{display:block;}
+      .hero h1{font-size:46px;}
     }
-
-    nav {
-      display: flex;
-      gap: 20px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #333;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-
-    nav a:hover {
-      color: #5e17eb;
-    }
-
-    /* HAMBURGER */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-    }
-
-    .hamburger span {
-      width: 25px;
-      height: 3px;
-      background: #333;
-      border-radius: 3px;
-    }
-
-    .mobile-nav {
-      display: none;
-      flex-direction: column;
-      background: #fff;
-      padding: 15px;
-      border-top: 1px solid #eee;
-    }
-
-    .mobile-nav a {
-      padding: 10px 0;
-      text-decoration: none;
-      color: #333;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #f1f1f1;
-    }
-
-    .mobile-nav a:last-child {
-      border-bottom: none;
-    }
-
-    /* CONTENT */
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 30px 20px;
-    }
-
-    h1 {
-      font-size: 2.4rem;
-      color: #5e17eb;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .section {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-      margin-bottom: 25px;
-    }
-
-    .section h2 {
-      color: #5e17eb;
-      margin-bottom: 10px;
-      font-size: 1.6rem;
-    }
-
-    .section p {
-      margin: 10px 0;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 850px) {
-      nav { display: none; }
-      .hamburger { display: flex; }
+    @media(max-width:480px){
+      .hero h1{font-size:38px;}
+      .hero p{font-size:18px;}
     }
   </style>
 </head>
 <body>
+
+  <!-- Header -->
   <header>
-    <div class="logo">Ufq Academy</div>
-
-    <nav>
-      <a href="/">Home</a>
-      <a href="/faq">FAQ</a>
-      <a href="/about">About Us</a>
-      <a href="/contact">Contact</a>
-      <a href="/terms">Terms</a>
-      <a href="/privacy">Privacy Policy</a>
-    </nav>
-
-    <div class="hamburger" onclick="toggleMenu()">
-      <span></span>
-      <span></span>
-      <span></span>
+    <div class="container nav">
+      <div class="logo">Daromad Link</div>
+      <div class="hamburger" onclick="this.parentNode.querySelector('.nav-links').classList.toggle('active')">
+        <i class="fas fa-bars"></i>
+      </div>
+      <div class="nav-links">
+        <a href="/">Bosh sahifa</a>
+        <a href="/about.html">Haqimizda</a>
+        <a href="/terms.html">Foydalanish shartlari</a>
+        <a href="/privacy.html">Maxfiylik</a>
+        <a href="/contact.html">Aloqa</a>
+        <a href="/" style="color:#a855f7;font-weight:600;">Kirish / Ro‘yxatdan o‘tish</a>
+      </div>
     </div>
   </header>
 
-  <div class="mobile-nav" id="mobileNav">
-    <a href="/">Home</a>
-    <a href="/faq">FAQ</a>
-    <a href="/about">About Us</a>
-    <a href="/contact">Contact</a>
-    <a href="/terms">Terms</a>
-    <a href="/privacy">Privacy Policy</a>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>Biz kimmiz?</h1>
+      <p>
+        Daromad Link — O‘zbekistonning birinchi va eng ishonchli <strong>havola orqali daromad</strong> tizimi.<br>
+        2025-yilda tashkil etilganimizdan buyon minglab odamlarga internetda qo‘shimcha pul ishlash imkonini berdik.
+      </p>
+      <button onclick="confetti({particleCount:150,spread:70,origin:{y:0.6}})" style="background:#9333ea;color:white;padding:16px 40px;border:none;border-radius:50px;font-size:18px;font-weight:700;cursor:pointer;">
+        Konfeti oting!
+      </button>
+    </div>
+  </section>
+
+  <!-- Stats Cards -->
+  <div class="container cards">
+    <div class="card"><i class="fas fa-users"></i><h3>15,000+</h3><p>Aktiv foydalanuvchi</p></div>
+    <div class="card"><i class="fas fa-dollar-sign"></i><h3>$48,000+</h3><p>Jami to‘langan pul</p></div>
+    <div class="card"><i class="fas fa-link"></i><h3>99.9%</h3><p>Ishonchlilik darajasi</p></div>
+    <div class="card"><i class="fas fa-clock"></i><h3>24/7</h3><p>Tez to‘lovlar</p></div>
   </div>
 
-  <script>
-    function toggleMenu() {
-      const menu = document.getElementById("mobileNav");
-      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-    }
-  </script>
+  <!-- Mission -->
+  <div class="container" style="text-align:center;margin:100px 0;">
+    <h2 style="font-size:42px;margin-bottom:30px;background:linear-gradient(90deg,#9333ea,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+      Bizning maqsadimiz
+    </h2>
+    <p style="font-size:20px;max-width:900px;margin:0 auto;line-height:1.8;color:#cbd5e1;">
+      Har bir inson internet orqali oson va halol daromad topishi kerak.<br>
+      Biz reklama ko‘rishni emas, oddiy havola ulashishni daromad manbai qildik — chunki bu eng adolatli va qulay usul.
+    </p>
+  </div>
 
-  <div class="container">
-    <h1>About Us</h1>
-
-    <div class="section">
-      <h2>Who We Are</h2>
-      <p>
-        Ufq Academy is a modern, fast‑growing education initiative focused on bringing affordable
-        and high‑quality learning to every student. Our mission is simple: empower the next
-        generation with the skills they need to rise, compete, and conquer.
-      </p>
-      <p>
-        From English to digital skills to competitive learning programs — we aim to make premium
-        knowledge accessible to everyone.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>Our Payout Rates</h2>
-      <p>
-        We believe in rewarding talent. Students and members who participate in competitions,
-        referral systems, or content‑based earning programs receive competitive payouts.
-      </p>
-      <ul>
-        <li>✔ Fast withdrawals</li>
-        <li>✔ Transparent rules</li>
-        <li>✔ Competitive rewards for high performers</li>
-      </ul>
-      <p>
-        Our payout structure is designed to grow as our platform grows — the more the academy
-        expands, the more our students earn.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>Navigation & Resources</h2>
-      <p>
-        You can learn more about our systems, mission, and processes by exploring these pages:
-      </p>
-      <ul>
-        <li><a href="/faq">Frequently Asked Questions (FAQ)</a></li>
-        <li><a href="/terms">Terms & Conditions</a></li>
-        <li><a href="/privacy">Privacy Policy</a></li>
-        <li><a href="/contact">Contact Us</a></li>
-      </ul>
-    </div>
-
-    <div class="section">
-      <h2>Our Vision</h2>
-      <p>
-        We dream of an academy that elevates millions — an education platform that becomes a
-        gateway to success no matter where you start. Knowledge belongs to everyone, and Ufq
-        Academy exists to deliver it.
-      </p>
+  <!-- Team -->
+  <div class="container team">
+    <h2 style="text-align:center;font-size:38px;margin-bottom:60px;background:linear-gradient(90deg,#fff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+      Bizning jamoa
+    </h2>
+    <div class="team-grid">
+      <div class="member">
+        <div class="avatar">A</div>
+        <h3>Abror Ahmed</h3>
+        <p>Founder & CEO</p>
+      </div>
+      <div class="member">
+        <div class="avatar">M</div>
+        <h3>Muhammad Ali</h3>
+        <p>Full-Stack Developer</p>
+      </div>
+      <div class="member">
+        <div class="avatar">S</div>
+        <h3>Sarvar Bek</h3>
+        <p>Marketing & Support</p>
+      </div>
     </div>
   </div>
 
+  <!-- Footer -->
   <footer>
-    © 2025 Ufq Academy. All rights reserved.
+    <div class="container">
+      <div class="footer-links">
+        <div>
+          <h4>Daromad Link</h4>
+          <a href="/about.html">Haqimizda</a>
+          <a href="/contact.html">Aloqa</a>
+          <a href="/faq.html">FAQ</a>
+        </div>
+        <div>
+          <h4>Qonuniy</h4>
+          <a href="/terms.html">Foydalanish shartlari</a>
+          <a href="/privacy.html">Maxfiylik siyosati</a>
+          <a href="/refund.html">Pul qaytarish</a>
+        </div>
+        <div>
+          <h4>Biz bilan</h4>
+          <a href="https://t.me/daromadlinkuz">Telegram</a>
+          <a href="https://instagram.com/daromadlink">Instagram</a>
+          <a href="https://t.me/daromadlink_support">Qo‘llab-quvvatlash</a>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2025 Daromad Link. Barcha huquqlar himoyalangan.<br>
+        Made with ❤️ in Uzbekistan
+      </div>
+    </div>
   </footer>
+
 </body>
 </html>
