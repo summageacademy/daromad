@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us | Daromad Link</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg:#0f0a1a;
+      --card:#1a0f30;
+      --card-hover:#221144;
+      --border:#332266;
+      --text:#e0d4ff;
+      --muted:#9990c7;
+      --primary:#9333ea;
+      --primary-light:#a855f7;
+      --accent:#06b6d4;
+      --gradient:linear-gradient(135deg,#1a0033 0%,#0f0a1a 50%,#000000 100%);
+      --card-gradient:linear-gradient(145deg,#1a0f30,#221044);
+    }
+
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
+      font-family:'Inter',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    header {
+      width:100%;
+      padding:20px 30px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:rgba(26,15,48,0.7);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      position:sticky;
+      top:0;
+      z-index:999;
+    }
+
+    .logo {
+      font-size:26px;
+      font-weight:800;
+      background:linear-gradient(90deg,#fff,#c4b5fd);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    nav a {
+      color:var(--text);
+      margin-left:24px;
+      text-decoration:none;
+      font-size:16px;
+      font-weight:500;
+      transition:.3s;
+    }
+    nav a:hover { color:var(--accent); }
+
+    .hero {
+      text-align:center;
+      padding:80px 20px;
+      max-width:900px;
+      margin:auto;
+    }
+
+    .hero h1 {
+      font-size:54px;
+      font-weight:900;
+      background:linear-gradient(90deg,#ffffff,#c4b5fd);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:16px;
+    }
+
+    .hero p {
+      font-size:18px;
+      color:var(--muted);
+      line-height:1.7;
+      max-width:700px;
+      margin:auto;
+    }
+
+    .section {
+      max-width:1100px;
+      margin:60px auto;
+      padding:20px;
+    }
+
+    .card {
+      background:var(--card-gradient);
+      padding:30px;
+      border-radius:20px;
+      border:1px solid var(--border);
+      margin-bottom:30px;
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      transition:.3s;
+    }
+
+    .card:hover {
+      transform:translateY(-6px);
+      box-shadow:0 14px 40px rgba(0,0,0,.5);
+    }
+
+    .card h2 {
+      font-size:28px;
+      font-weight:700;
+      margin-bottom:14px;
+    }
+
+    .card p { line-height:1.6; color:#cec4f6; }
+
+    .team {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:24px;
+      margin-top:30px;
+    }
+
+    .team-card {
+      background:var(--card-gradient);
+      padding:24px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      text-align:center;
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      transition:.3s;
+    }
+
+    .team-card:hover {
+      transform:translateY(-6px);
+    }
+
+    .team-card img {
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      object-fit:cover;
+      margin-bottom:16px;
+      border:3px solid var(--primary);
+    }
+
+    footer {
+      margin-top:80px;
+      padding:40px 20px;
+      background:rgba(26,15,48,0.7);
+      backdrop-filter:blur(10px);
+      border-top:1px solid var(--border);
+      text-align:center;
+    }
+
+    footer .links a {
+      margin:0 14px;
+      color:var(--muted);
+      text-decoration:none;
+      transition:.3s;
+    }
+    footer .links a:hover { color:var(--primary-light); }
+
+    footer p {
+      margin-top:18px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    @media(max-width:600px){
+      .hero h1 { font-size:38px; }
+      header { flex-direction:column; gap:10px; }
+      nav a { margin:0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Daromad Link</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about/">About</a>
+    <a href="/terms/">Terms</a>
+    <a href="/privacy/">Privacy</a>
+    <a href="/contact/">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Who We Are</h1>
+  <p>
+    Daromad Link is a modern, fast, and powerful ad network built for creators, developers, and businesses across Uzbekistan and the world. We help you monetize your traffic with beautiful dashboards, clean analytics, and lightning-fast ad delivery.
+  </p>
+</section>
+
+<section class="section">
+  <div class="card">
+    <h2>Our Mission</h2>
+    <p>
+      We aim to empower every creator with a fair, transparent, and high-earning ad system. No unfair cuts, no hidden fees, no complicated setup—just pure monetization.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Why We Built This</h2>
+    <p>
+      We saw too many platforms taking advantage of small creators. Daromad Link was built to flip the system—giving full control, real rewards, and beautiful tools to those who actually create value.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>What Makes Us Different</h2>
+    <p>
+      ✦ Clean and futuristic UI<br>
+      ✦ Advanced analytics in real time<br>
+      ✦ High-quality ads with strong fill rates<br>
+      ✦ Transparent earnings with instant updates<br>
+      ✦ Trusted by creators, built for the future
+    </p>
+  </div>
+
+  <h2 style="margin-top:60px; font-size:32px; font-weight:800;">Meet the Team</h2>
+  <div class="team">
+    <div class="team-card">
+      <img src="https://via.placeholder.com/150" />
+      <h3>Founder & CEO</h3>
+      <p>The visionary mind building the future of ad monetization.</p>
+    </div>
+
+    <div class="team-card">
+      <img src="https://via.placeholder.com/150" />
+      <h3>Frontend Engineer</h3>
+      <p>Designer of the smooth UI and immersive experience.</p>
+    </div>
+
+    <div class="team-card">
+      <img src="https://via.placeholder.com/150" />
+      <h3>Backend Engineer</h3>
+      <p>Master of servers, performance, and speed.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="links">
+    <a href="/terms/">Terms & Conditions</a>
+    <a href="/privacy/">Privacy Policy</a>
+    <a href="/contact/">Contact</a>
+  </div>
+  <p>© 2025 Daromad Link. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
