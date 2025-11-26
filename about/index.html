@@ -1,87 +1,189 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Haqimizda • Daromad Link</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root{--bg:#0f0a1a;--card:#1a0f30;--border:#332266;--text:#e0d4ff;--muted:#9990c7;--primary:#9333ea;--primary-light:#a855f7;--accent:#06b6d4;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
-      background-image:radial-gradient(circle at 10% 90%,rgba(147,51,234,0.12),transparent 50%),
-                       radial-gradient(circle at 90% 10%,rgba(6,182,212,0.12),transparent 50%);}
-    body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;border-radius:50%;
-      background:radial-gradient(circle,#9333ea 0%,transparent 70%);opacity:0.08;animation:float 30s infinite linear;}
-    body::after{content:'';position:fixed;bottom:-150px;right:-150px;width:500px;height:500px;border-radius:50%;
-      background:radial-gradient(circle,#06b6d4 0%,transparent 60%);opacity:0.08;animation:float 35s infinite linear reverse;}
-    @keyframes float{0%{transform:translate(0,0) rotate(0deg);}100%{transform:translate(70px,70px) rotate(360deg);}}
+    :root {
+      --bg: #0a0616;
+      --card: #140f24;
+      --border: #2a1f4d;
+      --text: #e0d4ff;
+      --muted: #9990c7;
+      --primary: #9333ea;
+      --accent: #06b6d4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
 
-    .container{max-width:1100px;margin:0 auto;padding:0 20px;}
+    /* Header */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(10,6,22,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+    }
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #fff, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: #a855f7; }
 
-    /* Fixed Header */
-    header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,10,26,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
-    .logo{font-size:26px;font-weight:900;background:linear-gradient(90deg,#fff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .nav-links{list-style:none;display:flex;gap:28px;align-items:center;}
-    .nav-links a{color:var(--text);text-decoration:none;font-weight:500;transition:.3s;}
-    .nav-links a:hover{color:var(--primary-light);}
-    .hamburger{display:none;cursor:pointer;font-size:26px;color:white;padding:10px;background:rgba(147,51,234,0.15);border-radius:10px;transition:.3s;}
-    .hamburger.active{background:var(--primary);}
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      font-size: 26px;
+      color: white;
+      padding: 8px;
+      background: rgba(147,51,234,0.2);
+      border-radius: 10px;
+    }
 
     /* Mobile Menu */
-    .mobile-menu{position:fixed;top:0;left:0;width:100%;height:100vh;background:rgba(10,5,20,0.98);backdrop-filter:blur(20px);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px;font-size:26px;transform:translateY(-100%);transition:transform .4s ease;z-index:999;}
-    .mobile-menu.active{transform:translateY(0);}
-    .mobile-menu a{color:white;text-decoration:none;padding:10px 20px;border-radius:12px;transition:.3s;}
-    .mobile-menu a:hover{background:rgba(147,51,234,0.3);}
-
-    /* Hero */
-    .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:100px 20px 60px;}
-    .hero h1{font-size:48px;font-weight:900;line-height:1.1;margin-bottom:20px;background:linear-gradient(90deg,#ffffff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .hero p{font-size:18px;max-width:800px;margin:24px auto 40px;line-height:1.8;color:#cbd5e1;}
-    .btn{background:var(--primary);color:white;padding:16px 40px;border:none;border-radius:50px;font-weight:700;font-size:17px;cursor:pointer;transition:.4s;box-shadow:0 10px 30px rgba(147,51,234,.4);}
-    .btn:hover{background:var(--primary-light);transform:translateY(-4px);}
-
-    /* Mission */
-    .mission{padding:100px 20px;text-align:center;background:rgba(26,15,48,0.3);border-radius:24px;margin:40px 0;}
-    .mission h2{font-size:38px;margin-bottom:30px;background:linear-gradient(90deg,#9333ea,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .mission p{font-size:18px;max-width:900px;margin:0 auto;line-height:1.8;color:#cbd5e1;}
-
-    /* FAQ */
-    .faq{padding:80px 20px;}
-    .faq h2{text-align:center;font-size:36px;margin-bottom:60px;background:linear-gradient(90deg,#06b6d4,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .accordion{max-width:900px;margin:0 auto;}
-    .acc-item{background:var(--card);border-radius:16px;margin-bottom:16px;overflow:hidden;border:1px solid var(--border);}
-    .acc-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;font-weight:600;font-size:17px;transition:.3s;}
-    .acc-header:hover{background:rgba(147,51,234,0.1);}
-    .acc-header i{transition:.3s;}
-    .acc-header.active i{transform:rotate(180deg);}
-    .acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease;padding:0 24px;}
-    .acc-body.show{max-height:400px;padding:20px 24px 30px;}
-    .acc-body p{color:#cbd5e1;line-height:1.7;font-size:15px;}
-
-    /* Footer */
-    footer{background:#0a0614;padding:80px 20px 40px;border-top:1px solid var(--border);text-align:center;}
-    .footer-links{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:50px;}
-    .footer-links a{color:#9990c7;text-decoration:none;margin:0 15px;font-size:15px;transition:.3s;}
-    .footer-links a:hover{color:white;}
-    .copyright{color:#666;font-size:14px;}
-
-    /* RESPONSIVE */
-    @media (max-width:992px){
-      .nav-links{display:none;}
-      .hamburger{display:block;}
-      .hero h1{font-size:42px;}
+    .mobile-menu {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,6,22,0.98);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      font-size: 28px;
+      font-weight: 600;
+      transform: translateY(-100%);
+      transition: transform 0.4s ease;
+      z-index: 999;
     }
-    @media (max-width:640px){
-      .hero h1{font-size:36px;}
-      .hero p{font-size:17px;}
-      .btn{padding:14px 32px;font-size:16px;}
-      .mission h2{font-size:32px;}
-      .faq h2{font-size:30px;}
-      .acc-header{font-size:16px;}
+    .mobile-menu.active { transform: translateY(0); }
+    .mobile-menu a { color: white; text-decoration: none; }
+
+    /* Main Content */
+    main { padding-top: 100px; max-width: 900px; margin: 0 auto; padding: 100px 20px 80px; }
+
+    h1 {
+      font-size: 44px;
+      font-weight: 900;
+      text-align: center;
+      background: linear-gradient(90deg, #ffffff, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+    }
+    p {
+      font-size: 18px;
+      color: #cbd5e1;
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 40px;
+      margin: 40px 0;
+      border: 1px solid var(--border);
+    }
+    .section h2 {
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 32px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* FAQ Accordion */
+    .faq-item {
+      background: rgba(147,51,234,0.08);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .faq-question {
+      padding: 20px 24px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 17px;
+    }
+    .faq-question i { transition: transform 0.3s; }
+    .faq-question.active i { transform: rotate(180deg); }
+    .faq-answer {
+      padding: 0 24px;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      font-size: 15px;
+      color: #cbd5e1;
+    }
+    .faq-answer.show {
+      padding: 20px 24px 30px;
+      max-height: 300px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 60px 20px 40px;
+      color: #666;
+      font-size: 14px;
+    }
+    footer a { color: #9990c7; text-decoration: none; margin: 0 12px; }
+    footer a:hover { color: white; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      h1 { font-size: 38px; }
+      p { font-size: 17px; }
+      .section { padding: 32px 24px; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 34px; }
+      .section h2 { font-size: 28px; }
     }
   </style>
 </head>
@@ -89,94 +191,79 @@
 
   <!-- Header -->
   <header>
-    <div class="container nav">
+    <div class="nav">
       <div class="logo">Daromad Link</div>
-      <div class="hamburger" id="ham"><i class="fas fa-bars"></i></div>
-      <ul class="nav-links">
-        <li><a href="/">Bosh sahifa</a></li>
-        <li><a href="/about.html">Haqimizda</a></li>
-        <li><a href="/terms.html">Shartlar</a></li>
-        <li><a href="/privacy.html">Maxfiylik</a></li>
-        <li><a href="/contact.html">Aloqa</a></li>
-      </ul>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/">Bosh sahifa</a></li>
+          <li><a href="/about.html">Haqimizda</a></li>
+          <li><a href="/contact.html">Aloqa</a></li>
+        </ul>
+        <div class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')">
+          <i class="fas fa-bars"></i>
+        </div>
+      </nav>
     </div>
   </header>
 
   <!-- Mobile Menu -->
-  <div class="mobile-menu" id="mobileMenu">
+  <div id="mobileMenu" class="mobile-menu">
     <a href="/">Bosh sahifa</a>
     <a href="/about.html">Haqimizda</a>
-    <a href="/terms.html">Shartlar</a>
-    <a href="/privacy.html">Maxfiylik</a>
     <a href="/contact.html">Aloqa</a>
     <a href="/">Kirish</a>
   </div>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>Biz bilan tanishing</h1>
-      <p>O‘zbekistonning yangi avlod daromad tizimi • Halol, oddiy va tezkor</p>
-      <button class="btn" onclick="confetti({particleCount:150,spread:80,origin:{y:0.6}})">Konfeti oting :)</button>
+  <main>
+    <h1>Biz bilan tanishing</h1>
+    <p>Daromad Link — O‘zbekiston uchun yaratilgan yangi avlod daromad tizimi. Oddiy havola ulashish orqali halol va real pul ishlang.</p>
+
+    <div class="section">
+      <h2>Bizning maqsadimiz</h2>
+      <p>Har bir inson internetda qo‘shimcha daromad topishi kerak. Reklama ko‘rish, murakkab vazifalar emas — faqat havola yuborish. Biz reklama beruvchilar bilan ishlaymiz va daromadni siz bilan adolatli bo‘lamiz.</p>
     </div>
-  </section>
 
-  <!-- Mission -->
-  <section class="mission container">
-    <h2>Bizning maqsadimiz</h2>
-    <p>Har bir o‘zbekistonlik internetda qo‘shimcha daromad topishi kerak. Reklama ko‘rish yoki murakkab ishlar emas — oddiy havola ulashish orqali halol pul ishlang. Biz reklama beruvchilar bilan to‘g‘ridan-to‘g‘ri ishlaymiz va daromadni sizga adolatli taqsimlaymiz.</p>
-  </section>
-
-  <!-- FAQ -->
-  <section class="faq">
-    <div class="container">
+    <div class="section">
       <h2>Tez-tez so‘raladigan savollar</h2>
-      <div class="accordion">
-        <div class="acc-item">
-          <div class="acc-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
-            Qanday ishlaydi?<i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="acc-body"><p>Ro‘yxatdan o‘ting → shaxsiy havolangizni oling → do‘stlaringizga yuboring. Har bir haqiqiy bosish = $0.001 (1000 ta = $1)</p></div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
+          Qanday qilib pul ishlash mumkin?<i class="fas fa-chevron-down"></i>
         </div>
-        <div class="acc-item">
-          <div class="acc-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
-            To‘lov qachon keladi?<i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="acc-body"><p>Minimum $5 yig‘ilganda so‘raysiz → 24-48 soat ichida Uzcard/Humo/Visa kartangizga tushadi.</p></div>
+        <div class="faq-answer">Ro‘yxatdan o‘ting → shaxsiy havolangizni oling → do‘stlaringizga yuboring. Har bir haqiqiy bosish = $0.001 (1000 ta = $1)</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
+          To‘lov qachon va qayerdan keladi?<i class="fas fa-chevron-down"></i>
         </div>
-        <div class="acc-item">
-          <div class="acc-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
-            Bir kunda qancha ishlash mumkin?<i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="acc-body"><p>Bitta odam har 3 soatda 1 marta bosishi hisoblanadi. Faol ulashsangiz kuniga $1–$10+ real.</p></div>
+        <div class="faq-answer">Minimum $5 yig‘ilganda so‘raysiz. 24-48 soat ichida Uzcard, Humo yoki boshqa kartangizga tushadi.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
+          Bu halolmi?<i class="fas fa-chevron-down"></i>
         </div>
-        <div class="acc-item">
-          <div class="acc-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
-            Bu halolmi?<i class="fas fa-chevron-down"></i>
-          </div>
-          <div class="acc-body"><p>100% halol. Reklama beruvchilar pul to‘laydi → biz uni sizga beramiz.</p></div>
+        <div class="faq-answer">100% halol. Reklama beruvchilar pul to‘laydi → biz uni sizga beramiz. Hech qanday firib yo‘q.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('show')">
+          Nega sizlarga ishonish kerak?<i class="fas fa-chevron-down"></i>
         </div>
+        <div class="faq-answer">Biz O‘zbekiston uchun ishlaymiz. Tezkor to‘lov, shaffof statistika, o‘zbek tilida qo‘llab-quvvatlash. Sinab ko‘ring — yo‘qotadigan hech narsangiz yo‘q.</div>
       </div>
     </div>
-  </section>
+  </main>
 
-  <!-- Footer -->
   <footer>
-    <div class="footer-links">
-      <a href="/about.html">Haqimizda</a>
-      <a href="/terms.html">Shartlar</a>
-      <a href="/privacy.html">Maxfiylik</a>
-      <a href="/contact.html">Aloqa</a>
+    <p>
+      <a href="/terms.html">Foydalanish shartlari</a> • 
+      <a href="/privacy.html">Maxfiylik</a> • 
       <a href="https://t.me/daromadlinkuz">Telegram</a>
-    </div>
-    <div class="copyright">© 2025 Daromad Link • Made in Uzbekistan ❤️</div>
+    </p>
+    <p style="margin-top:20px;">© 2025 Daromad Link • Made in Uzbekistan with love</p>
   </footer>
 
-  <script>
-    document.getElementById('ham').addEventListener('click', () => {
-      document.getElementById('mobileMenu').classList.toggle('active');
-      document.getElementById('ham').classList.toggle('active');
-    });
-  </script>
 </body>
 </html>
