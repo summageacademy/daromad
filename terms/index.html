@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foydalanish shartlari • Daromad Link</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0a0616;
+      --card: #140f24;
+      --border: #2a1f4d;
+      --text: #e0d4ff;
+      --muted: #9990c7;
+      --primary: #9333ea;
+      --accent: #06b6d4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(10,6,22,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+    }
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #fff, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: #a855f7; }
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      font-size: 26px;
+      color: white;
+      padding: 8px;
+      background: rgba(147,51,234,0.2);
+      border-radius: 10px;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,6,22,0.98);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      font-size: 28px;
+      font-weight: 600;
+      transform: translateY(-100%);
+      transition: transform 0.4s ease;
+      z-index: 999;
+    }
+    .mobile-menu.active { transform: translateY(0); }
+    .mobile-menu a { color: white; text-decoration: none; }
+
+    /* Main Content */
+    main {
+      padding-top: 100px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 100px 20px 100px;
+    }
+    h1 {
+      font-size: 44px;
+      font-weight: 900;
+      text-align: center;
+      background: linear-gradient(90deg, #ffffff, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+    .last-update {
+      text-align: center;
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 50px;
+    }
+
+    .terms-content {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+    }
+    .terms-content h2 {
+      color: #a855f7;
+      font-size: 24px;
+      margin: 40px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .terms-content ol {
+      padding-left: 20px;
+      margin: 16px 0;
+    }
+    .terms-content li {
+      margin: 12px 0;
+    }
+    .terms-content p {
+      margin: 16px 0;
+      font-size: 16px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 80px 20px 40px;
+      color: #666;
+      font-size: 14px;
+    }
+    footer a { color: #9990c7; text-decoration: none; margin: 0 12px; }
+    footer a:hover { color: white; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      h1 { font-size: 38px; }
+      .terms-content { padding: 32px 24px; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 34px; }
+      .terms-content h2 { font-size: 22px; }
+    }
+  </dd>
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="nav">
+      <div class="logo">Daromad Link</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/daromad/">Bosh sahifa</a></li>
+          <li><a href="/daromad/about/">Haqimizda</a></li>
+          <li><a href="/daromad/contact/">Aloqa</a></li>
+        </ul>
+        <div class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')">
+          <i class="fas fa-bars"></i>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="mobile-menu">
+    <a href="/daromad/">Bosh sahifa</a>
+    <a href="/daromad/about/">Haqimizda</a>
+    <a href="/daromad/contact/">Aloqa</a>
+  </div>
+
+  <main>
+    <h1>Foydalanish shartlari</h1>
+    <p class="last-update">Oxirgi yangilanish: 26-noyabr, 2025-yil</p>
+
+    <div class="terms-content">
+      <p>Ushbu shartlar <strong>Daromad Link</strong> platformasidan foydalanish qoidalarini belgilaydi. Xizmatdan foydalanishni boshlaganingizda, siz ushbu shartlarga rozilik bildirasiz.</p>
+
+      <h2>1. Umumiy qoidalar</h2>
+      <ol>
+        <li>Xizmatdan faqat 16 yoshdan oshgan shaxslar foydalanishi mumkin.</li>
+        <li>Har bir foydalanuvchi faqat bitta hisob ochishi mumkin. Bir nechta hisob yaratish taqiqlanadi.</li>
+        <li>Barcha harakatlar uchun javobgarlik foydalanuvchining o‘z bo'ynida bo'ladi.</li>
+      </ol>
+
+      <h2>2. Daromad olish qoidalari</h2>
+      <ol>
+        <li>Har bir haqiqiy bosish uchun $0.001 (1000 ta = $1) to‘lanadi.</li>
+        <li>Bitta IP-manzil har 3 soatda faqat 1 marta hisoblanadi.</li>
+        <li>Foydalanuvchi avtomatik tizimlar, botlar, VPN orqali ko‘p marta bosish kabi firibgarlik harakatlarini amalga oshirsa, hisob abadiy bloklanadi va to‘plangan pul to‘lanmaydi.</li>
+      </ol>
+
+      <h2>3. To‘lovlar</h2>
+      <ol>
+        <li>Minimum to‘lov miqdori — $5.00</li>
+        <li>To‘lov so‘rovi yuborilgandan keyin 24–48 soat ichida Uzcard, Humo yoki boshqa karta raqamiga yuboriladi.</li>
+        <li>To‘lov komissiyasi (agar mavjud bo‘lsa) foydalanuvchi tomonidan qoplanadi.</li>
+      </ol>
+
+      <h2>4. Taqiqlangan harakatlar</h2>
+      <ol>
+        <li>Spam, aldash, yolg‘on reklama qilish</li>
+        <li>Havolani o‘zgartirish yoki qisqartirish</li>
+        <li>Boshqa foydalanuvchilarning shaxsiy ma’lumotlarini oshkor qilish</li>
+        <li>Xizmatga zarar yetkazuvchi har qanday harakat</li>
+      </ol>
+
+      <h2>5. Javobgarlik</h2>
+      <p>Platforma xizmatning uzluksiz ishlashiga kafolat bermaydi. Texnik muammolar yuzaga kelishi mumkin. Bunday hollarda biz muammoni tezda bartaraf etishga harakat qilamiz.</p>
+
+      <h2>6. Shartlarni o‘zgartirish</h2>
+      <p>Biz istalgan vaqtda ushbu shartlarni o‘zgartirish huquqini o‘zimizda saqlaymiz. Muhim o‘zgarishlar haqida foydalanuvchilarga xabar beriladi.</p>
+
+      <h2>7. Aloqa</h2>
+      <p>Agar savollaringiz bo‘lsa, bizga Telegram orqali yozing: <a href="https://t.me/daromadlink_support" style="color:#06b6d4">@daromadlink_support</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      <a href="/daromad/about/">Haqimizda</a> • 
+      <a href="/daromad/privacy/">Maxfiylik</a> • 
+      <a href="https://t.me/daromadlinkuz">Telegram</a>
+    </p>
+    <p style="margin-top:20px;">© 2025 Daromad Link • Made in Uzbekistan with love</p>
+  </footer>
+
+</body>
+</html>
