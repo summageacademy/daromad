@@ -1,256 +1,233 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Us | Daromad Link</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <title>About Us | Ufq Academy</title>
   <style>
-    :root {
-      --bg:#0f0a1a;
-      --card:#1a0f30;
-      --card-hover:#221144;
-      --border:#332266;
-      --text:#e0d4ff;
-      --muted:#9990c7;
-      --primary:#9333ea;
-      --primary-light:#a855f7;
-      --accent:#06b6d4;
-      --gradient:linear-gradient(135deg,#1a0033 0%,#0f0a1a 50%,#000000 100%);
-      --card-gradient:linear-gradient(145deg,#1a0f30,#221044);
-    }
-
-    * {margin:0; padding:0; box-sizing:border-box;}
     body {
-      font-family:'Inter',sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      overflow-x:hidden;
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #f6f9fc;
+      color: #1a1a1a;
+      line-height: 1.6;
     }
 
+    /* NAVBAR */
     header {
-      width:100%;
-      padding:20px 30px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:rgba(26,15,48,0.7);
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--border);
-      position:sticky;
-      top:0;
-      z-index:999;
+      width: 100%;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 12px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .logo {
-      font-size:26px;
-      font-weight:800;
-      background:linear-gradient(90deg,#fff,#c4b5fd);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #5e17eb;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
     }
 
     nav a {
-      color:var(--text);
-      margin-left:24px;
-      text-decoration:none;
-      font-size:16px;
-      font-weight:500;
-      transition:.3s;
-    }
-    nav a:hover { color:var(--accent); }
-
-    .hero {
-      text-align:center;
-      padding:80px 20px;
-      max-width:900px;
-      margin:auto;
+      text-decoration: none;
+      color: #333;
+      font-size: 1rem;
+      transition: 0.3s;
     }
 
-    .hero h1 {
-      font-size:54px;
-      font-weight:900;
-      background:linear-gradient(90deg,#ffffff,#c4b5fd);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      margin-bottom:16px;
+    nav a:hover {
+      color: #5e17eb;
     }
 
-    .hero p {
-      font-size:18px;
-      color:var(--muted);
-      line-height:1.7;
-      max-width:700px;
-      margin:auto;
+    /* HAMBURGER */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: #333;
+      border-radius: 3px;
+    }
+
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      background: #fff;
+      padding: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .mobile-nav a {
+      padding: 10px 0;
+      text-decoration: none;
+      color: #333;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #f1f1f1;
+    }
+
+    .mobile-nav a:last-child {
+      border-bottom: none;
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      color: #5e17eb;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     .section {
-      max-width:1100px;
-      margin:60px auto;
-      padding:20px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+      margin-bottom: 25px;
     }
 
-    .card {
-      background:var(--card-gradient);
-      padding:30px;
-      border-radius:20px;
-      border:1px solid var(--border);
-      margin-bottom:30px;
-      box-shadow:0 10px 30px rgba(0,0,0,.4);
-      transition:.3s;
+    .section h2 {
+      color: #5e17eb;
+      margin-bottom: 10px;
+      font-size: 1.6rem;
     }
 
-    .card:hover {
-      transform:translateY(-6px);
-      box-shadow:0 14px 40px rgba(0,0,0,.5);
+    .section p {
+      margin: 10px 0;
     }
 
-    .card h2 {
-      font-size:28px;
-      font-weight:700;
-      margin-bottom:14px;
-    }
-
-    .card p { line-height:1.6; color:#cec4f6; }
-
-    .team {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:24px;
-      margin-top:30px;
-    }
-
-    .team-card {
-      background:var(--card-gradient);
-      padding:24px;
-      border-radius:18px;
-      border:1px solid var(--border);
-      text-align:center;
-      box-shadow:0 10px 30px rgba(0,0,0,.4);
-      transition:.3s;
-    }
-
-    .team-card:hover {
-      transform:translateY(-6px);
-    }
-
-    .team-card img {
-      width:120px;
-      height:120px;
-      border-radius:50%;
-      object-fit:cover;
-      margin-bottom:16px;
-      border:3px solid var(--primary);
+    ul {
+      padding-left: 20px;
     }
 
     footer {
-      margin-top:80px;
-      padding:40px 20px;
-      background:rgba(26,15,48,0.7);
-      backdrop-filter:blur(10px);
-      border-top:1px solid var(--border);
-      text-align:center;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #555;
     }
 
-    footer .links a {
-      margin:0 14px;
-      color:var(--muted);
-      text-decoration:none;
-      transition:.3s;
-    }
-    footer .links a:hover { color:var(--primary-light); }
-
-    footer p {
-      margin-top:18px;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    @media(max-width:600px){
-      .hero h1 { font-size:38px; }
-      header { flex-direction:column; gap:10px; }
-      nav a { margin:0 12px; }
+    /* RESPONSIVE */
+    @media (max-width: 850px) {
+      nav { display: none; }
+      .hamburger { display: flex; }
     }
   </style>
 </head>
 <body>
+  <header>
+    <div class="logo">Ufq Academy</div>
 
-<header>
-  <div class="logo">Daromad Link</div>
-  <nav>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/faq">FAQ</a>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy Policy</a>
+    </nav>
+
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
     <a href="/">Home</a>
-    <a href="/about/">About</a>
-    <a href="/terms/">Terms</a>
-    <a href="/privacy/">Privacy</a>
-    <a href="/contact/">Contact</a>
-  </nav>
-</header>
-
-<section class="hero">
-  <h1>Who We Are</h1>
-  <p>
-    Daromad Link is a modern, fast, and powerful ad network built for creators, developers, and businesses across Uzbekistan and the world. We help you monetize your traffic with beautiful dashboards, clean analytics, and lightning-fast ad delivery.
-  </p>
-</section>
-
-<section class="section">
-  <div class="card">
-    <h2>Our Mission</h2>
-    <p>
-      We aim to empower every creator with a fair, transparent, and high-earning ad system. No unfair cuts, no hidden fees, no complicated setup—just pure monetization.
-    </p>
+    <a href="/faq">FAQ</a>
+    <a href="/about">About Us</a>
+    <a href="/contact">Contact</a>
+    <a href="/terms">Terms</a>
+    <a href="/privacy">Privacy Policy</a>
   </div>
 
-  <div class="card">
-    <h2>Why We Built This</h2>
-    <p>
-      We saw too many platforms taking advantage of small creators. Daromad Link was built to flip the system—giving full control, real rewards, and beautiful tools to those who actually create value.
-    </p>
-  </div>
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("mobileNav");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    }
+  </script>
 
-  <div class="card">
-    <h2>What Makes Us Different</h2>
-    <p>
-      ✦ Clean and futuristic UI<br>
-      ✦ Advanced analytics in real time<br>
-      ✦ High-quality ads with strong fill rates<br>
-      ✦ Transparent earnings with instant updates<br>
-      ✦ Trusted by creators, built for the future
-    </p>
-  </div>
+  <div class="container">
+    <h1>About Us</h1>
 
-  <h2 style="margin-top:60px; font-size:32px; font-weight:800;">Meet the Team</h2>
-  <div class="team">
-    <div class="team-card">
-      <img src="https://via.placeholder.com/150" />
-      <h3>Founder & CEO</h3>
-      <p>The visionary mind building the future of ad monetization.</p>
+    <div class="section">
+      <h2>Who We Are</h2>
+      <p>
+        Ufq Academy is a modern, fast‑growing education initiative focused on bringing affordable
+        and high‑quality learning to every student. Our mission is simple: empower the next
+        generation with the skills they need to rise, compete, and conquer.
+      </p>
+      <p>
+        From English to digital skills to competitive learning programs — we aim to make premium
+        knowledge accessible to everyone.
+      </p>
     </div>
 
-    <div class="team-card">
-      <img src="https://via.placeholder.com/150" />
-      <h3>Frontend Engineer</h3>
-      <p>Designer of the smooth UI and immersive experience.</p>
+    <div class="section">
+      <h2>Our Payout Rates</h2>
+      <p>
+        We believe in rewarding talent. Students and members who participate in competitions,
+        referral systems, or content‑based earning programs receive competitive payouts.
+      </p>
+      <ul>
+        <li>✔ Fast withdrawals</li>
+        <li>✔ Transparent rules</li>
+        <li>✔ Competitive rewards for high performers</li>
+      </ul>
+      <p>
+        Our payout structure is designed to grow as our platform grows — the more the academy
+        expands, the more our students earn.
+      </p>
     </div>
 
-    <div class="team-card">
-      <img src="https://via.placeholder.com/150" />
-      <h3>Backend Engineer</h3>
-      <p>Master of servers, performance, and speed.</p>
+    <div class="section">
+      <h2>Navigation & Resources</h2>
+      <p>
+        You can learn more about our systems, mission, and processes by exploring these pages:
+      </p>
+      <ul>
+        <li><a href="/faq">Frequently Asked Questions (FAQ)</a></li>
+        <li><a href="/terms">Terms & Conditions</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Our Vision</h2>
+      <p>
+        We dream of an academy that elevates millions — an education platform that becomes a
+        gateway to success no matter where you start. Knowledge belongs to everyone, and Ufq
+        Academy exists to deliver it.
+      </p>
     </div>
   </div>
-</section>
 
-<footer>
-  <div class="links">
-    <a href="/terms/">Terms & Conditions</a>
-    <a href="/privacy/">Privacy Policy</a>
-    <a href="/contact/">Contact</a>
-  </div>
-  <p>© 2025 Daromad Link. All rights reserved.</p>
-</footer>
-
+  <footer>
+    © 2025 Ufq Academy. All rights reserved.
+  </footer>
 </body>
 </html>
