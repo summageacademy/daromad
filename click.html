@@ -6,9 +6,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
-    body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;}
+    body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;}
     .spin{border:6px solid #fff3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
     @keyframes s{to{transform:rotate(360deg)}}
   </style>
@@ -16,46 +15,38 @@
 <body>
   <h2>Bir soniya...</h2>
   <div class="spin"></div>
+  <p><strong>$0.001</strong> hisobingizga qo‘shildi!</p>
 
 <script>
-const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15",databaseURL:"https://daromad-link-default-rtdb.firebaseio.com"};
+const firebaseConfig = {apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain: "daromad-link.firebaseapp.com",projectId: "daromad-link",storageBucket: "daromad-link.firebasestorage.app",messagingSenderId: "770178829456",appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const rtdb = firebase.database();
 
 const params = new URLSearchParams(location.search);
-const username = (params.get('u')||'').trim();
-if(!username||username.length<3){setTimeout(()=>location.href="https://summage.org/blogs/blog1.html",600);}
+let username = params.get('u');
+if (!username) {
+  const path = location.pathname.split('/').pop();
+  username = path.replace('click.html','').replace('.html','');
+}
 
-let ip = 'noip';
-fetch('https://api.ipify.org').then(r=>r.text()).then(i=>{ip=(i||'noip').replace(/\./g,'_');check();}).catch(()=>check());
+const SPONSORS = ["https://summage.org/blogs/blog1.html","https://summage.org/blogs/blog2.html","https://summage.org/blogs/blog3.html"];
 
-async function check(){
-  const ref = rtdb.ref(`clicks/${ip}`);
-  const snap = await ref.get();
-  const data = snap.val();
-  const now = Date.now();
-  const limit = 3*60*60*1000;
-
-  if(!data || now - data.t > limit){
-    // VALID CLICK
-    const q = await db.collection("publishers").where("username","==",username).limit(1).get();
-    if(!q.empty){
-      const today = new Date().toISOString().slice(0,10);
-      await q.docs[0].ref.update({
+if (username && username.length > 2) {
+  const today = new Date().toISOString().split('T')[0];
+  db.collection("publishers").where("username", "==", username).limit(1).get().then(snap => {
+    if (!snap.empty) {
+      const ref = snap.docs[0].ref;
+      // Increment clicks + earnings + daily stats
+      ref.update({
         clicks: firebase.firestore.FieldValue.increment(1),
         earnings: firebase.firestore.FieldValue.increment(0.001),
         [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
       });
     }
-    await ref.set({t:now});
-    setTimeout(()=>location.href="https://summage.org/blogs/blog"+(Math.floor(Math.random()*3)+1)+".html", 600);
-  } else {
-    // Already clicked
-    const mins = Math.ceil((limit - (now-data.t))/60000);
-    document.body.innerHTML = `<h2>${mins} daqiqa kutish kerak</h2>`;
-    setTimeout(()=>location.href="https://summage.org/blogs/blog1.html", 1500);
-  }
+    setTimeout(() => location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)], 800);
+  }).catch(() => setTimeout(() => location.href = SPONSORS[0], 800));
+} else {
+  setTimeout(() => location.href = SPONSORS[0], 800);
 }
 </script>
 </body>
