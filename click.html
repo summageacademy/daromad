@@ -10,14 +10,14 @@
     body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;}
     .spin{border:6px solid rgba(255,255,255,.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
     @keyframes s{to{transform:rotate(360deg)}}
-    .msg{font-size:18px;margin-top:15px;line-height:1.5;}
-    .warn{color:#ff6b6b;font-weight:bold;}
+    .msg{font-size:18px;line-height:1.6;max-width:90%;}
+    .success{color:#a7f3d0;}
   </style>
 </head>
 <body>
   <h2>Bir soniya...</h2>
   <div class="spin"></div>
-  <div class="msg" id="msg"><strong>$0.001</strong> hisobingizga qo‘shildi!</div>
+  <div class="msg success" id="msg"><strong>$0.001</strong> hisobingizga qo‘shildi!</div>
 
 <script>
 const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
@@ -28,19 +28,14 @@ const SPONSORS = ["https://summage.org/blogs/blog1.html","https://summage.org/bl
 const params = new URLSearchParams(location.search);
 let username = params.get('u')?.trim();
 
-if (!username || username.length < 3) {
-  redirect();
-}
+if (!username || username.length < 3) return redirect();
 
-// Real IP olish (Cloudflare yoki oddiy server)
 let realIP = "unknown";
 (async () => {
   try {
     const res = await fetch('https://api.ipify.org');
     realIP = await res.text();
-  } catch(e) {
-    realIP = "unknown";
-  }
+  } catch(e) {}
 
   const today = new Date().toISOString().split('T')[0];
   const now = Date.now();
@@ -54,42 +49,37 @@ let realIP = "unknown";
   const userData = (await userRef.get()).data() || {};
   const todayClicks = (userData.dailyStats?.[today]?.clicks || 0);
 
-  // 1. Global kunlik limit: 1000 klik
+  // Global 1000 limit
   if (todayClicks >= 1000) {
-    showMsg("Bugun 1000 ta bosish limitiga yetdingiz.<br>Ertaga yana davom eting!", "warn");
-    setTimeout(redirect, 4000);
-    return;
+    showMsg("Bugungi kunlik maksimal bosish soniga yetdingiz.<br>Ertaga yangi imkoniyatlar bilan qaytamiz", "normal");
+    return setTimeout(redirect, 4500);
   }
 
-  // 2. IP ma'lumotlarini olish yoki yaratish
   const ipSnap = await ipRef.get();
-  let ipData = ipSnap.exists ? ipSnap.data() : {count: 0, lastClick: 0, resetDate: ""};
+  let ipData = ipSnap.exists ? ipSnap.data() : {count:0, lastClick:0, resetDate:""};
 
-  // Yangi kun bo‘lsa — reset
   if (ipData.resetDate !== today) {
-    ipData = {count: 0, lastClick: now, resetDate: today};
+    ipData = {count:0, lastClick:now, resetDate:today};
     await ipRef.set(ipData);
   }
 
   const timeSinceLast = now - (ipData.lastClick || 0);
   const minWait = 5 * 60 * 1000; // 5 daqiqa
 
-  // 3. 5 daqiqa kutish tekshiruvi
+  // 5 daqiqa kutish
   if (timeSinceLast < minWait && ipData.count > 0) {
     const waitMin = Math.ceil((minWait - timeSinceLast) / 60000);
-    showMsg(`Iltimos, ${waitMin} daqiqa kutib qayting!`, "warn");
-    setTimeout(redirect, 4000);
-    return;
+    showMsg(`Siz bu havolani yaqinda bosgansiz.<br>Yana <strong>${waitMin} daqiqa</strong>dan so‘ng sinab ko‘ring`, "normal");
+    return setTimeout(redirect, 4500);
   }
 
-  // 4. Kunlik IP limit: 30 ta
+  // Kunlik 30 ta limit
   if (ipData.count >= 30) {
-    showMsg("Bu IP bugun 30 marta bosdi.<br>Ertaga qayting!", "warn");
-    setTimeout(redirect, 4000);
-    return;
+    showMsg("Bugun ushbu qurilmadan yetarlicha bosish amalga oshirildi.<br>Ertaga yana birga davom etamiz", "normal");
+    return setTimeout(redirect, 4500);
   }
 
-  // HAMMA TEKSHIRUVDAN O‘TDI → PUL BERAMIZ!
+  // PUL BERAMIZ!
   await db.runTransaction(async (t) => {
     t.update(userRef, {
       clicks: firebase.firestore.FieldValue.increment(1),
@@ -114,7 +104,7 @@ function redirect() {
 function showMsg(text, type = "") {
   const el = document.getElementById("msg");
   el.innerHTML = text;
-  if (type === "warn") el.classList.add("warn");
+  el.className = "msg " + type;
 }
 </script>
 </body>
