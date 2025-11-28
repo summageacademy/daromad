@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
     body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;}
-    .spin{border:6px solid rgba(255,255,255,.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
+    .spin{border:6px solid rgba(255,255,255,255,.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
     @keyframes s{to{transform:rotate(360deg)}}
     .msg{font-size:18px;line-height:1.6;max-width:90%;}
     .success{color:#a7f3d0;}
@@ -31,6 +31,7 @@ let username = params.get('u')?.trim();
 if (!username || username.length < 3) return redirect();
 
 let realIP = "unknown";
+
 (async () => {
   try {
     const res = await fetch('https://api.ipify.org');
@@ -39,6 +40,7 @@ let realIP = "unknown";
 
   const today = new Date().toISOString().split('T')[0];
   const now = Date.now();
+  const tomorrow = now + 24*60*60*1000; // 24 soatdan keyin
 
   const ipRef = db.collection("ip_limits").doc(realIP);
   const userSnap = await db.collection("publishers").where("username", "==", username).limit(1).get();
@@ -49,19 +51,24 @@ let realIP = "unknown";
   const userData = (await userRef.get()).data() || {};
   const todayClicks = (userData.dailyStats?.[today]?.clicks || 0);
 
-  // Global 1000 limit
+  // Global kunlik 1000 limit
   if (todayClicks >= 1000) {
-    showMsg("Bugungi kunlik maksimal bosish soniga yetdingiz.<br>Ertaga yangi imkoniyatlar bilan qaytamiz", "normal");
+    showMsg("Bugungi kunlik maksimal bosish soniga yetdingiz.<br>Ertaga yangi imkoniyatlar bilan qaytamiz");
     return setTimeout(redirect, 4500);
   }
 
+  // IP ma'lumotlarini olish
   const ipSnap = await ipRef.get();
-  let ipData = ipSnap.exists ? ipSnap.data() : {count:0, lastClick:0, resetDate:""};
 
-  if (ipData.resetDate !== today) {
-    ipData = {count:0, lastClick:now, resetDate:today};
-    await ipRef.set(ipData);
+  // Agar 24 soatdan oldin bo‘lgan eski dokument bo‘lsa – uni o‘chiramiz
+  if (ipSnap.exists) {
+    const data = ipSnap.data();
+    if (data.expiresAt && data.expiresAt < now) {
+      await ipRef.delete(); // eski IP ni o‘chirdik
+    }
   }
+
+  let ipData = ipSnap.exists ? ipSnap.data() : {count: 0, lastClick: 0};
 
   const timeSinceLast = now - (ipData.lastClick || 0);
   const minWait = 5 * 60 * 1000; // 5 daqiqa
@@ -69,30 +76,31 @@ let realIP = "unknown";
   // 5 daqiqa kutish
   if (timeSinceLast < minWait && ipData.count > 0) {
     const waitMin = Math.ceil((minWait - timeSinceLast) / 60000);
-    showMsg(`Siz bu havolani yaqinda bosgansiz.<br>Yana <strong>${waitMin} daqiqa</strong>dan so‘ng sinab ko‘ring`, "normal");
+    showMsg(`Siz bu havolani yaqinda bosgansiz.<br>Yana <strong>${waitMin} daqiqa</strong>dan keyin sinab ko‘ring`);
     return setTimeout(redirect, 4500);
   }
 
   // Kunlik 30 ta limit
-  if (ipData.count >= 30) {
-    showMsg("Bugun ushbu qurilmadan yetarlicha bosish amalga oshirildi.<br>Ertaga yana birga davom etamiz", "normal");
+  if ((ipData.count || 0) >= 30) {
+    showMsg("Bugun ushbu qurilmadan yetarlicha bosish amalga oshirildi.<br>Ertaga yana birga davom etamiz");
     return setTimeout(redirect, 4500);
   }
 
-  // PUL BERAMIZ!
+  // PUL BERAMIZ + yangi expiresAt qo‘yamiz
   await db.runTransaction(async (t) => {
     t.update(userRef, {
       clicks: firebase.firestore.FieldValue.increment(1),
       earnings: firebase.firestore.FieldValue.increment(0.001),
       [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
     });
-    t.update(ipRef, {
+    t.set(ipRef, {
       count: firebase.firestore.FieldValue.increment(1),
-      lastClick: now
-    });
+      lastClick: now,
+      expiresAt: tomorrow   // 24 soatdan keyin avto o‘chadi
+    }, {merge: true});
   });
 
-  showMsg("<strong>$0.001</strong> hisobingizga qo‘shildi!", "success");
+  showMsg("<strong>$0.001</strong> hisobingizga qo‘shildi!");
   setTimeout(redirect, 1200);
 
 })();
@@ -101,10 +109,8 @@ function redirect() {
   location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)];
 }
 
-function showMsg(text, type = "") {
-  const el = document.getElementById("msg");
-  el.innerHTML = text;
-  el.className = "msg " + type;
+function showMsg(text) {
+  document.getElementById("msg").innerHTML = text;
 }
 </script>
 </body>
