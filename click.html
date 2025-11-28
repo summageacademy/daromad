@@ -7,46 +7,114 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <style>
-    body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;}
-    .spin{border:6px solid #fff3;border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
+    body{background:#4361ee;color:#fff;font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;}
+    .spin{border:6px solid rgba(255,255,255,.3);border-top:6px solid #fff;border-radius:50%;width:50px;height:50px;animation:s 1s linear infinite;margin:20px 0;}
     @keyframes s{to{transform:rotate(360deg)}}
+    .msg{font-size:18px;margin-top:15px;line-height:1.5;}
+    .warn{color:#ff6b6b;font-weight:bold;}
   </style>
 </head>
 <body>
   <h2>Bir soniya...</h2>
   <div class="spin"></div>
-  <p><strong>$0.001</strong> hisobingizga qo‘shildi!</p>
+  <div class="msg" id="msg"><strong>$0.001</strong> hisobingizga qo‘shildi!</div>
 
 <script>
-const firebaseConfig = {apiKey: "AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain: "daromad-link.firebaseapp.com",projectId: "daromad-link",storageBucket: "daromad-link.firebasestorage.app",messagingSenderId: "770178829456",appId: "1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
+const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+const SPONSORS = ["https://summage.org/blogs/blog1.html","https://summage.org/blogs/blog2.html","https://summage.org/blogs/blog3.html"];
 const params = new URLSearchParams(location.search);
-let username = params.get('u');
-if (!username) {
-  const path = location.pathname.split('/').pop();
-  username = path.replace('click.html','').replace('.html','');
+let username = params.get('u')?.trim();
+
+if (!username || username.length < 3) {
+  redirect();
 }
 
-const SPONSORS = ["https://summage.org/blogs/blog1.html","https://summage.org/blogs/blog2.html","https://summage.org/blogs/blog3.html"];
+// Real IP olish (Cloudflare yoki oddiy server)
+let realIP = "unknown";
+(async () => {
+  try {
+    const res = await fetch('https://api.ipify.org');
+    realIP = await res.text();
+  } catch(e) {
+    realIP = "unknown";
+  }
 
-if (username && username.length > 2) {
   const today = new Date().toISOString().split('T')[0];
-  db.collection("publishers").where("username", "==", username).limit(1).get().then(snap => {
-    if (!snap.empty) {
-      const ref = snap.docs[0].ref;
-      // Increment clicks + earnings + daily stats
-      ref.update({
-        clicks: firebase.firestore.FieldValue.increment(1),
-        earnings: firebase.firestore.FieldValue.increment(0.001),
-        [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
-      });
-    }
-    setTimeout(() => location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)], 800);
-  }).catch(() => setTimeout(() => location.href = SPONSORS[0], 800));
-} else {
-  setTimeout(() => location.href = SPONSORS[0], 800);
+  const now = Date.now();
+
+  const ipRef = db.collection("ip_limits").doc(realIP);
+  const userSnap = await db.collection("publishers").where("username", "==", username).limit(1).get();
+
+  if (userSnap.empty) return redirect();
+
+  const userRef = userSnap.docs[0].ref;
+  const userData = (await userRef.get()).data() || {};
+  const todayClicks = (userData.dailyStats?.[today]?.clicks || 0);
+
+  // 1. Global kunlik limit: 1000 klik
+  if (todayClicks >= 1000) {
+    showMsg("Bugun 1000 ta bosish limitiga yetdingiz.<br>Ertaga yana davom eting!", "warn");
+    setTimeout(redirect, 4000);
+    return;
+  }
+
+  // 2. IP ma'lumotlarini olish yoki yaratish
+  const ipSnap = await ipRef.get();
+  let ipData = ipSnap.exists ? ipSnap.data() : {count: 0, lastClick: 0, resetDate: ""};
+
+  // Yangi kun bo‘lsa — reset
+  if (ipData.resetDate !== today) {
+    ipData = {count: 0, lastClick: now, resetDate: today};
+    await ipRef.set(ipData);
+  }
+
+  const timeSinceLast = now - (ipData.lastClick || 0);
+  const minWait = 5 * 60 * 1000; // 5 daqiqa
+
+  // 3. 5 daqiqa kutish tekshiruvi
+  if (timeSinceLast < minWait && ipData.count > 0) {
+    const waitMin = Math.ceil((minWait - timeSinceLast) / 60000);
+    showMsg(`Iltimos, ${waitMin} daqiqa kutib qayting!`, "warn");
+    setTimeout(redirect, 4000);
+    return;
+  }
+
+  // 4. Kunlik IP limit: 30 ta
+  if (ipData.count >= 30) {
+    showMsg("Bu IP bugun 30 marta bosdi.<br>Ertaga qayting!", "warn");
+    setTimeout(redirect, 4000);
+    return;
+  }
+
+  // HAMMA TEKSHIRUVDAN O‘TDI → PUL BERAMIZ!
+  await db.runTransaction(async (t) => {
+    t.update(userRef, {
+      clicks: firebase.firestore.FieldValue.increment(1),
+      earnings: firebase.firestore.FieldValue.increment(0.001),
+      [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
+    });
+    t.update(ipRef, {
+      count: firebase.firestore.FieldValue.increment(1),
+      lastClick: now
+    });
+  });
+
+  showMsg("<strong>$0.001</strong> hisobingizga qo‘shildi!", "success");
+  setTimeout(redirect, 1200);
+
+})();
+
+function redirect() {
+  location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)];
+}
+
+function showMsg(text, type = "") {
+  const el = document.getElementById("msg");
+  el.innerHTML = text;
+  if (type === "warn") el.classList.add("warn");
 }
 </script>
 </body>
