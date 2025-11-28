@@ -28,10 +28,10 @@ const urlParams = new URLSearchParams(location.search);
 let username = urlParams.get('u')?.trim();
 
 if (!username || username.length < 3) {
-  setTimeout(redirect, 1000);
+  setTimeout(() => location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)], 1000);
+  throw new Error("No username");
 }
 
-// Har qanday xato bo‘lsa ham redirect bo‘lishi uchun
 function redirect() {
   location.href = SPONSORS[Math.floor(Math.random() * SPONSORS.length)];
 }
@@ -40,7 +40,6 @@ function show(text) {
   document.getElementById("msg").innerHTML = text;
 }
 
-// BOSHIDAN ASINXRON KOD
 (async () => {
   let realIP = "unknown";
   try {
@@ -57,62 +56,73 @@ function show(text) {
     if (userSnap.empty) throw "user not found";
 
     const userRef = userSnap.docs[0].ref;
-    const userData = (await userRef.get()).data();
-
-    // 1000 klik limit
-    const todayClicks = userData?.dailyStats?.[today]?.clicks || 0;
-    if (todayClicks >= 1000) {
-      show("Bugungi maksimal limitga yetdingiz.<br>Ertaga yana davom etamiz");
-      return setTimeout(redirect, 4000);
-    }
-
     const ipRef = db.collection("ip_limits").doc(realIP);
-    const ipSnap = await ipRef.get();
-    let ipData = ipSnap.exists ? ipSnap.data() : {};
 
-    // Agar 24 soat o‘tgan bo‘lsa – reset
-    if (ipData.expiresAt && ipData.expiresAt < now) {
-      await ipRef.delete();
-      ipData = {};
-    }
+    // BITTA TRANSACTION — HAMMA TEKSHIRUV VA YOZISH SHU YERDA
+    await db.runTransaction(async (t) => {
+      const userDoc = await t.get(userRef);
+      if (!userDoc.exists) throw "user gone";
 
-    const count = ipData.count || 0;
-    const last = ipData.lastClick || 0;
-    const timeDiff = now - last;
+      const data = userDoc.data();
+      const todayClicks = data.dailyStats?.[today]?.clicks || 0;
 
-    // 5 daqiqa kutish
-    if (count > 0 && timeDiff < 5*60*1000) {
-      const min = Math.ceil((5*60*1000 - timeDiff)/60000);
-      show(`Yaqinda bosgansiz.<br>Yana <strong>${min} daqiqa</strong>dan keyin`);
-      return setTimeout(redirect, 4000);
-    }
+      // 1000 LIMIT — ENDI HECH QACHON O‘TMAYDI
+      if (todayClicks >= 1000) {
+        show("Bugungi maksimal limitga yetdingiz.<br>Ertaga yana davom etamiz");
+        setTimeout(redirect, 4000);
+        return; // transaction to‘xtaydi
+      }
 
-    // 30 ta IP limit
-    if (count >= 30) {
-      show("Bugun bu qurilmadan yetarlicha bosildi.<br>Ertaga yana birga");
-      return setTimeout(redirect, 4000);
-    }
+      // IP tekshiruvi
+      const ipDoc = await t.get(ipRef);
+      let ipData = ipDoc.exists ? ipDoc.data() : {};
 
-    // HAMMA OK → PUL BERAMIZ
-    await db.runTransaction(async t => {
+      // 24 soat o‘tgan bo‘lsa o‘chir
+      if (ipData.expiresAt && ipData.expiresAt < now) {
+        t.delete(ipRef);
+        ipData = {count: 0, lastClick: 0};
+      }
+
+      const count = ipData.count || 0;
+      const lastClick = ipData.lastClick || 0;
+      const timeDiff = now - lastClick;
+
+      // 5 daqiqa kutish
+      if (count > 0 && timeDiff < 5*60*1000) {
+        const minLeft = Math.ceil((5*60*1000 - timeDiff) / 60000);
+        show(`Yaqinda bosgansiz.<br>Yana <strong>${minLeft} daqiqa</strong> kutish kerak`);
+        setTimeout(redirect, 4000);
+        return;
+      }
+
+      // 30 ta IP limit
+      if (count >= 30) {
+        show("Bugun bu qurilmadan yetarlicha bosildi.<br>Ertaga yana birga");
+        setTimeout(redirect, 4000);
+        return;
+      }
+
+      // HAMMA TEKSHIRUVDAN O‘TDI → PUL BERAMIZ
       t.update(userRef, {
         clicks: firebase.firestore.FieldValue.increment(1),
         earnings: firebase.firestore.FieldValue.increment(0.001),
         [`dailyStats.${today}.clicks`]: firebase.firestore.FieldValue.increment(1)
       });
+
       t.set(ipRef, {
         count: count + 1,
         lastClick: now,
         expiresAt: tomorrow
       }, {merge: true});
-    });
 
+    }); // transaction tugadi
+
+    // Agar bu yerga yetib kelsa — pul muvaffaqiyatli qo‘shildi
     show("<strong>$0.001</strong> hisobingizga qo‘shildi!");
     setTimeout(redirect, 1200);
 
   } catch (err) {
-    // Har qanday xato bo‘lsa ham — redirect qilamiz, foydalanuvchi hech qachon to‘xtab qolmaydi
-    console.log(err);
+    console.log("Error:", err);
     show("Xatolik yuz berdi, lekin yo‘naltirilmoqda...");
     setTimeout(redirect, 2000);
   }
