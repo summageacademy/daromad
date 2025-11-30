@@ -100,6 +100,22 @@
   @media(max-width:480px){.landing-box h1{font-size:44px;}.landing-box{padding:20px 15px;}}
   .section:not(.active):not(#dashboard) { display:none !important; }
   #dashboard { display:block; } /* dashboard is default */
+    .admin-tabs button {
+    padding:12px 24px;
+    background:transparent;
+    border:none;
+    color:#94a3b8;
+    font-weight:600;
+    cursor:pointer;
+    border-radius:12px 12px 0 0;
+    transition:all .3s;
+  }
+  .admin-tabs button.active {
+    background:#9333ea;
+    color:white;
+    box-shadow:0 -4px 20px rgba(147,51,234,0.4);
+  }
+  .admin-tab-content { animation:fadeIn .5s; }
 </style>
 </head>
 <body>
@@ -235,22 +251,101 @@
       </div>
     </div>
 
-    <!-- ADMIN PANEL -->
+    <!-- ADMIN PANEL - UPGRADED TO GOD MODE -->
     <div id="admin" class="section">
-      <h1 class="page-title">Admin Panel</h1>
-      <div class="stat-card">
-        <h3>Yangi roʻyxatdan oʻtganlar (oxirgi 50 ta)</h3>
-        <div style="overflow-x:auto;margin-bottom:40px;">
-          <table><thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Sana</th><th>Bosish</th><th>Daromad</th><th>Amal</th></tr></thead><tbody id="newUsersBody"><tr><td colspan="7" class="empty">Yuklanmoqda...</td></tr></tbody></table>
+      <div class="main-content">
+        <h1 class="page-title">
+          <i class="fas fa-crown" style="margin-right:12px;color:#fbbf24;"></i>
+          Admin Dashboard
+        </h1>
+    
+        <!-- Quick Stats Grid -->
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:24px; margin-bottom:40px;">
+          <div class="stat-card" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
+            <h3>Total Users</h3>
+            <div class="value" id="adminTotalUsers">0</div>
+          </div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #06b6d4, #22d3ee);">
+            <h3>Total Clicks</h3>
+            <div class="value" id="adminTotalClicks">0</div>
+          </div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #34d399);">
+            <h3>Total Paid Out</h3>
+            <div class="value" id="adminTotalPaid">$0.00</div>
+          </div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+            <h3>Pending Requests</h3>
+            <div class="value" id="adminPendingCount">0</div>
+          </div>
         </div>
-        <h3>Aktiv foydalanuvchilar</h3>
-        <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
-        <div style="overflow-x:auto;">
-          <table><thead><tr><th>User</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>Soʻrov</th><th>Amal</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="empty">Yuklanmoqda...</td></tr></tbody></table>
+    
+        <!-- Search + Tabs -->
+        <div style="margin-bottom:32px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+          <input type="text" id="adminGlobalSearch" placeholder="Search users, emails, cards..." 
+                 style="flex:1;min-width:300px;padding:16px 20px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:white;font-size:16px;"
+                 onkeyup="adminGlobalSearch()">
+          <button class="btn-primary" onclick="exportUsers()" style="padding:14px 28px;">
+            <i class="fas fa-download"></i> Export CSV
+          </button>
         </div>
-        <h3 style="margin-top:40px;">Toʻlovlar tarixi</h3>
-        <div style="overflow-x:auto;">
-          <table><thead><tr><th>Sana</th><th>Foydalanuvchi</th><th>Miqdor</th><th>Karta</th></tr></thead><tbody id="adminPayoutLog"><tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr></tbody></table>
+    
+        <!-- Tabs -->
+        <div class="admin-tabs" style="display:flex;gap:12px;margin-bottom:24px;border-bottom:2px solid rgba(147,51,234,0.3);">
+          <button class="admin-tab active" data-tab="active-users">Active Users</button>
+          <button class="admin-tab" data-tab="pending-payments">Pending Payments</button>
+          <button class="admin-tab" data-tab="recent-signups">Recent Signups</button>
+          <button class="admin-tab" data-tab="payout-log">Payout History</button>
+        </div>
+    
+        <!-- Tab Contents -->
+        <div id="active-users" class="admin-tab-content">
+          <div style="overflow-x:auto;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+            <table style="width:100%;font-size:15px;">
+              <thead style="background:linear-gradient(90deg,#9333ea,#06b6d4);">
+                <tr>
+                  <th style="padding:18px 16px;">User</th>
+                  <th>Email</th>
+                  <th>Card</th>
+                  <th>Clicks</th>
+                  <th>Earned</th>
+                  <th>Pending</th>
+                  <th style="text-align:center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersBody"></tbody>
+            </table>
+          </div>
+        </div>
+    
+        <div id="pending-payments" class="admin-tab-content" style="display:none;">
+          <div class="grid" style="gap:20px;" id="pendingPaymentsGrid">
+            <div class="empty" style="grid-column:1/-1;padding:60px;font-size:20px;">
+              <i class="fas fa-clock" style="font-size:48px;margin-bottom:16px;opacity:0.5;"></i><br>
+              No pending payment requests
+            </div>
+          </div>
+        </div>
+    
+        <div id="recent-signups" class="admin-tab-content" style="display:none;">
+          <div style="overflow-x:auto;">
+            <table>
+              <thead style="background:#1e293b;"><tr>
+                <th>#</th><th>Name</th><th>Email</th><th>Date</th><th>Clicks</th><th>Earned</th><th>Action</th>
+              </tr></thead>
+              <tbody id="recentUsersBody"></tbody>
+            </table>
+          </div>
+        </div>
+    
+        <div id="payout-log" class="admin-tab-content" style="display:none;">
+          <div style="overflow-x:auto;">
+            <table>
+              <thead style="background:#166534;"><tr>
+                <th>Date</th><th>User</th><th>Amount</th><th>Card</th>
+              </tr></thead>
+              <tbody id="adminPayoutLog"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -265,6 +360,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let dailyChart, earningsChart;
+let adminAllUsers = []; // ← NEW: for global admin data
 
 function showLogin() {
   document.getElementById('landingPage').style.display = 'none';
@@ -276,35 +372,25 @@ function showSignup() {
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('signupScreen').style.display = 'flex';
 }
-
 function toggleSidebar() {
   document.querySelector('.sidebar').classList.toggle('open');
   document.querySelector('.overlay').classList.toggle('active');
 }
-
 function showSection(id) {
-  // HIDE ALL sections first — using both class and inline style
   document.querySelectorAll('.section').forEach(s => {
     s.style.display = 'none';
     s.classList.remove('active');
   });
-
-  // Show only the selected one
   const target = document.getElementById(id);
   if (target) {
     target.style.display = 'block';
     setTimeout(() => target.classList.add('active'), 10);
   }
-
-  // Update sidebar active state
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const navItem = document.querySelector(`[data-section="${id}"]`);
   if (navItem) navItem.classList.add('active');
-
-  // Mobile: close sidebar after click
   if (window.innerWidth <= 992) toggleSidebar();
 }
-
 function copyLink() {
   const link = document.getElementById('link').textContent;
   navigator.clipboard.writeText(link);
@@ -314,27 +400,44 @@ function copyLink() {
   btn.style.background = "#10b981";
   setTimeout(() => { btn.textContent = old; btn.style.background = ""; }, 2000);
 }
-
 function logout() {
   auth.signOut().then(() => location.reload());
 }
-
 async function saveCard() {
   let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
   if (card && card.length !== 16) return alert("16 ta raqam kiriting");
   await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
   alert("Saqlandi!");
 }
-
 function celebrate() {
   confetti({particleCount: 120, spread: 70, origin: { y: 0.6 }});
 }
 
-function filterUsers() {
-  const term = document.getElementById('userSearch').value.toLowerCase();
-  document.querySelectorAll('#usersBody tr').forEach(tr => {
-    tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
+// ADMIN PANEL NEW FUNCTIONS
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(tab).style.display = 'block';
+}
+function adminGlobalSearch() {
+  const term = document.getElementById('adminGlobalSearch').value.toLowerCase();
+  document.querySelectorAll('#adminUsersBody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
   });
+}
+function exportUsers() {
+  let csv = "Username,Email,Card,Clicks,Earned\n";
+  adminAllUsers.forEach(u => {
+    csv += `${u.username || ''},${u.email},${u.cardNumber || ''},${u.clicks || 0},${(u.earnings || 0).toFixed(2)}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `daromad-link-users-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 window.payUser = async (uid) => {
@@ -345,8 +448,8 @@ window.payUser = async (uid) => {
   const updated = (data.requests || []).map(r => r.status === 'pending' ? {...r, status:'paid'} : r);
   await ref.update({requests: updated, earnings: 0, clicks: 0});
   alert("Toʻlov amalga oshirildi!");
+  celebrate();
 };
-
 window.deleteUser = async (uid) => {
   if (!confirm("Bu foydalanuvchi butunlay oʻchirilsinmi?")) return;
   await db.collection("publishers").doc(uid).delete();
@@ -360,7 +463,7 @@ document.getElementById('cardNumber')?.addEventListener('input', function (e) {
   e.target.value = v;
 });
 
-// Instant signup with auto-login fix
+// Signup & Login (unchanged)
 document.getElementById('signupBtn').addEventListener('click', async () => {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
@@ -368,17 +471,14 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
   const error = document.getElementById('signupError');
   const btn = document.getElementById('signupBtn');
   const success = document.getElementById('signupSuccess');
-
   if (!name || !email || pass.length < 6) {
     error.textContent = "Barcha maydonlarni toʻldiring (parol 6+ belgidan)";
     error.classList.add('show');
     return;
   }
-
   btn.disabled = true;
   error.classList.remove('show');
   success.style.display = 'none';
-
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 9999);
@@ -386,7 +486,7 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
       username, displayName: name, email, clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber: ""
     });
     success.style.display = 'block';
-    setTimeout(() => location.reload(), 1500);  // Reload to trigger dashboard
+    setTimeout(() => location.reload(), 1500);
   } catch (e) {
     const msg = e.message.includes("email-already-in-use") ? "Bu email allaqachon ishlatilgan" : "Xato yuz berdi: " + e.message;
     error.textContent = msg;
@@ -395,22 +495,18 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
   btn.disabled = false;
 });
 
-// Login
 document.getElementById('loginBtn').addEventListener('click', () => {
   const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
   const error = document.getElementById('loginError');
   const btn = document.getElementById('loginBtn');
-
   if (!email || !pass) {
     error.textContent = "Toʻldiring";
     error.classList.add('show');
     return;
   }
-
   btn.disabled = true;
   error.classList.remove('show');
-
   auth.signInWithEmailAndPassword(email, pass).catch(e => {
     error.textContent = "Notoʻgʻri email yoki parol";
     error.classList.add('show');
@@ -420,7 +516,6 @@ document.getElementById('loginBtn').addEventListener('click', () => {
 
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
-    // User is NOT logged in → show Landing Page for new visitors
     document.getElementById('landingPage').style.display = 'flex';
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('signupScreen').style.display = 'none';
@@ -429,7 +524,6 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
-  // User IS logged in → hide all auth/landing screens and show the main app
   document.getElementById('landingPage').style.display = 'none';
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('signupScreen').style.display = 'none';
@@ -440,18 +534,8 @@ auth.onAuthStateChanged(async (user) => {
   const pubRef = db.collection("publishers").doc(user.uid);
   const snap = await pubRef.get();
   let data = snap.data() || {};
-
   if (!snap.exists) {
-    data = {
-      username: user.email.split('@')[0],
-      displayName: "",
-      clicks: 0,
-      earnings: 0,
-      requests: [],
-      joined: new Date(),
-      dailyStats: {},
-      cardNumber: ""
-    };
+    data = { username: user.email.split('@')[0], displayName: "", clicks: 0, earnings: 0, requests: [], joined: new Date(), dailyStats: {}, cardNumber: "" };
     await pubRef.set(data);
   }
 
@@ -465,10 +549,10 @@ auth.onAuthStateChanged(async (user) => {
   document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
   document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
 
+  // USER DASHBOARD (unchanged)
   pubRef.onSnapshot((doc) => {
     if (!doc.exists) return;
     const d = doc.data();
-
     document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
     const earn = (d.earnings || 0).toFixed(2);
     document.getElementById('totalEarn').textContent = "$" + earn;
@@ -477,7 +561,6 @@ auth.onAuthStateChanged(async (user) => {
     const pending = (d.requests || []).some(r => r.status === 'pending');
     const btn = document.getElementById('requestPayout');
     const notice = document.getElementById('pendingNotice');
-
     if (pending || parseFloat(earn) < 5) {
       btn.disabled = true;
       btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
@@ -488,37 +571,17 @@ auth.onAuthStateChanged(async (user) => {
       notice.style.display = "none";
     }
 
-    // Charts update
+    // Charts
     const daily = d.dailyStats || {};
     const dates = Object.keys(daily).sort().slice(-7);
     const labels = dates.length ? dates.map(d => d.slice(5).replace('-', '/')) : ["Bugun"];
     const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [0];
-
     if (dailyChart) dailyChart.destroy();
     if (earningsChart) earningsChart.destroy();
+    dailyChart = new Chart(document.getElementById('dailyChart'), { type: 'bar', data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+    earningsChart = new Chart(document.getElementById('earningsChart'), { type: 'line', data: { labels: ['Yan','Fev','Mar','Apr','May','Iyun','Iyul','Avg','Sen','Okt','Noy','Dek'], datasets: [{ label: 'Daromad', data: Array(12).fill(0).map((_,i)=>i+1===new Date().getMonth()+1?parseFloat(earn):0), borderColor: '#10b981', tension: 0.4, fill: true }] }, options: { responsive: true } });
 
-    dailyChart = new Chart(document.getElementById('dailyChart'), {
-      type: 'bar',
-      data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
-      options: { responsive: true, plugins: { legend: { display: false } } }
-    });
-
-    earningsChart = new Chart(document.getElementById('earningsChart'), {
-      type: 'line',
-      data: {
-        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
-        datasets: [{
-          label: 'Daromad',
-          data: Array(12).fill(0).map((_, i) => i + 1 === new Date().getMonth() + 1 ? parseFloat(earn) : 0),
-          borderColor: '#10b981',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: { responsive: true }
-    });
-
-    // Payout history table
+    // Payout history
     const tbody = document.getElementById('payoutTable');
     tbody.innerHTML = '';
     const requests = d.requests || [];
@@ -526,73 +589,81 @@ auth.onAuthStateChanged(async (user) => {
     requests.forEach(r => {
       const tr = document.createElement('tr');
       const date = new Date(r.date?.seconds * 1000 || r.date);
-      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status === 'paid' ? '#10b981' : '#f59e0b'}">${r.status === 'paid' ? 'Toʻlandi' : 'Kutilyapti'}</strong></td>`;
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#f59e0b'}">${r.status==='paid'?'Toʻlandi':'Kutilyapti'}</strong></td>`;
       tbody.appendChild(tr);
     });
   });
 
-  // Admin panel features (unchanged)
+  // ==================== NEW ADMIN PANEL (ASTAGFIRULLAH) ====================
   if (isAdmin) {
-    db.collection("publishers").orderBy("joined", "desc").limit(50).onSnapshot((snap) => {
-      const tbody = document.getElementById('newUsersBody');
+    db.collection("publishers").onSnapshot(snap => {
+      adminAllUsers = snap.docs.map(d => ({id: d.id, ...d.data()}));
+
+      const totalUsers = snap.size;
+      const totalClicks = adminAllUsers.reduce((a,b) => a + (b.clicks||0), 0);
+      const totalPaid = adminAllUsers.flatMap(u => u.requests || []).filter(r => r.status === 'paid').reduce((a,r) => a + r.amount, 0);
+      const pendingCount = adminAllUsers.flatMap(u => u.requests || []).filter(r => r.status === 'pending').length;
+
+      document.getElementById('adminTotalUsers').textContent = totalUsers.toLocaleString();
+      document.getElementById('adminTotalClicks').textContent = totalClicks.toLocaleString();
+      document.getElementById('adminTotalPaid').textContent = '$' + totalPaid.toFixed(2);
+      document.getElementById('adminPendingCount').textContent = pendingCount;
+
+      // Active Users Table
+      const tbody = document.getElementById('adminUsersBody');
       tbody.innerHTML = '';
-      snap.docs.forEach((doc, i) => {
-        const d = doc.data();
+      adminAllUsers.forEach(u => {
+        const pending = (u.requests || []).filter(r => r.status === 'pending').length;
+        const card = u.cardNumber ? u.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${d.displayName || d.username || '-'}</td>
-          <td>${d.email}</td>
-          <td>${new Date(d.joined?.seconds * 1000 || d.joined).toLocaleDateString('uz-UZ')}</td>
-          <td>${(d.clicks || 0).toLocaleString()}</td>
-          <td>$${(d.earnings || 0).toFixed(2)}</td>
-          <td><button class="btn-danger" onclick="deleteUser('${doc.id}')">Oʻchirish</button></td>
+          <td><strong>${u.username || '—'}</strong></td>
+          <td>${u.email}</td>
+          <td>${card} ${u.cardNumber ? `<button class="copy-btn" onclick="navigator.clipboard.writeText('${u.cardNumber}')">Copy</button>` : ''}</td>
+          <td>${(u.clicks||0).toLocaleString()}</td>
+          <td style="color:#10b981;font-weight:600;">$${(u.earnings||0).toFixed(2)}</td>
+          <td><span class="badge" style="background:${pending>0?'#f59e0b':'#166534'};padding:4px 10px;border-radius:8px;color:white;">${pending}</span></td>
+          <td style="text-align:center;">
+            ${pending > 0 ? `<button class="btn-primary" style="padding:8px 16px;font-size:13px;" onclick="payUser('${u.id}')">Pay Now</button>` : '—'}
+            <button onclick="deleteUser('${u.id}')" style="margin-left:8px;background:#ef4444;padding:8px 12px;border:none;border-radius:8px;color:white;cursor:pointer;font-size:12px;">Delete</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
-      if (!snap.size) tbody.innerHTML = '<tr><td colspan="7" class="empty">Yangi foydalanuvchi yoʻq</td></tr>';
+
+      // Pending Payments Tab
+      const pendingGrid = document.getElementById('pendingPaymentsGrid');
+      pendingGrid.innerHTML = '';
+      const pendingUsers = adminAllUsers.filter(u => (u.requests || []).some(r => r.status === 'pending'));
+      if (!pendingUsers.length) {
+        pendingGrid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><i class="fas fa-check-circle" style="font-size:48px;color:#10b981;"></i><br>All caught up!</div>`;
+      } else {
+        pendingUsers.forEach(u => {
+          const req = u.requests.find(r => r.status === 'pending');
+          const card = u.cardNumber?.replace(/(\d{4})/g, '$1 ').trim() || 'No card';
+          const div = document.createElement('div');
+          div.className = 'stat-card';
+          div.style.cssText = 'background:linear-gradient(135deg,#1e293b,#334155);position:relative;overflow:hidden;';
+          div.innerHTML = `
+            <h3>${u.username} • $${req.amount.toFixed(2)}</h3>
+            <p style="margin:12px 0;color:#94a3b8;">${u.email}</p>
+            <p style="font-family:monospace;color:#06b6d4;">${card}</p>
+            <button onclick="payUser('${u.id}')" style="margin-top:16px;background:#10b981;padding:12px 24px;border:none;border-radius:12px;color:white;font-weight:600;cursor:pointer;">
+              Pay $${req.amount.toFixed(2)} Now
+            </button>
+          `;
+          pendingGrid.appendChild(div);
+        });
+      }
     });
 
-    db.collection("publishers").onSnapshot((snap) => {
-      const tbody = document.getElementById('usersBody');
-      tbody.innerHTML = '';
-      snap.docs.forEach((doc) => {
-        const d = doc.data();
-        const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
-        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${d.username || '—'}</strong></td>
-          <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + d.cardNumber + '\')">Copy</button>' : ''}</td>
-          <td>${(d.clicks || 0).toLocaleString()}</td>
-          <td>$${(d.earnings || 0).toFixed(2)}</td>
-          <td>${pendingCount}</td>
-          <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\'' + doc.id + '\')">Toʻlash</button>' : '—'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-      if (!snap.size) tbody.innerHTML = '<tr><td colspan="6" class="empty">Foydalanuvchi yoʻq</td></tr>';
-    });
-
-    const logBody = document.getElementById('adminPayoutLog');
-    db.collection("publishers").get().then((snap) => {
-      logBody.innerHTML = '';
-      const payments = [];
-      snap.docs.forEach((doc) => {
-        const d = doc.data();
-        (d.requests || []).forEach(r => r.status === 'paid' && payments.push({date: r.date, username: d.username || '—', amount: r.amount, card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'}));
-      });
-      payments.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
-      if (!payments.length) logBody.innerHTML = '<tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr>';
-      payments.forEach(p => {
-        const tr = document.createElement('tr');
-        const date = new Date(p.date?.seconds * 1000 || p.date);
-        tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
-        logBody.appendChild(tr);
-      });
+    // Tab switching
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchAdminTab(tab.dataset.tab));
     });
   }
 
+  // Payout request
   document.getElementById('requestPayout').onclick = async () => {
     const earn = parseFloat(document.getElementById('balance').textContent.replace('$', ''));
     if (earn < 5) return alert("Minimum $5 kerak");
@@ -611,6 +682,7 @@ auth.onAuthStateChanged(async (user) => {
   };
 });
 
+// Navigation
 document.querySelectorAll('.nav-item[data-section]').forEach(item => {
   item.addEventListener('click', () => {
     showSection(item.dataset.section);
