@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="icon" type="image/jpeg" href="logo.jpg">
+  <link rel="shortcut icon" href="logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
@@ -45,6 +46,9 @@
   .btn-readmore:hover{background:#a855f7;transform:translateY(-4px);box-shadow:0 20px 40px rgba(147,51,234,.5);}
   .btn-signin{background:transparent;color:white;border:2px solid #9333ea !important;}
   .btn-signin:hover{background:#9333ea;transform:translateY(-4px);}
+  .auth-box,.signup-box{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border-radius:24px;padding:48px 40px;width:100%;max-width:480px;box-shadow:0 25px 50px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);text-align:center;animation:fadeIn .8s;}
+  .landing-box{background:transparent;backdrop-filter:none;border:none;box-shadow:none;max-width:560px;padding:40px 20px;animation:fadeInUp 1s ease-out;}
+  @keyframes fadeIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
   .auth-box h1,.signup-box h1{font-size:38px;font-weight:800;color:white;margin-bottom:8px;background:linear-gradient(90deg,#fff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
   .auth-box p,.signup-box p{font-size:18px;color:#cbd5e1;margin-bottom:30px;}
   .input-group{margin:18px 0;}
@@ -52,7 +56,7 @@
   .input-group input::placeholder{color:#94a3b8;}
   .input-group input:focus{outline:none;border-color:#a855f7;box-shadow:0 0 0 4px rgba(147,51,234,.3);}
   button,.btn-primary,.landing-btn{background:var(--primary);color:white;padding:18px;border-radius:16px;border:none;font-weight:600;cursor:pointer;transition:.3s;box-shadow:0 10px 30px rgba(147,51,234,.4);}
-  button:hover,.btn-primary:hover{background:var(--primary-light);transform:translateY(-4px);box-shadow:0 20px 40px rgba(147,51,234,.5);}
+  button:hover,.btn-primary:hover,.btn-readmore:hover{background:var(--primary-light);transform:translateY(-4px);box-shadow:0 20px 40px rgba(147,51,234,.5);}
   button:disabled{background:#334155;cursor:not-allowed;transform:none;box-shadow:none;}
   .error{color:#ff6b6b;margin-top:12px;font-size:14px;opacity:0;transition:.3s;}
   .error.show{opacity:1;}
@@ -91,38 +95,43 @@
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:997;display:none;}
   .overlay.active{display:block;}
   .empty{text-align:center;color:var(--muted);padding:40px;font-size:18px;}
+  @media(max-width:992px){.sidebar{left:-300px;}.main-content{margin-left:0;padding:20px;padding-bottom:100px;}.hamburger{display:flex;}.sidebar.open{left:0;}.overlay.active{display:block;}.grid{grid-template-columns:1fr;gap:20px;}.page-title{font-size:26px;}}
+  @media(max-width:768px){.landing-box h1{font-size:52px;}.landing-box .subtitle{font-size:17px;}.landing-buttons{flex-direction:column;align-items:center;}.landing-btn{width:80%;max-width:300px;}.landing-lines{display:none;}}
+  @media(max-width:480px){.landing-box h1{font-size:44px;}.landing-box{padding:20px 15px;}}
   .section:not(.active):not(#dashboard) { display:none !important; }
-  #dashboard { display:block; }
-
-  /* NEW ADMIN PANEL STYLES */
-  .admin-tab { display:none; }
-  .admin-tab.active { display:block; animation:fadeIn .6s; }
-  .tab-btn { padding:12px 24px; border-radius:12px; background:rgba(147,51,234,.15); border:none; color:white; cursor:pointer; font-weight:600; transition:.3s; }
-  .tab-btn.active, .tab-btn:hover { background:var(--primary); box-shadow:var(--glow-purple); }
-  .btn-danger { background:#ef4444; padding:8px 16px; border:none; border-radius:8px; color:white; cursor:pointer; font-size:13px; }
-  .btn-success { background:#22c55e; padding:8px 16px; border:none; border-radius:8px; color:white; cursor:pointer; font-size:13px; }
-  @media(max-width:992px){.sidebar{left:-300px;}.main-content{margin-left:0;padding:20px;padding-bottom:100px;}.hamburger{display:flex;}.sidebar.open{left:0;}.overlay.active{display:block;}.grid{grid-template-columns:1fr;}}
-  @media(max-width:768px){.landing-box h1{font-size:52px;}.landing-buttons{flex-direction:column;align-items:center;}.landing-btn{width:80%;max-width:300px;}}
-  </style>
+  #dashboard { display:block; } /* dashboard is default */
+</style>
 </head>
 <body>
-
-<!-- LANDING PAGE -->
+<!-- NEW MODERN LANDING PAGE -->
 <div id="landingPage">
-  <div class="landing-lines"></div><div class="landing-lines"></div><div class="landing-lines"></div>
-  <div class="landing-box">
-    <h1>Daromad Link</h1>
-    <p class="subtitle">Daromad Link - O'zbekistondagi Eng Ishonchli va Yagona Monetizatsiya Platformasi</p>
-    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-    <div class="landing-buttons">
-      <button class="landing-btn btn-readmore" onclick="showSignup()">Get Started</button>
-      <button class="landing-btn btn-signin" onclick="showLogin()">Sign In</button>
-      <button class="landing-btn btn-readmore" onclick="window.location.href='/daromad/about/'">About Us</button>
-    </div>
-  </div>
+<div class="landing-lines"></div>
+<div class="landing-lines"></div>
+<div class="landing-lines"></div>
+
+
+<div class="landing-box">
+<h1>Daromad Link</h1>
+<p class="subtitle">Daromad Link - O'zbekistondagi Eng Ishonchli va Yagona Monetizatsiya Platformasi</p>
+
+
+<div class="dots">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
 </div>
 
-<!-- LOGIN & SIGNUP SCREENS (unchanged) -->
+
+<div class="landing-buttons">
+<button class="landing-btn btn-readmore" onclick="showSignup()">Get Started</button>
+<button class="landing-btn btn-signin" onclick="showLogin()">Sign In</button>
+<!-- NEW THIRD BUTTON (About Us) -->
+<!-- Redirects to /about/ instead of aboutus.html -->
+<button class="landing-btn btn-readmore" onclick="window.location.href='/daromad/about/'">About Us</button>
+</div>
+</div>
+</div>
+<!-- LOGIN SCREEN -->
 <div id="authScreen" style="display:none;">
   <div class="auth-box">
     <h1>Daromad Link</h1>
@@ -135,6 +144,7 @@
   </div>
 </div>
 
+<!-- SIGNUP SCREEN -->
 <div id="signupScreen">
   <div class="signup-box">
     <h1>Roʻyxatdan oʻtish</h1>
@@ -144,8 +154,8 @@
     <div class="input-group"><input id="regPass" type="password" placeholder="Parol (6+ belgidan)" required /></div>
     <button id="signupBtn">Hisob ochish</button>
     <div class="error" id="signupError"></div>
-    <div class="success-msg" id="signupSuccess" style="display:none;color:#22c55e;margin-top:15px;">Hisob ochildi! Avtomatik kirish...</div>
     <div class="switch-text"><span onclick="showLogin()">← Kirish sahifasiga qaytish</span></div>
+    <div class="success-msg" id="signupSuccess" style="display:none;">Hisob ochildi! Avtomatik kirish...</div>
   </div>
 </div>
 
@@ -163,7 +173,7 @@
   </div>
 
   <div class="main-content">
-    <!-- DASHBOARD, STATS, PROFILE, BILLING (unchanged) -->
+    <!-- DASHBOARD -->
     <div id="dashboard" class="section active">
       <h1 class="page-title">Salom, <span id="userName">...</span>!</h1>
       <div class="grid">
@@ -177,14 +187,22 @@
       </div>
     </div>
 
+    <!-- STATS -->
     <div id="stats" class="section">
       <h1 class="page-title">Statistika</h1>
       <div class="grid">
-        <div class="stat-card"><h3 style="text-align:center;margin-bottom:20px;">Oxirgi 7 kun</h3><canvas id="dailyChart"></canvas></div>
-        <div class="stat-card"><h3 style="text-align:center;margin-bottom:20px;">Daromad oʻsishi</h3><canvas id="earningsChart"></canvas></div>
+        <div class="stat-card">
+          <h3 style="text-align:center;margin-bottom:20px;">Oxirgi 7 kun</h3>
+          <canvas id="dailyChart"></canvas>
+        </div>
+        <div class="stat-card">
+          <h3 style="text-align:center;margin-bottom:20px;">Daromad oʻsishi</h3>
+          <canvas id="earningsChart"></canvas>
+        </div>
       </div>
     </div>
 
+    <!-- PROFILE -->
     <div id="profile" class="section">
       <h1 class="page-title">Profil</h1>
       <div class="grid" style="max-width:600px;margin:0 auto;">
@@ -200,6 +218,7 @@
       </div>
     </div>
 
+    <!-- BILLING -->
     <div id="billing" class="section">
       <h1 class="page-title">Toʻlovlar</h1>
       <div class="grid">
@@ -216,357 +235,388 @@
       </div>
     </div>
 
-    <!-- NEW SUPER MODERN ADMIN PANEL -->
+    <!-- ADMIN PANEL -->
     <div id="admin" class="section">
       <h1 class="page-title">Admin Panel</h1>
-
-      <!-- Summary Cards -->
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-bottom:32px;">
-        <div class="stat-card"><h3>Jami foydalanuvchilar</h3><div class="value" id="adminTotalUsers">0</div></div>
-        <div class="stat-card"><h3>Jami toʻlangan</h3><div class="value" style="background:linear-gradient(90deg,#10b981,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;" id="adminTotalPaid">$0.00</div></div>
-        <div class="stat-card"><h3>Kutilayotgan soʻrovlar</h3><div class="value" style="color:#f59e0b;" id="adminPendingCount">0</div></div>
-        <div class="stat-card"><h3>Bugungi bosishlar</h3><div class="value" id="adminTodayClicks">0</div></div>
-      </div>
-
-      <!-- Tabs -->
-      <div class="admin-tabs" style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
-        <button class="tab-btn active" data-tab="tab-users">Foydalanuvchilar</button>
-        <button class="tab-btn" data-tab="tab-requests">Toʻlov soʻrovlari</button>
-        <button class="tab-btn" data-tab="tab-stats">Statistika</button>
-        <button class="tab-btn" data-tab="tab-system">Tizim</button>
-      </div>
-
-      <!-- Users Tab -->
-      <div id="tab-users" class="admin-tab active">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-          <input type="text" id="adminUserSearch" placeholder="Ism, email yoki username boʻyicha qidiruv..." style="flex:1;min-width:280px;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;" onkeyup="adminSearchUsers()">
-          <button class="btn-primary" onclick="exportUsersCSV()">Export CSV</button>
+      <div class="stat-card">
+        <h3>Yangi roʻyxatdan oʻtganlar (oxirgi 50 ta)</h3>
+        <div style="overflow-x:auto;margin-bottom:40px;">
+          <table><thead><tr><th>#</th><th>Ism</th><th>Email</th><th>Sana</th><th>Bosish</th><th>Daromad</th><th>Amal</th></tr></thead><tbody id="newUsersBody"><tr><td colspan="7" class="empty">Yuklanmoqda...</td></tr></tbody></table>
         </div>
-        <div style="overflow-x:auto;border-radius:16px;background:var(--card);box-shadow:var(--glow-purple);">
-          <table style="width:100%;min-width:900px;">
-            <thead><tr style="background:linear-gradient(90deg,#9333ea,#06b6d4);">
-              <th>#</th><th>Ism / Username</th><th>Email</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>Soʻrov</th><th>Status</th><th>Amallar</th>
-            </tr></thead>
-            <tbody id="adminUsersBody"><tr><td colspan="9" class="empty">Yuklanmoqda...</td></tr></tbody>
-          </table>
+        <h3>Aktiv foydalanuvchilar</h3>
+        <input type="text" placeholder="Qidiruv..." id="userSearch" onkeyup="filterUsers()" style="width:100%;padding:16px;border-radius:12px;background:#16213e;border:1px solid var(--border);color:white;margin-bottom:20px;" />
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>User</th><th>Karta</th><th>Bosish</th><th>Daromad</th><th>Soʻrov</th><th>Amal</th></tr></thead><tbody id="usersBody"><tr><td colspan="6" class="empty">Yuklanmoqda...</td></tr></tbody></table>
         </div>
-      </div>
-
-      <!-- Requests Tab -->
-      <div id="tab-requests" class="admin-tab">
-        <div style="margin-bottom:20px;text-align:right;">
-          <button class="btn-primary" id="payAllPending" style="background:#22c55e;display:none;" onclick="payAllPending()">Barcha soʻrovlarni toʻlash</button>
-        </div>
-        <div style="overflow-x:auto;border-radius:16px;background:var(--card);">
-          <table style="width:100%;min-width:800px;">
-            <thead><tr style="background:linear-gradient(90deg,#9333ea,#06b6d4);">
-              <th>Sana</th><th>Foydalanuvchi</th><th>Miqdor</th><th>Karta</th><th>Amal</th>
-            </tr></thead>
-            <tbody id="adminRequestsBody"><tr><td colspan="5" class="empty">Yuklanmoqda...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Stats Tab -->
-      <div id="tab-stats" class="admin-tab">
-        <div class="grid">
-          <div class="stat-card"><canvas id="adminMonthlyChart" height="100"></canvas></div>
-          <div class="stat-card"><canvas id="adminTopUsersChart" height="100"></canvas></div>
-        </div>
-      </div>
-
-      <!-- System Tab -->
-      <div id="tab-system" class="admin-tab">
-        <div class="stat-card">
-          <h3 style="margin-bottom:20px;">Tezkor amallar</h3>
-          <button class="btn-primary" style="margin:8px;background:#06b6d4;" onclick="alert('Keyingi versiyada')">Clear Cache</button>
-          <button class="btn-primary" style="margin:8px;background:#f59e0b;" onclick="alert('Reklamalar yangilandi')">Reklama yangilash</button>
-          <button class="btn-primary" style="margin:8px;background:#ef4444;" onclick="if(confirm('Test maʼlumotlarni oʻchirish?')) db.collection('publishers').get().then(s=>s.docs.forEach(d=>d.ref.delete()))">Test tozalash</button>
+        <h3 style="margin-top:40px;">Toʻlovlar tarixi</h3>
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>Sana</th><th>Foydalanuvchi</th><th>Miqdor</th><th>Karta</th></tr></thead><tbody id="adminPayoutLog"><tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr></tbody></table>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="hamburger" onclick="toggleSidebar()">Bars</div>
+<div class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
 
 <script>
-const firebaseConfig = {
-  apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",
-  authDomain:"daromad-link.firebaseapp.com",
-  projectId:"daromad-link",
-  storageBucket:"daromad-link.firebasestorage.app",
-  messagingSenderId:"770178829456",
-  appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"
-};
+const firebaseConfig = {apiKey:"AIzaSyDoHvJKLk_8QEm0nUN1fWi_lBtGq0nErdA",authDomain:"daromad-link.firebaseapp.com",projectId:"daromad-link",storageBucket:"daromad-link.firebasestorage.app",messagingSenderId:"770178829456",appId:"1:770178829456:web:00ee4ed46d4b4b6bb15c15"};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+let dailyChart, earningsChart;
 
-let dailyChart, earningsChart, adminMonthlyChart;
+function showLogin() {
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('signupScreen').style.display = 'none';
+}
+function showSignup() {
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('signupScreen').style.display = 'flex';
+}
 
-// ==== BASIC FUNCTIONS (unchanged) ====
-function showLogin(){ document.getElementById('landingPage').style.display='none'; document.getElementById('authScreen').style.display='flex'; document.getElementById('signupScreen').style.display='none'; }
-function showSignup(){ document.getElementById('landingPage').style.display='none'; document.getElementById('authScreen').style.display='none'; document.getElementById('signupScreen').style.display='flex'; }
-function toggleSidebar(){ document.querySelector('.sidebar').classList.toggle('open'); document.querySelector('.overlay').classList.toggle('active'); }
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=> { s.style.display='none'; s.classList.remove('active'); });
-  const el = document.getElementById(id); if(el){ el.style.display='block'; setTimeout(()=>el.classList.add('active'),10); }
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const nav = document.querySelector(`[data-section="${id}"]`); if(nav) nav.classList.add('active');
-  if(window.innerWidth<=992) toggleSidebar();
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.overlay').classList.toggle('active');
 }
-function copyLink(){
-  navigator.clipboard.writeText(document.getElementById('link').textContent);
-  const btn = event.target; const old=btn.textContent; btn.textContent="Nusxalandi!"; btn.style.background="#10b981";
-  setTimeout(()=>{btn.textContent=old; btn.style.background="";},2000);
+
+function showSection(id) {
+  // HIDE ALL sections first — using both class and inline style
+  document.querySelectorAll('.section').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+
+  // Show only the selected one
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
+    setTimeout(() => target.classList.add('active'), 10);
+  }
+
+  // Update sidebar active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`[data-section="${id}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Mobile: close sidebar after click
+  if (window.innerWidth <= 992) toggleSidebar();
 }
-function logout(){ auth.signOut().then(()=>location.reload()); }
-function celebrate(){ confetti({particleCount:120, spread:70, origin:{y:0.6}}); }
-function saveCard(){
+
+function copyLink() {
+  const link = document.getElementById('link').textContent;
+  navigator.clipboard.writeText(link);
+  const btn = event.target;
+  const old = btn.textContent;
+  btn.textContent = "Nusxalandi!";
+  btn.style.background = "#10b981";
+  setTimeout(() => { btn.textContent = old; btn.style.background = ""; }, 2000);
+}
+
+function logout() {
+  auth.signOut().then(() => location.reload());
+}
+
+async function saveCard() {
   let card = document.getElementById('cardNumber').value.replace(/\s/g,'');
-  if(card && card.length!==16) return alert("16 raqam kiriting");
-  db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card||null}).then(()=>alert("Saqlandi!"));
+  if (card && card.length !== 16) return alert("16 ta raqam kiriting");
+  await db.collection("publishers").doc(auth.currentUser.uid).update({cardNumber: card || null});
+  alert("Saqlandi!");
 }
 
-// ==== AUTHENTICATION ====
-document.getElementById('signupBtn').onclick = async ()=>{
+function celebrate() {
+  confetti({particleCount: 120, spread: 70, origin: { y: 0.6 }});
+}
+
+function filterUsers() {
+  const term = document.getElementById('userSearch').value.toLowerCase();
+  document.querySelectorAll('#usersBody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(term) ? '' : 'none';
+  });
+}
+
+window.payUser = async (uid) => {
+  if (!confirm("Toʻlov tasdiqlansinmi?")) return;
+  const ref = db.collection("publishers").doc(uid);
+  const snap = await ref.get();
+  const data = snap.data();
+  const updated = (data.requests || []).map(r => r.status === 'pending' ? {...r, status:'paid'} : r);
+  await ref.update({requests: updated, earnings: 0, clicks: 0});
+  alert("Toʻlov amalga oshirildi!");
+};
+
+window.deleteUser = async (uid) => {
+  if (!confirm("Bu foydalanuvchi butunlay oʻchirilsinmi?")) return;
+  await db.collection("publishers").doc(uid).delete();
+  alert("Foydalanuvchi oʻchirildi");
+};
+
+// Card formatting
+document.getElementById('cardNumber')?.addEventListener('input', function (e) {
+  let v = e.target.value.replace(/\D/g, '').substring(0,16);
+  v = v.replace(/(\d{4})/g, '$1 ').trim();
+  e.target.value = v;
+});
+
+// Instant signup with auto-login fix
+document.getElementById('signupBtn').addEventListener('click', async () => {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const pass = document.getElementById('regPass').value;
   const error = document.getElementById('signupError');
   const btn = document.getElementById('signupBtn');
-  if(!name||!email||pass.length<6){ error.textContent="Barcha maydonlar toʻldirilsin"; error.classList.add('show'); return; }
-  btn.disabled=true;
-  try{
-    const cred = await auth.createUserWithEmailAndPassword(email,pass);
-    const username = name.toLowerCase().replace(/\s+/g,'') + Math.floor(Math.random()*9999);
-    await db.collection("publishers").doc(cred.user.uid).set({username,displayName:name,email,clicks:0,earnings:0,requests:[],joined:new Date(),dailyStats:{},cardNumber:""});
-    document.getElementById('signupSuccess').style.display='block';
-    setTimeout(()=>location.reload(),1500);
-  }catch(e){ error.textContent = e.message.includes("email-already-in-use")?"Bu email ishlatilgan":"Xato: "+e.message; error.classList.add('show'); }
-  btn.disabled=false;
-};
+  const success = document.getElementById('signupSuccess');
 
-document.getElementById('loginBtn').onclick = ()=>{ 
+  if (!name || !email || pass.length < 6) {
+    error.textContent = "Barcha maydonlarni toʻldiring (parol 6+ belgidan)";
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  error.classList.remove('show');
+  success.style.display = 'none';
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 9999);
+    await db.collection("publishers").doc(cred.user.uid).set({
+      username, displayName: name, email, clicks:0, earnings:0, requests:[], joined: new Date(), dailyStats:{}, cardNumber: ""
+    });
+    success.style.display = 'block';
+    setTimeout(() => location.reload(), 1500);  // Reload to trigger dashboard
+  } catch (e) {
+    const msg = e.message.includes("email-already-in-use") ? "Bu email allaqachon ishlatilgan" : "Xato yuz berdi: " + e.message;
+    error.textContent = msg;
+    error.classList.add('show');
+  }
+  btn.disabled = false;
+});
+
+// Login
+document.getElementById('loginBtn').addEventListener('click', () => {
   const email = document.getElementById('loginEmail').value.trim();
   const pass = document.getElementById('loginPass').value;
   const error = document.getElementById('loginError');
-  if(!email||!pass){ error.textContent="Toʻldiring"; error.classList.add('show'); return; }
-  document.getElementById('loginBtn').disabled=true;
-  auth.signInWithEmailAndPassword(email,pass).catch(e=>{ error.textContent="Notoʻgʻri email/parol"; error.classList.add('show'); document.getElementById('loginBtn').disabled=false; });
-};
+  const btn = document.getElementById('loginBtn');
 
-// ==== USER DASHBOARD LOGIC (unchanged + admin) ====
-auth.onAuthStateChanged(async user => {
-  if(!user){
-    document.getElementById('landingPage').style.display='flex';
+  if (!email || !pass) {
+    error.textContent = "Toʻldiring";
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  error.classList.remove('show');
+
+  auth.signInWithEmailAndPassword(email, pass).catch(e => {
+    error.textContent = "Notoʻgʻri email yoki parol";
+    error.classList.add('show');
+    btn.disabled = false;
+  });
+});
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    // User is NOT logged in → show Landing Page for new visitors
+    document.getElementById('landingPage').style.display = 'flex';
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('signupScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
     document.body.classList.add('loaded');
     return;
   }
 
-  document.getElementById('landingPage').style.display='none';
-  document.getElementById('authScreen').style.display='none';
-  document.getElementById('signupScreen').style.display='none';
-  document.getElementById('app').style.display='flex';
+  // User IS logged in → hide all auth/landing screens and show the main app
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('signupScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
   document.getElementById('app').classList.add('loaded');
   document.body.classList.add('loaded');
 
-  const uid = user.uid;
-  const pubRef = db.collection("publishers").doc(uid);
-  const isAdmin = user.email === "abrorahmeed@gmail.com";
-  if(isAdmin) document.getElementById('adminTab').style.display='flex';
+  const pubRef = db.collection("publishers").doc(user.uid);
+  const snap = await pubRef.get();
+  let data = snap.data() || {};
 
-  pubRef.get().then(async snap => {
-    let data = snap.data() || {};
-    if(!snap.exists){
-      data = {username:user.email.split('@')[0],displayName:"",clicks:0,earnings:0,requests:[],joined:new Date(),dailyStats:{},cardNumber:""};
-      await pubRef.set(data);
+  if (!snap.exists) {
+    data = {
+      username: user.email.split('@')[0],
+      displayName: "",
+      clicks: 0,
+      earnings: 0,
+      requests: [],
+      joined: new Date(),
+      dailyStats: {},
+      cardNumber: ""
+    };
+    await pubRef.set(data);
+  }
+
+  const isAdmin = user.email === "abrorahmeed@gmail.com";
+  if (isAdmin) document.getElementById('adminTab').style.display = 'flex';
+
+  const username = data.username || user.email.split('@')[0];
+  document.querySelectorAll('#userName, #profileUsername').forEach(e => e.textContent = username);
+  document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds * 1000 || data.joined).toLocaleDateString('uz-UZ');
+  document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + username;
+  document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : "";
+
+  pubRef.onSnapshot((doc) => {
+    if (!doc.exists) return;
+    const d = doc.data();
+
+    document.getElementById('totalClicks').textContent = (d.clicks || 0).toLocaleString();
+    const earn = (d.earnings || 0).toFixed(2);
+    document.getElementById('totalEarn').textContent = "$" + earn;
+    document.getElementById('balance').textContent = "$" + earn;
+
+    const pending = (d.requests || []).some(r => r.status === 'pending');
+    const btn = document.getElementById('requestPayout');
+    const notice = document.getElementById('pendingNotice');
+
+    if (pending || parseFloat(earn) < 5) {
+      btn.disabled = true;
+      btn.textContent = pending ? "Kutilyapti..." : "Minimum $5";
+      notice.style.display = pending ? "block" : "none";
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Soʻrash";
+      notice.style.display = "none";
     }
 
-    document.querySelectorAll('#userName, #profileUsername').forEach(e=>e.textContent = data.username || data.displayName || user.email.split('@')[0]);
-    document.getElementById('profileEmail').textContent = user.email;
-    document.getElementById('joinedDate').textContent = new Date(data.joined?.seconds*1000 || data.joined).toLocaleDateString('uz-UZ');
-    document.getElementById('link').textContent = location.origin + "/daromad/click.html?u=" + (data.username || user.email.split('@')[0]);
-    document.getElementById('cardNumber').value = data.cardNumber ? data.cardNumber.replace(/(\d{4})/g,'$1 ').trim() : "";
+    // Charts update
+    const daily = d.dailyStats || {};
+    const dates = Object.keys(daily).sort().slice(-7);
+    const labels = dates.length ? dates.map(d => d.slice(5).replace('-', '/')) : ["Bugun"];
+    const clicksData = dates.length ? dates.map(d => daily[d]?.clicks || 0) : [0];
 
-    // Real-time user data
-    pubRef.onSnapshot(doc => {
-      const d = doc.data();
-      document.getElementById('totalClicks').textContent = (d.clicks||0).toLocaleString();
-      const earn = (d.earnings||0).toFixed(2);
-      document.getElementById('totalEarn').textContent = "$"+earn;
-      document.getElementById('balance').textContent = "$"+earn;
+    if (dailyChart) dailyChart.destroy();
+    if (earningsChart) earningsChart.destroy();
 
-      const pending = (d.requests||[]).some(r=>r.status==='pending');
-      const btn = document.getElementById('requestPayout');
-      if(pending || parseFloat(earn)<5){
-        btn.disabled=true; btn.textContent = pending?"Kutilyapti...":"Minimum $5";
-        document.getElementById('pendingNotice').style.display = pending?"block":"none";
-      }else{
-        btn.disabled=false; btn.textContent="Soʻrash";
-      }
-
-      // Charts (unchanged)
-      const daily = d.dailyStats || {};
-      const dates = Object.keys(daily).sort().slice(-7);
-      const labels = dates.length ? dates.map(d=>d.slice(5).replace('-','/')) : ["Bugun"];
-      const clicksData = dates.length ? dates.map(d=>daily[d]?.clicks||0) : [0];
-      if(dailyChart) dailyChart.destroy();
-      dailyChart = new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels,datasets:[{label:'Bosishlar',data:clicksData,backgroundColor:'#4361ee'}]},options:{responsive:true,plugins:{legend:{display:false}}}});
-
-      // Payout table
-      const tbody = document.getElementById('payoutTable');
-      tbody.innerHTML='';
-      (d.requests||[]).forEach(r=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${new Date(r.date?.seconds*1000 || r.date).toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status==='paid'?'#10b981':'#f59e0b'}">${r.status==='paid'?'Toʻlandi':'Kutilyapti'}</strong></td>`;
-        tbody.appendChild(tr);
-      });
-      if(!d.requests?.length) tbody.innerHTML='<tr><td colspan="3" class="empty">Hali toʻlov yoʻq</td></tr>';
+    dailyChart = new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Bosishlar', data: clicksData, backgroundColor: '#4361ee' }] },
+      options: { responsive: true, plugins: { legend: { display: false } } }
     });
 
-    document.getElementById('requestPayout').onclick = async ()=>{
-      if(parseFloat(earn)<5) return alert("Minimum $5");
-      if((d.requests||[]).some(r=>r.status==='pending')) return alert("Allaqachon soʻrov bor");
-      if(confirm(`$${earn} soʻraymizmi?`)){
-        await pubRef.update({requests: firebase.firestore.FieldValue.arrayUnion({amount:parseFloat(earn),date:new Date(),status:'pending'})});
-        celebrate();
-      }
-    };
+    earningsChart = new Chart(document.getElementById('earningsChart'), {
+      type: 'line',
+      data: {
+        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
+        datasets: [{
+          label: 'Daromad',
+          data: Array(12).fill(0).map((_, i) => i + 1 === new Date().getMonth() + 1 ? parseFloat(earn) : 0),
+          borderColor: '#10b981',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: { responsive: true }
+    });
+
+    // Payout history table
+    const tbody = document.getElementById('payoutTable');
+    tbody.innerHTML = '';
+    const requests = d.requests || [];
+    if (!requests.length) tbody.innerHTML = '<tr><td colspan="3" class="empty">Hali toʻlov yoʻq</td></tr>';
+    requests.forEach(r => {
+      const tr = document.createElement('tr');
+      const date = new Date(r.date?.seconds * 1000 || r.date);
+      tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>$${r.amount.toFixed(2)}</td><td><strong style="color:${r.status === 'paid' ? '#10b981' : '#f59e0b'}">${r.status === 'paid' ? 'Toʻlandi' : 'Kutilyapti'}</strong></td>`;
+      tbody.appendChild(tr);
+    });
   });
 
-  // ADMIN PANEL LOGIC (NEW & FULL)
-  if(isAdmin){
-    // Summary counters
-    db.collection("publishers").onSnapshot(snap=>{
-      let totalPaid=0, pending=0, todayClicks=0;
-      const today = new Date().toISOString().slice(0,10);
-      snap.docs.forEach(doc=>{
-        const d=doc.data();
-        totalPaid += (d.requests||[]).filter(r=>r.status==='paid').reduce((a,r)=>a+r.amount,0);
-        pending += (d.requests||[]).filter(r=>r.status==='pending').length;
-        if(d.dailyStats?.[today]) todayClicks += d.dailyStats[today].clicks||0;
-      });
-      document.getElementById('adminTotalUsers').textContent=snap.size;
-      document.getElementById('adminTotalPaid').textContent='$'+totalPaid.toFixed(2);
-      document.getElementById('adminPendingCount').textContent=pending;
-      document.getElementById('adminTodayClicks').textContent=todayClicks.toLocaleString();
-    });
-
-    // Users table
-    db.collection("publishers").onSnapshot(snap=>{
-      const tbody=document.getElementById('adminUsersBody'); tbody.innerHTML=''; let i=1;
-      snap.docs.forEach(doc=>{
-        const d=doc.data();
-        const pending=(d.requests||[]).filter(r=>r.status==='pending').length;
-        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g,'$1 ').trim() : '<span style="color:#64748b;">—</span>';
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${i++}</td>
-          <td><strong>${d.displayName||d.username}</strong></td>
+  // Admin panel features (unchanged)
+  if (isAdmin) {
+    db.collection("publishers").orderBy("joined", "desc").limit(50).onSnapshot((snap) => {
+      const tbody = document.getElementById('newUsersBody');
+      tbody.innerHTML = '';
+      snap.docs.forEach((doc, i) => {
+        const d = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${d.displayName || d.username || '-'}</td>
           <td>${d.email}</td>
-          <td>${card}</td>
-          <td>${(d.clicks||0).toLocaleString()}</td>
-          <td>$${(d.earnings||0).toFixed(2)}</td>
-          <td>${pending?`<span style="color:#f59e0b;font-weight:700;">${pending} ta</span>`:'—'}</td>
-          <td>${d.banned?'<span style="color:#ef4444;">Ban</span>':'<span style="color:#10b981;">Faol</span>'}</td>
-          <td style="white-space:nowrap;">
-            ${pending?`<button class="btn-success" onclick="payUser('${doc.id}')">Toʻlash</button>`:''}
-            <button class="btn-danger" onclick="banUser('${doc.id}',${!d.banned})">${d.banned?'Unban':'Ban'}</button>
-            <button class="btn-danger" onclick="resetEarnings('${doc.id}')">Reset</button>
-            <button class="btn-danger" onclick="deleteUser('${doc.id}')">Delete</button>
-          </td>`;
+          <td>${new Date(d.joined?.seconds * 1000 || d.joined).toLocaleDateString('uz-UZ')}</td>
+          <td>${(d.clicks || 0).toLocaleString()}</td>
+          <td>$${(d.earnings || 0).toFixed(2)}</td>
+          <td><button class="btn-danger" onclick="deleteUser('${doc.id}')">Oʻchirish</button></td>
+        `;
         tbody.appendChild(tr);
       });
+      if (!snap.size) tbody.innerHTML = '<tr><td colspan="7" class="empty">Yangi foydalanuvchi yoʻq</td></tr>';
     });
 
-    // Requests table
-    db.collection("publishers").onSnapshot(snap=>{
-      const tbody=document.getElementById('adminRequestsBody'); tbody.innerHTML='';
-      const reqs=[];
-      snap.docs.forEach(doc=>{
-        (doc.data().requests||[]).forEach(r=>{
-          if(r.status==='pending') reqs.push({docId:doc.id, data:doc.data(), req:r});
-        });
-      });
-      if(!reqs.length){
-        tbody.innerHTML='<tr><td colspan="5" class="empty">Hozircha soʻrov yoʻq</td></tr>';
-        document.getElementById('payAllPending').style.display='none';
-      }else document.getElementById('payAllPending').style.display='inline-block';
-
-      reqs.forEach(item=>{
-        const r=item.req; d=item.data;
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${new Date(r.date?.seconds*1000 || r.date).toLocaleDateString('uz-UZ')}</td>
-        <td>${d.displayName||d.username}</td>
-        <td>$${r.amount.toFixed(2)}</td>
-        <td>${d.cardNumber?d.cardNumber.replace(/(\d{4})/g,'$1 ').trim():'—'}</td>
-        <td><button class="btn-success" onclick="payUser('${item.docId}')">Toʻlash</button></td>`;
+    db.collection("publishers").onSnapshot((snap) => {
+      const tbody = document.getElementById('usersBody');
+      tbody.innerHTML = '';
+      snap.docs.forEach((doc) => {
+        const d = doc.data();
+        const pendingCount = (d.requests || []).filter(r => r.status === 'pending').length;
+        const card = d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${d.username || '—'}</strong></td>
+          <td>${card} ${d.cardNumber ? '<button class="copy-btn" onclick="navigator.clipboard.writeText(\'' + d.cardNumber + '\')">Copy</button>' : ''}</td>
+          <td>${(d.clicks || 0).toLocaleString()}</td>
+          <td>$${(d.earnings || 0).toFixed(2)}</td>
+          <td>${pendingCount}</td>
+          <td>${pendingCount > 0 ? '<button class="btn-primary" style="padding:8px 16px;" onclick="payUser(\'' + doc.id + '\')">Toʻlash</button>' : '—'}</td>
+        `;
         tbody.appendChild(tr);
+      });
+      if (!snap.size) tbody.innerHTML = '<tr><td colspan="6" class="empty">Foydalanuvchi yoʻq</td></tr>';
+    });
+
+    const logBody = document.getElementById('adminPayoutLog');
+    db.collection("publishers").get().then((snap) => {
+      logBody.innerHTML = '';
+      const payments = [];
+      snap.docs.forEach((doc) => {
+        const d = doc.data();
+        (d.requests || []).forEach(r => r.status === 'paid' && payments.push({date: r.date, username: d.username || '—', amount: r.amount, card: d.cardNumber ? d.cardNumber.replace(/(\d{4})/g, '$1 ').trim() : '—'}));
+      });
+      payments.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+      if (!payments.length) logBody.innerHTML = '<tr><td colspan="4" class="empty">Hali toʻlov yoʻq</td></tr>';
+      payments.forEach(p => {
+        const tr = document.createElement('tr');
+        const date = new Date(p.date?.seconds * 1000 || p.date);
+        tr.innerHTML = `<td>${date.toLocaleDateString()}</td><td>${p.username}</td><td>$${p.amount.toFixed(2)}</td><td>${p.card}</td>`;
+        logBody.appendChild(tr);
       });
     });
   }
+
+  document.getElementById('requestPayout').onclick = async () => {
+    const earn = parseFloat(document.getElementById('balance').textContent.replace('$', ''));
+    if (earn < 5) return alert("Minimum $5 kerak");
+    if ((data.requests || []).some(r => r.status === 'pending')) return alert("Sizda allaqachon soʻrov bor!");
+    if (confirm(`$${earn.toFixed(2)} soʻraymizmi?`)) {
+      await pubRef.update({
+        requests: firebase.firestore.FieldValue.arrayUnion({
+          amount: earn,
+          date: new Date(),
+          status: 'pending'
+        })
+      });
+      celebrate();
+      alert("Soʻrov yuborildi! Tez orada toʻlov keladi");
+    }
+  };
 });
 
-// Admin extra functions
-window.payUser = async uid => {
-  if(!confirm("Toʻlov tasdiqlansinmi?")) return;
-  const ref = db.collection("publishers").doc(uid);
-  const snap = await ref.get();
-  const d = snap.data();
-  const updated = d.requests.map(r=> r.status==='pending'?{...r,status:'paid'}:r);
-  await ref.update({requests:updated, earnings:0, clicks:0});
-  celebrate();
-};
-window.banUser = async (uid, ban) => {
-  if(!confirm(ban?"Bloklash?":"Blok ochish?")) return;
-  await db.collection("publishers").doc(uid).update({banned:!!ban});
-};
-window.resetEarnings = async uid => {
-  if(!confirm("Daromad va bosishlarni 0 ga tushirish?")) return;
-  await db.collection("publishers").doc(uid).update({earnings:0,clicks:0,requests:[]});
-};
-window.payAllPending = async ()=>{
-  if(!confirm("Barcha kutilayotgan toʻlovlarni toʻlash?")) return;
-  const batch = db.batch();
-  const snap = await db.collection("publishers").get();
-  snap.docs.forEach(doc=>{
-    const d=doc.data();
-    if(d.requests?.some(r=>r.status==='pending')){
-      const updated = d.requests.map(r=> r.status==='pending'?{...r,status:'paid'}:r);
-      batch.update(doc.ref, {requests:updated, earnings:0, clicks:0});
-    }
+document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+  item.addEventListener('click', () => {
+    showSection(item.dataset.section);
+    if (window.innerWidth <= 992) toggleSidebar();
   });
-  await batch.commit();
-  celebrate();
-  alert("Barcha toʻlovlar amalga oshirildi!");
-};
-window.exportUsersCSV = ()=>{
-  let csv="Ism,Username,Email,Karta,Bosish,Daromad,Sana\n";
-  db.collection("publishers").get().then(snap=>{
-    snap.docs.forEach(doc=>{
-      const d=doc.data();
-      csv += `"${d.displayName||"","${d.username}","${d.email}","${d.cardNumber||"",${d.clicks||0},${d.earnings||0},${new Date(d.joined?.seconds*1000).toLocaleDateString()}\n`;
-    });
-    const blob = new Blob([csv],{type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download='daromadlink_users.csv'; a.click();
-  });
-};
-function adminSearchUsers(){
-  const term = document.getElementById('adminUserSearch').value.toLowerCase();
-  document.querySelectorAll('#adminUsersBody tr').forEach(tr=> tr.style.display = tr.textContent.toLowerCase().includes(term)?'':'none');
-}
-
-// Navigation
-document.querySelectorAll('.nav-item[data-section]').forEach(item=> item.addEventListener('click',()=>showSection(item.dataset.section)));
-document.querySelectorAll('.tab-btn').forEach(btn=> btn.addEventListener('click',()=>{ 
-  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(btn.dataset.tab).classList.add('active');
-  btn.classList.add('active');
-}));
+});
 </script>
 </body>
 </html>
